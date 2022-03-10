@@ -17,7 +17,7 @@
 # Mono auto generated files
 mono_crash.*
 
-[Pp]ackages/
+../[Pp]ackages/
 
 # Build results
 [Dd]ebug/

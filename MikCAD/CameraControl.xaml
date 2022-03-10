@@ -6,7 +6,7 @@
              xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
              xmlns:local="clr-namespace:MikCAD"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="250">
+             d:DesignWidth="250">
     <Grid>
         <GroupBox x:Name="Camera">
             <GroupBox.Header>

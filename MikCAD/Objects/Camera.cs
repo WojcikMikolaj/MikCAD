@@ -1,5 +1,5 @@
 ﻿using OpenTK.Mathematics;
-
+using MH = OpenTK.Mathematics.MathHelper;
 namespace MikCAD
 {
     public class Camera
@@ -55,7 +55,7 @@ namespace MikCAD
         private Vector3 _up = new Vector3(0, 1, 0);
         
         private float _pitch;
-        private float _yaw;
+        private float _yaw = -90;
         private float _roll;
 
         private float _fov = 60;
@@ -66,12 +66,16 @@ namespace MikCAD
 
         public Matrix4 GetViewMatrix()
         {
-            return Matrix4.LookAt(_position, _front, _up);
+            _front.X = (float)MH.Cos(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
+            _front.Y = (float)MH.Sin(MH.DegreesToRadians(_pitch));
+            _front.Z = (float)MH.Sin(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
+            
+            return Matrix4.LookAt(_position, _front + _position, _up);
         }
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(_fov), _width / _height, _near,
+            return Matrix4.CreatePerspectiveFieldOfView(MH.DegreesToRadians(_fov), _width / _height, _near,
                 _far);
         }
     }

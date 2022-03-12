@@ -12,18 +12,20 @@ namespace MikCAD
     /// </summary>
     public partial class MainWindow
     {
-        private Scene _scene = new Scene();
+        public Scene scene { get; set; }
+        
         public MainWindow()
         {
             InitializeComponent();
-            
+            this.DataContext = this;
             var mainSettings = new GLWpfControlSettings {MajorVersion = 2, MinorVersion = 1};
             OpenTkControl.Start(mainSettings);
-            _scene.Initialise(400, 400);
+            scene = new Scene();
+            scene.Initialise(400, 400);
         }
 
         private void OpenTkControl_OnRender(TimeSpan delta) {
-            _scene.OnRenderFrame();
+            scene.OnRenderFrame();
         }
     }
 }

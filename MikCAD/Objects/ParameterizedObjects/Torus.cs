@@ -136,6 +136,8 @@ namespace MikCAD
 
         private uint[] GenerateLines()
         {
+            //2 - ends of each line
+            //2 - same number of big and small circles
             uint[] lines = new uint[2* _planeStepsCount * 2 * _circleStepsCount];
             uint it = 0;
             for (int i = 0; i < _planeStepsCount; i++)
@@ -178,13 +180,13 @@ namespace MikCAD
 
             for (int i = 0; i < _vertices.Length; i++)
             {
-                vertices[i * 3] = _vertices[i].X;
-                vertices[i * 3 + 1] = _vertices[i].Y;
-                vertices[i * 3 + 2] = _vertices[i].Z;
+                vertices[i * Point.Size] = _vertices[i].X;
+                vertices[i * Point.Size + 1] = _vertices[i].Y;
+                vertices[i * Point.Size + 2] = _vertices[i].Z;
 
-                colors[i * 3] = 1.0f;
-                colors[i * 3 + 1] = 0.0f;
-                colors[i * 3 + 2] = 0.0f;
+                colors[i * Point.Size] = 1.0f;
+                colors[i * Point.Size + 1] = 0.0f;
+                colors[i * Point.Size + 2] = 0.0f;
             }
 
             return vertices;

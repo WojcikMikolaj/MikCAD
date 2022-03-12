@@ -15,7 +15,7 @@
             <ColumnDefinition Width="1*" MinWidth="400"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
-        <local:CameraControl Grid.Column="0"></local:CameraControl>
+        <local:CameraControl Grid.Column="0" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>
         <glWpfControl:GLWpfControl Grid.Column="1" x:Name="OpenTkControl" 
                                    Render="OpenTkControl_OnRender"
                                    MinWidth="400"

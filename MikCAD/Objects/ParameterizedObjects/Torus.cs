@@ -1,11 +1,66 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD
 {
     public class Torus : IParameterizedObject
     {
+        public float posX
+        {
+            get => _position.X;
+            set => _position.X = value;
+        }
+
+        public float posY
+        {
+            get => _position.Y;
+            set => _position.Y = value;
+        }
+
+        public float posZ
+        {
+            get => _position.Z;
+            set => _position.Z = value;
+        }
+
+        public float rotX
+        {
+            get => _rotation.X;
+            set => _rotation.X = value;
+        }
+
+        public float rotY
+        {
+            get => _rotation.Y;
+            set => _rotation.Y = value;
+        }
+
+        public float rotZ
+        {
+            get => _rotation.Z;
+            set => _rotation.Z = value;
+        }
+
+        public float scaleX
+        {
+            get => _scale.X;
+            set => _scale.X = value;
+        }
+
+        public float scaleY
+        {
+            get => _scale.Y;
+            set => _scale.Y = value;
+        }
+
+        public float scaleZ
+        {
+            get => _scale.Z;
+            set => _scale.Z = value;
+        }
+
         public float R
         {
             get => _R;
@@ -26,7 +81,7 @@ namespace MikCAD
             }
         }
 
-        public float Theta
+        public float theta
         {
             get => _theta;
             set
@@ -36,7 +91,7 @@ namespace MikCAD
             }
         }
 
-        public float Phi
+        public float phi
         {
             get => _phi;
             set
@@ -46,8 +101,11 @@ namespace MikCAD
             }
         }
 
-        private Point[] _vertices;
-        public int VerticesCount => _vertices.Length;
+        private Vector3 _position = new Vector3();
+        private Vector3 _rotation = new Vector3();
+        private Vector3 _scale = new Vector3(1,1,1);
+
+
         private float _R;
         private float _r;
         private float _theta;
@@ -57,6 +115,8 @@ namespace MikCAD
         private int _circleStepsCount;
         private int _planeStepsCount;
 
+        private Point[] _vertices;
+        public int VerticesCount => _vertices.Length;
         public uint[] lines;
 
         public Torus()
@@ -94,8 +154,11 @@ namespace MikCAD
 
         public Matrix4 GetModelMatrix()
         {
-            return Matrix4.Identity;
-            //return modelMatrix;
+            return Matrix4.CreateTranslation(_position)
+                   * Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]))
+                   * Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]))
+                   * Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]))
+                   * Matrix4.CreateScale(_scale);
         }
 
         public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
@@ -138,7 +201,7 @@ namespace MikCAD
         {
             //2 - ends of each line
             //2 - same number of big and small circles
-            uint[] lines = new uint[2* _planeStepsCount * 2 * _circleStepsCount];
+            uint[] lines = new uint[2 * _planeStepsCount * 2 * _circleStepsCount];
             uint it = 0;
             for (int i = 0; i < _planeStepsCount; i++)
             {

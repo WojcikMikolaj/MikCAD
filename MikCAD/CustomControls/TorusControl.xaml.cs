@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace MikCAD.CustomControls
+namespace MikCAD
 {
     public partial class TorusControl : UserControl
     {

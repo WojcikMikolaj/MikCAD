@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="MikCAD.CustomControls.TorusControl"
+﻿<UserControl x:Class="MikCAD.TorusControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
-             xmlns:local="clr-namespace:MikCAD.CustomControls"
+             xmlns:local="clr-namespace:MikCAD"
              mc:Ignorable="d"
              d:DesignWidth="250">
     <Grid>
@@ -27,17 +27,26 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0" Grid.Column="0">Pozycja</Label>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="2" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="3" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.posX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="0" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.posY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="0" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.posZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
                         <Label Grid.Row="1" Grid.Column="0">Rotacja</Label>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="2" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="3" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.rotX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="1" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.rotY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="1" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.rotZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
                         <Label Grid.Row="2" Grid.Column="0">Skala</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="2" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="3" Value="{Binding Path=placeHolder, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.scaleX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.scaleY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.scaleZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
                     </Grid>
                 </GroupBox>
                 <GroupBox x:Name="TorusParameters">
@@ -56,13 +65,17 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Label>R</Label>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Path=R}" DisplayLength="10" IsReadOnly="False"/>
+                        <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.R, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                         <Label Grid.Row="1" Grid.Column="0">r</Label>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Path=r}" DisplayLength="10" IsReadOnly="False"/>
+                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.r, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                         <Label Grid.Row="2" Grid.Column="0">θ</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding Path=Theta}" DisplayLength="10" IsReadOnly="False"/>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.theta, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                         <Label Grid.Row="3" Grid.Column="0">Φ</Label>
-                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" Value="{Binding Path=Phi}" DisplayLength="10" IsReadOnly="False"/>
+                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.phi, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
             </StackPanel>

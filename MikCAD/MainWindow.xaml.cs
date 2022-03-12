@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Windows.Interop;
-using SharpGL;
-using SharpGL.SceneGraph;
-using SharpGL.SceneGraph.Primitives;
-using SharpGL.WPF;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Wpf;
 
 
 namespace MikCAD
@@ -13,38 +12,18 @@ namespace MikCAD
     /// </summary>
     public partial class MainWindow
     {
+        private Scene _scene = new Scene();
         public MainWindow()
         {
             InitializeComponent();
+            
+            var mainSettings = new GLWpfControlSettings {MajorVersion = 2, MinorVersion = 1};
+            OpenTkControl.Start(mainSettings);
+            _scene.Initialise(400, 400);
         }
 
-        private void OpenGLControl_OpenGLDraw(object sender, OpenGLRoutedEventArgs args)
-        {
-            //  Get the OpenGL instance.
-            var gl = args.OpenGL;
-
-            scene.Draw(gl);
+        private void OpenTkControl_OnRender(TimeSpan delta) {
+            _scene.OnRenderFrame();
         }
-
-        private void OpenGLControl_OpenGLInitialized(object sender, OpenGLRoutedEventArgs args)
-        {
-            OpenGL gl = args.OpenGL;
-
-            scene.Initialise(gl, 400, 400);
-        }
-
-        private void OpenGLControl_Resized(object sender, OpenGLRoutedEventArgs args)
-        {
-        }
-
-        /// <summary>
-        /// The axies, which may be drawn.
-        /// </summary>
-        private readonly Axies axies = new Axies();
-
-        /// <summary>
-        /// The scene we're drawing.
-        /// </summary>
-        private readonly Scene scene = new Scene();
     }
 }

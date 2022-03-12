@@ -1,26 +1,11 @@
 ﻿using System;
-using GlmNet;
-using SharpGL;
-using SharpGL.VertexBuffers;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 
 namespace MikCAD
 {
     public class Torus : IParameterizedObject
     {
-        private Point[] _vertices;
-        private float _R;
-
-        public int VerticesCount => _vertices.Length;
-
-        public Torus()
-        {
-            _R = 1;
-            _r = 0.5f;
-            _theta = 360;
-            _phi = 45;
-            CalculateVertices();
-        }
-        
         public float R
         {
             get => _R;
@@ -30,8 +15,6 @@ namespace MikCAD
                 CalculateVertices();
             }
         }
-
-        private float _r;
 
         public float r
         {
@@ -43,8 +26,6 @@ namespace MikCAD
             }
         }
 
-        private float _theta;
-
         public float Theta
         {
             get => _theta;
@@ -54,8 +35,6 @@ namespace MikCAD
                 CalculateVertices();
             }
         }
-
-        private float _phi;
 
         public float Phi
         {
@@ -67,82 +46,148 @@ namespace MikCAD
             }
         }
 
+        private Point[] _vertices;
+        public int VerticesCount => _vertices.Length;
+        private float _R;
+        private float _r;
+        private float _theta;
+        private float _thetaStep;
+        private float _phi;
+        private float _phiStep;
+        private int _circleStepsCount;
+        private int _planeStepsCount;
+
+        public uint[] lines;
+
+        public Torus()
+        {
+            _R = 1;
+            _r = 0.5f;
+            _theta = 60;
+            _phi = 60;
+            CalculateVertices();
+        }
+
         private void CalculateVertices()
         {
-            int planeStepsCount = (int) (360 / _phi);
-            float phiStep = glm.radians(360.0f / planeStepsCount);
+            _planeStepsCount = (int) (360 / _phi);
+            _phiStep = MathHelper.DegreesToRadians(360.0f / _planeStepsCount);
 
-            int circleStepsCount = (int) (360 / _theta);
-            float thetaStep = glm.radians(360.0f / circleStepsCount);
+            _circleStepsCount = (int) (360 / _theta);
+            _thetaStep = MathHelper.DegreesToRadians(360.0f / _circleStepsCount);
 
-            _vertices = new Point[planeStepsCount * circleStepsCount];
+            _vertices = new Point[_planeStepsCount * _circleStepsCount];
 
-            for (int i = 0; i < planeStepsCount; i++)
+            for (int i = 0; i < _planeStepsCount; i++)
             {
-                for (int j = 0; j < circleStepsCount; j++)
+                for (int j = 0; j < _circleStepsCount; j++)
                 {
-                    _vertices[i * circleStepsCount + j] = new Point()
+                    _vertices[i * _circleStepsCount + j] = new Point()
                     {
-                        X = (R + r * glm.cos(j * thetaStep)) * glm.cos(i * phiStep),
-                        Y = (R + r * glm.cos(j * thetaStep)) * glm.sin(i * phiStep),
-                        Z = r * glm.sin(j * thetaStep)
+                        X = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Cos(i * _phiStep),
+                        Y = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Sin(i * _phiStep),
+                        Z = r * (float) MathHelper.Sin(j * _thetaStep)
                     };
                 }
             }
         }
 
-
-        public mat4 GetModelMatrix()
+        public Matrix4 GetModelMatrix()
         {
-            return mat4.identity();
+            return Matrix4.Identity;
             //return modelMatrix;
         }
 
-        public void GenerateVertices(OpenGL gl, uint vertexAttributeLocation, uint normalAttributeLocation, out VertexBufferArray vertexBufferArray)
+        public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
+            out int _vertexBufferObject, out int _vertexArrayObject)
+        {
+            var vertices = new float[_vertices.Length * Point.Size];
+            var colors = new float[_vertices.Length * Point.Size];
+
+            for (int i = 0; i < _vertices.Length; i++)
+            {
+                vertices[Point.Size * i] = _vertices[i].X;
+                vertices[Point.Size * i + 1] = _vertices[i].Y;
+                vertices[Point.Size * i + 2] = _vertices[i].Z;
+            }
+
+            var vertexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
+                BufferUsageHint.StaticDraw);
+            _vertexBufferObject = vertexBufferObject;
+
+            var vertexArrayObject = GL.GenVertexArray();
+            GL.BindVertexArray(vertexArrayObject);
+            _vertexArrayObject = vertexArrayObject;
+
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+
+            var indexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+            lines = GenerateLines();
+            GL.BufferData(BufferTarget.ElementArrayBuffer, lines.Length * sizeof(uint), lines,
+                BufferUsageHint.StaticDraw);
+
+            GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+            GL.EnableVertexAttribArray(1);
+        }
+
+        private uint[] GenerateLines()
+        {
+            uint[] lines = new uint[2* _planeStepsCount * 2 * _circleStepsCount];
+            uint it = 0;
+            for (int i = 0; i < _planeStepsCount; i++)
+            {
+                for (int j = 0; j < _circleStepsCount; j++)
+                {
+                    //duże okręgi
+                    if (i != _planeStepsCount - 1)
+                    {
+                        lines[it++] = (uint) (i * _circleStepsCount + j);
+                        lines[it++] = (uint) ((i + 1) * _circleStepsCount + j);
+                    }
+                    else
+                    {
+                        lines[it++] = (uint) ((_planeStepsCount - 1) * _circleStepsCount + j);
+                        lines[it++] = (uint) j;
+                    }
+
+                    //małe okręgi
+                    if (j != _circleStepsCount - 1)
+                    {
+                        lines[it++] = (uint) (i * _circleStepsCount + j);
+                        lines[it++] = (uint) (i * _circleStepsCount + j + 1);
+                    }
+                    else
+                    {
+                        lines[it++] = (uint) (i * _circleStepsCount + _circleStepsCount - 1);
+                        lines[it++] = (uint) (i * _circleStepsCount);
+                    }
+                }
+            }
+
+            return lines;
+        }
+
+        public float[] GetVertices()
         {
             var vertices = new float[_vertices.Length * 3];
             var colors = new float[_vertices.Length * 3];
-            
+
             for (int i = 0; i < _vertices.Length; i++)
             {
-                vertices[i] = _vertices[i].X;
-                vertices[i + 1] = _vertices[i].Y;
-                vertices[i + 2] = _vertices[i].Z;
+                vertices[i * 3] = _vertices[i].X;
+                vertices[i * 3 + 1] = _vertices[i].Y;
+                vertices[i * 3 + 2] = _vertices[i].Z;
 
-                colors[i] = 1.0f;
-                colors[i + 1] = 0.0f;
-                colors[i + 2] = 0.0f;
+                colors[i * 3] = 1.0f;
+                colors[i * 3 + 1] = 0.0f;
+                colors[i * 3 + 2] = 0.0f;
             }
-            
-            //  Create the vertex array object.
-            vertexBufferArray = new VertexBufferArray();
-            vertexBufferArray.Create(gl);
-            vertexBufferArray.Bind(gl);
 
-            //  Create a vertex buffer for the vertex data.
-            var vertexDataBuffer = new VertexBuffer();
-            vertexDataBuffer.Create(gl);
-            vertexDataBuffer.Bind(gl);
-            vertexDataBuffer.SetData(gl, 0, vertices, false, 3);
-
-            //  Now do the same for the colour data.
-            var colourDataBuffer = new VertexBuffer();
-            colourDataBuffer.Create(gl);
-            colourDataBuffer.Bind(gl);
-            colourDataBuffer.SetData(gl, 1, colors, false, 3);
-
-            //  Unbind the vertex array, we've finished specifying data for it.
-            vertexBufferArray.Unbind(gl);
-        }
-
-        public void CreateVertexNormalBuffer(OpenGL gl, uint vertexAttributeLocation, uint normalAttributeLocation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CreateIndexBuffer(OpenGL gl)
-        {
-            throw new NotImplementedException();
+            return vertices;
         }
     }
 }

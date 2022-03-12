@@ -4,14 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MikCAD"
+        xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
+        xmlns:wpf="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF"
         mc:Ignorable="d"
-        Title="MikCAD" Height="350" Width="525">
+        Title="MikCAD" Height="350" Width="525"
+        >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MinWidth="400"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
         <local:CameraControl Grid.Column="0"></local:CameraControl>
+        <wpf:OpenGLControl Grid.Column="1" OpenGLDraw="OpenGLControl_OpenGLDraw" OpenGLInitialized="OpenGLControl_OpenGLInitialized" Resized="OpenGLControl_Resized" RenderContextType="FBO"/> 
     </Grid>
 </Window>

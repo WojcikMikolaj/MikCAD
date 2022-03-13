@@ -27,5 +27,6 @@ namespace MikCAD
         private void OpenTkControl_OnRender(TimeSpan delta) {
             scene.OnRenderFrame();
         }
+        
     }
 }

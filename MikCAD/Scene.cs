@@ -27,8 +27,8 @@ namespace MikCAD
             
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             
-            torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             
+            torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             
             // _vertices = _torus.GetVertices();
             // _vertexBufferObject = GL.GenBuffer();
@@ -57,6 +57,7 @@ namespace MikCAD
             _shader.SetMatrix4("viewMatrix", _viewMatrix);
             _shader.SetMatrix4("modelMatrix", _modelMatrix);
 
+            
             _shader.Use();
         }
 
@@ -65,7 +66,7 @@ namespace MikCAD
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
 
-            
+            torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             UpdatePVM();
             GL.BindVertexArray(_vertexArrayObject);
             GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);

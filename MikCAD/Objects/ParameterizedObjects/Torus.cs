@@ -5,60 +5,96 @@ using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD
 {
-    public class Torus : IParameterizedObject
+    public class Torus : ParameterizedObject
     {
         public float posX
         {
             get => _position.X;
-            set => _position.X = value;
+            set
+            {
+                _position.X = value;
+                OnPropertyChanged(nameof(posX));
+            }
         }
 
         public float posY
         {
             get => _position.Y;
-            set => _position.Y = value;
+            set
+            {
+                _position.Y = value;
+                OnPropertyChanged(nameof(posY));
+            }
         }
 
         public float posZ
         {
             get => _position.Z;
-            set => _position.Z = value;
+            set
+            {
+                _position.Z = value;
+                OnPropertyChanged(nameof(posZ));
+            }
         }
 
         public float rotX
         {
             get => _rotation.X;
-            set => _rotation.X = value;
+            set
+            {
+                _rotation.X = value;
+                OnPropertyChanged(nameof(rotX));
+            }
         }
 
         public float rotY
         {
             get => _rotation.Y;
-            set => _rotation.Y = value;
+            set
+            {
+                _rotation.Y = value;
+                OnPropertyChanged(nameof(rotY));
+            }
         }
 
         public float rotZ
         {
             get => _rotation.Z;
-            set => _rotation.Z = value;
+            set
+            {
+                _rotation.Z = value;
+                OnPropertyChanged(nameof(rotZ));
+            }
         }
 
         public float scaleX
         {
             get => _scale.X;
-            set => _scale.X = value;
+            set
+            {
+                _scale.X = value;
+                OnPropertyChanged(nameof(scaleX));
+            }
         }
 
         public float scaleY
         {
             get => _scale.Y;
-            set => _scale.Y = value;
+            set
+            {
+                _scale.Y = value;
+                OnPropertyChanged(nameof(scaleY));
+            }
         }
 
         public float scaleZ
         {
             get => _scale.Z;
-            set => _scale.Z = value;
+            set
+            {
+                _scale.Z = value;
+                OnPropertyChanged(nameof(scaleZ));
+            }
         }
 
         public float R
@@ -66,8 +102,9 @@ namespace MikCAD
             get => _R;
             set
             {
-                _R = value;
+                _R = MH.Max(value,0.0f);
                 CalculateVertices();
+                OnPropertyChanged(nameof(R));
             }
         }
 
@@ -76,8 +113,9 @@ namespace MikCAD
             get => _r;
             set
             {
-                _r = value;
+                _r = MH.Max(value,0.0f);
                 CalculateVertices();
+                OnPropertyChanged(nameof(r));
             }
         }
 
@@ -86,8 +124,9 @@ namespace MikCAD
             get => _theta;
             set
             {
-                _theta = value;
+                _theta = MH.Max(MH.Min(value,120.0f),1f);
                 CalculateVertices();
+                OnPropertyChanged(nameof(theta));
             }
         }
 
@@ -96,8 +135,9 @@ namespace MikCAD
             get => _phi;
             set
             {
-                _phi = value;
+                _phi = MH.Max(MH.Min(value,120.0f),1f);
                 CalculateVertices();
+                OnPropertyChanged(nameof(phi));
             }
         }
 

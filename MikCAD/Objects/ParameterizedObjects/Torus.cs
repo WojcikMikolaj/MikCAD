@@ -102,7 +102,7 @@ namespace MikCAD
             get => _R;
             set
             {
-                _R = MH.Max(value,0.0f);
+                _R = MH.Max(value, 0.0f);
                 CalculateVertices();
                 OnPropertyChanged(nameof(R));
             }
@@ -113,7 +113,7 @@ namespace MikCAD
             get => _r;
             set
             {
-                _r = MH.Max(value,0.0f);
+                _r = MH.Max(value, 0.0f);
                 CalculateVertices();
                 OnPropertyChanged(nameof(r));
             }
@@ -124,7 +124,7 @@ namespace MikCAD
             get => _theta;
             set
             {
-                _theta = MH.Max(MH.Min(value,120.0f),1f);
+                _theta = MH.Max(MH.Min(value, 120.0f), 1f);
                 CalculateVertices();
                 OnPropertyChanged(nameof(theta));
             }
@@ -135,7 +135,7 @@ namespace MikCAD
             get => _phi;
             set
             {
-                _phi = MH.Max(MH.Min(value,120.0f),1f);
+                _phi = MH.Max(MH.Min(value, 120.0f), 1f);
                 CalculateVertices();
                 OnPropertyChanged(nameof(phi));
             }
@@ -143,7 +143,7 @@ namespace MikCAD
 
         private Vector3 _position = new Vector3();
         private Vector3 _rotation = new Vector3();
-        private Vector3 _scale = new Vector3(1,1,1);
+        private Vector3 _scale = new Vector3(1, 1, 1);
 
 
         private float _R;
@@ -194,11 +194,11 @@ namespace MikCAD
 
         public Matrix4 GetModelMatrix()
         {
-            return Matrix4.CreateTranslation(_position)
+            return Matrix4.CreateScale(_scale)
                    * Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]))
                    * Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]))
                    * Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]))
-                   * Matrix4.CreateScale(_scale);
+                   * Matrix4.CreateTranslation(_position);
         }
 
         public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,

@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Title="MikCAD" MinHeight="400" MinWidth="950"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
-        PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp">
+        PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp"
+        MouseLeave="Window_OnMouseLeave">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250" />

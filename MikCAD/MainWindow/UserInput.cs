@@ -63,6 +63,13 @@ public partial class MainWindow
                 _last = pos;
             }
         }
+
+        private void Window_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            _rightPressed = false;
+            _leftPressed = false;
+            _last = null;
+        }
         
         private void Image_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {

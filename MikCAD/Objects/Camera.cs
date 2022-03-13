@@ -1,55 +1,102 @@
-﻿using OpenTK.Mathematics;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using MikCAD.Annotations;
+using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
 namespace MikCAD
 {
-    public class Camera
+    public class Camera : INotifyPropertyChanged
     {
         public float posX
         {
             get => _position.X;
-            set => _position.X = value;
+            set
+            {
+                _position.X = value;
+                OnPropertyChanged(nameof(posX));
+            }
         }
+
         public float posY
         {
             get => _position.Y;
-            set => _position.Y = value;
+            set
+            {
+                _position.Y = value;
+                OnPropertyChanged(nameof(posY));
+            }
         }
+
         public float posZ
         {
             get => _position.Z;
-            set => _position.Z = value;
+            set
+            {
+                _position.Z = value;
+                OnPropertyChanged(nameof(posZ));
+            }
         }
+
         public float rotX
         {
             get => _pitch;
-            set => _pitch = value;
+            set
+            {
+                _pitch = value;
+                OnPropertyChanged(nameof(rotX));
+            }
         }
+
         public float rotY
         {
             get => _yaw;
-            set => _yaw = value;
+            set
+            {
+                _yaw = value; 
+                OnPropertyChanged(nameof(rotY));
+            }
         }
+
         public float rotZ
         {
             get => _roll;
-            set => _roll = value;
+            set
+            {
+                _roll = value;
+                OnPropertyChanged(nameof(rotZ));
+            }
         }
+
         public float fov
         {
             get => _fov;
-            set => _fov = value;
+            set
+            {
+                _fov = MH.Max(MH.Min(value,179.9f), 60.0f);
+                OnPropertyChanged(nameof(fov));
+            }
         }
+
         public float near
         {
             get => _near;
-            set => _near = value;
+            set
+            {
+                _near = MH.Max(MH.Min(value, _far-0.1f), 0.1f);
+                OnPropertyChanged(nameof(near));
+            }
         }
+
         public float far
         {
             get => _far;
-            set => _far = value;
+            set
+            {
+                _far = MH.Max(value, _near+0.1f);
+                OnPropertyChanged(nameof(far));
+            }
         }
-        
+
         private Vector3 _position = new Vector3(0, 0, 5);
         private Vector3 _front = new Vector3(0, 0, -1);
         private Vector3 _up = new Vector3(0, 1, 0);
@@ -77,6 +124,14 @@ namespace MikCAD
         {
             return Matrix4.CreatePerspectiveFieldOfView(MH.DegreesToRadians(_fov), _width / _height, _near,
                 _far);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

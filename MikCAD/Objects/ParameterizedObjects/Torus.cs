@@ -180,8 +180,8 @@ namespace MikCAD
                     _vertices[i * _circlesCount + j] = new Point()
                     {
                         X = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Cos(i * _phiStep),
-                        Y = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Sin(i * _phiStep),
-                        Z = r * (float) MathHelper.Sin(j * _thetaStep)
+                        Y = r * (float) MathHelper.Sin(j * _thetaStep),
+                        Z = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Sin(i * _phiStep),
                     };
                 }
             }

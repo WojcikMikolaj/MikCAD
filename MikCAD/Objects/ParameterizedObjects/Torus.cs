@@ -119,28 +119,28 @@ namespace MikCAD
             }
         }
 
-        public float theta
+        public int SectorsCount
         {
-            get => _theta;
+            get => _sectorsCount;
             set
             {
-                _theta = MH.Max(MH.Min(value, 120.0f), 1f);
+                _sectorsCount = MH.Max(value, 3);
                 CalculateVertices();
-                OnPropertyChanged(nameof(theta));
+                OnPropertyChanged(nameof(SectorsCount));
             }
         }
 
-        public float phi
+        public int CirclesCount
         {
-            get => _phi;
+            get => _circlesCount;
             set
             {
-                _phi = MH.Max(MH.Min(value, 120.0f), 1f);
+                _circlesCount = MH.Max(value, 3);
                 CalculateVertices();
-                OnPropertyChanged(nameof(phi));
+                OnPropertyChanged(nameof(CirclesCount));
             }
         }
-
+        
         private Vector3 _position = new Vector3();
         private Vector3 _rotation = new Vector3();
         private Vector3 _scale = new Vector3(1, 1, 1);
@@ -148,12 +148,10 @@ namespace MikCAD
 
         private float _R;
         private float _r;
-        private float _theta;
         private float _thetaStep;
-        private float _phi;
         private float _phiStep;
-        private int _circleStepsCount;
-        private int _planeStepsCount;
+        private int _sectorsCount;
+        private int _circlesCount;
 
         private Point[] _vertices;
         public int VerticesCount => _vertices.Length;
@@ -163,26 +161,23 @@ namespace MikCAD
         {
             _R = 1;
             _r = 0.5f;
-            _theta = 60;
-            _phi = 60;
+            _sectorsCount = 6;
+            _circlesCount = 6;
             CalculateVertices();
         }
 
         private void CalculateVertices()
         {
-            _planeStepsCount = (int) (360 / _phi);
-            _phiStep = MathHelper.DegreesToRadians(360.0f / _planeStepsCount);
+            _phiStep = MathHelper.DegreesToRadians(360.0f / _sectorsCount);
+            _thetaStep = MathHelper.DegreesToRadians(360.0f / _circlesCount);
 
-            _circleStepsCount = (int) (360 / _theta);
-            _thetaStep = MathHelper.DegreesToRadians(360.0f / _circleStepsCount);
+            _vertices = new Point[_sectorsCount * _circlesCount];
 
-            _vertices = new Point[_planeStepsCount * _circleStepsCount];
-
-            for (int i = 0; i < _planeStepsCount; i++)
+            for (int i = 0; i < _sectorsCount; i++)
             {
-                for (int j = 0; j < _circleStepsCount; j++)
+                for (int j = 0; j < _circlesCount; j++)
                 {
-                    _vertices[i * _circleStepsCount + j] = new Point()
+                    _vertices[i * _circlesCount + j] = new Point()
                     {
                         X = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Cos(i * _phiStep),
                         Y = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Sin(i * _phiStep),
@@ -241,34 +236,34 @@ namespace MikCAD
         {
             //2 - ends of each line
             //2 - same number of big and small circles
-            uint[] lines = new uint[2 * _planeStepsCount * 2 * _circleStepsCount];
+            uint[] lines = new uint[2 * _sectorsCount * 2 * _circlesCount];
             uint it = 0;
-            for (int i = 0; i < _planeStepsCount; i++)
+            for (int i = 0; i < _sectorsCount; i++)
             {
-                for (int j = 0; j < _circleStepsCount; j++)
+                for (int j = 0; j < _circlesCount; j++)
                 {
                     //duże okręgi
-                    if (i != _planeStepsCount - 1)
+                    if (i != _sectorsCount - 1)
                     {
-                        lines[it++] = (uint) (i * _circleStepsCount + j);
-                        lines[it++] = (uint) ((i + 1) * _circleStepsCount + j);
+                        lines[it++] = (uint) (i * _circlesCount + j);
+                        lines[it++] = (uint) ((i + 1) * _circlesCount + j);
                     }
                     else
                     {
-                        lines[it++] = (uint) ((_planeStepsCount - 1) * _circleStepsCount + j);
+                        lines[it++] = (uint) ((_sectorsCount - 1) * _circlesCount + j);
                         lines[it++] = (uint) j;
                     }
 
                     //małe okręgi
-                    if (j != _circleStepsCount - 1)
+                    if (j != _circlesCount - 1)
                     {
-                        lines[it++] = (uint) (i * _circleStepsCount + j);
-                        lines[it++] = (uint) (i * _circleStepsCount + j + 1);
+                        lines[it++] = (uint) (i * _circlesCount + j);
+                        lines[it++] = (uint) (i * _circlesCount + j + 1);
                     }
                     else
                     {
-                        lines[it++] = (uint) (i * _circleStepsCount + _circleStepsCount - 1);
-                        lines[it++] = (uint) (i * _circleStepsCount);
+                        lines[it++] = (uint) (i * _circlesCount + _circlesCount - 1);
+                        lines[it++] = (uint) (i * _circlesCount);
                     }
                 }
             }

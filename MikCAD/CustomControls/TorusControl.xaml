@@ -70,12 +70,12 @@
                         <Label Grid.Row="1" Grid.Column="0">r</Label>
                         <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.r, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
-                        <Label Grid.Row="2" Grid.Column="0">θ</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.theta, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
-                        <Label Grid.Row="3" Grid.Column="0">Φ</Label>
-                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.phi, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
+                        <Label Grid.Row="2" Grid.Column="0">Liczba wycinków</Label>
+                        <n:LongUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.SectorsCount, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
+                        <Label Grid.Row="3" Grid.Column="0">Liczba kół</Label>
+                        <n:LongUpDown Grid.Row="3" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.CirclesCount, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
             </StackPanel>

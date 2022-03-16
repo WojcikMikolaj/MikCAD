@@ -112,6 +112,7 @@ namespace MikCAD
             set
             {
                 _isOrbital = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(isOrbital));
             }
         }

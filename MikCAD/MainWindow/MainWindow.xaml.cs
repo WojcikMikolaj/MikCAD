@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using OpenTK.Graphics.OpenGL;
@@ -28,6 +29,11 @@ namespace MikCAD
         private void OpenTkControl_OnRender(TimeSpan delta) {
             scene.OnRenderFrame();
         }
-        
+
+        private void OpenTkControl_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            scene.camera._height = (float)this.OpenTkControl.ActualHeight;
+            scene.camera._width = (float)this.OpenTkControl.ActualWidth;
+        }
     }
 }

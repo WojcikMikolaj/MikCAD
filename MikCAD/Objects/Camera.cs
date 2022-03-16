@@ -97,6 +97,16 @@ namespace MikCAD
             }
         }
 
+        public bool isOrbital
+        {
+            get => _isOrbital;
+            set
+            {
+                _isOrbital = value;
+                OnPropertyChanged(nameof(isOrbital));
+            }
+        }
+
         private Vector3 _position = new Vector3(0, 0, 5);
         private Vector3 _front = new Vector3(0, 0, -1);
         private Vector3 _up = new Vector3(0, 1, 0);
@@ -106,17 +116,26 @@ namespace MikCAD
         private float _roll;
 
         private float _fov = 60;
-        private float _width = 400;
-        private float _height = 400;
+        internal float _width = 400;
+        internal float _height = 400;
         private float _near = 0.1f;
         private float _far = 100;
 
+        private bool _isOrbital = false;
         public Matrix4 GetViewMatrix()
         {
             _front.X = (float)MH.Cos(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
             _front.Y = (float)MH.Sin(MH.DegreesToRadians(_pitch));
             _front.Z = (float)MH.Sin(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
-            
+
+            if (!_isOrbital)
+            {
+                return Matrix4.LookAt(_position, _front + _position, _up);
+            }
+            else
+            {
+                
+            }
             return Matrix4.LookAt(_position, _front + _position, _up);
         }
 

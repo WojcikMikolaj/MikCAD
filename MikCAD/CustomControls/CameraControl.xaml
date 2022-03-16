@@ -67,6 +67,14 @@
                              Path=DataContext.far, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="0" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.isOrbital, Mode=TwoWay}">Orbital camera</CheckBox>
+                </Grid>
             </StackPanel>
         </GroupBox>
     </Grid>

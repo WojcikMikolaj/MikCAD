@@ -45,7 +45,7 @@ namespace MikCAD
             get => _pitch;
             set
             {
-                _pitch = value;
+                _pitch = MH.Min(MH.Max(value, -90.0f), 90f);
                 UpdateViewMatrix();
                 OnPropertyChanged(nameof(rotX));
             }

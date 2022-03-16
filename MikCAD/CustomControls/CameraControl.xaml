@@ -56,7 +56,7 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Label>Scale</Label>
+                        <Label>FoV</Label>
                         <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.fov, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                         <Label Grid.Row="1" Grid.Column="0">Near</Label>

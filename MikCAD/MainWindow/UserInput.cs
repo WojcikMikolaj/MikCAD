@@ -87,11 +87,11 @@ public partial class MainWindow
         private void Image_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             //var value = scene.camera.fov;
-            var value = scene.Scale;
+            var value = scene.camera.fov;
             value -= e.Delta * 0.005f;
             if (value < 0.1f)
                 value = 0.1f;
             //scene.camera.fov = value;
-            scene.Scale = value;
+            scene.camera.fov = value;
         }
 }

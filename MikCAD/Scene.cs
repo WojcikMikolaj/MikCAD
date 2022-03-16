@@ -13,21 +13,7 @@ namespace MikCAD
         {
             //theta = 120
         };
-        
-        public float Scale
-        {
-            get
-            {
-                return _scale;
-            }
 
-            set
-            {
-                _scale = value;
-                _sceneScaleMatrix = Matrix4.CreateScale(_scale);
-            }
-        }
-        
         private float _scale = 1;
         private int _vertexBufferObject;
         private int _vertexArrayObject;
@@ -36,7 +22,6 @@ namespace MikCAD
         private Matrix4 _projectionMatrix;
         private Matrix4 _viewMatrix;
         private Matrix4 _modelMatrix;
-        private Matrix4 _sceneScaleMatrix = Matrix4.Identity;
 
         public void Initialise(float width, float height)
         {
@@ -72,8 +57,6 @@ namespace MikCAD
             _shader.SetMatrix4("projectionMatrix", _projectionMatrix);
             _shader.SetMatrix4("viewMatrix", _viewMatrix);
             _shader.SetMatrix4("modelMatrix", _modelMatrix);
-            _shader.SetMatrix4("sceneScaleMatrix", _sceneScaleMatrix);
-            
             _shader.Use();
         }
 

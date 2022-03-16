@@ -14,7 +14,6 @@ namespace MikCAD
             //theta = 120
         };
 
-        private float _scale = 1;
         private int _vertexBufferObject;
         private int _vertexArrayObject;
         private Shader _shader;

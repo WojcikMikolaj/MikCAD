@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
@@ -13,6 +14,7 @@ namespace MikCAD
             set
             {
                 _position.X = value;
+                UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posX));
             }
         }
@@ -23,6 +25,7 @@ namespace MikCAD
             set
             {
                 _position.Y = value;
+                UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posY));
             }
         }
@@ -33,6 +36,7 @@ namespace MikCAD
             set
             {
                 _position.Z = value;
+                UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posZ));
             }
         }
@@ -43,6 +47,7 @@ namespace MikCAD
             set
             {
                 _rotation.X = value;
+                UpdateRotationMatrix(0);
                 OnPropertyChanged(nameof(rotX));
             }
         }
@@ -53,6 +58,7 @@ namespace MikCAD
             set
             {
                 _rotation.Y = value;
+                UpdateRotationMatrix(1);
                 OnPropertyChanged(nameof(rotY));
             }
         }
@@ -63,6 +69,7 @@ namespace MikCAD
             set
             {
                 _rotation.Z = value;
+                UpdateRotationMatrix(2);
                 OnPropertyChanged(nameof(rotZ));
             }
         }
@@ -73,6 +80,7 @@ namespace MikCAD
             set
             {
                 _scale.X = value;
+                UpdateScaleMatrix();
                 OnPropertyChanged(nameof(scaleX));
             }
         }
@@ -83,6 +91,7 @@ namespace MikCAD
             set
             {
                 _scale.Y = value;
+                UpdateScaleMatrix();
                 OnPropertyChanged(nameof(scaleY));
             }
         }
@@ -93,6 +102,7 @@ namespace MikCAD
             set
             {
                 _scale.Z = value;
+                UpdateScaleMatrix();
                 OnPropertyChanged(nameof(scaleZ));
             }
         }
@@ -140,7 +150,7 @@ namespace MikCAD
                 OnPropertyChanged(nameof(CirclesCount));
             }
         }
-        
+
         private Vector3 _position = new Vector3();
         private Vector3 _rotation = new Vector3();
         private Vector3 _scale = new Vector3(1, 1, 1);
@@ -187,13 +197,46 @@ namespace MikCAD
             }
         }
 
+        private Matrix4 _modelMatrix = Matrix4.Identity;
+        private Matrix4 _scaleMatrix = Matrix4.Identity;
+        private Matrix4 _rotationXMatrix = Matrix4.Identity;
+        private Matrix4 _rotationYMatrix = Matrix4.Identity;
+        private Matrix4 _rotationZMatrix = Matrix4.Identity;
+        private Matrix4 _translationMatrix = Matrix4.Identity;
+
+        public void UpdateScaleMatrix()
+        {
+            _scaleMatrix = Matrix4.CreateScale(_scale);
+            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+        }
+
+        public void UpdateRotationMatrix(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    _rotationXMatrix = Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]));
+                    break;
+                case 1:
+                    _rotationYMatrix = Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]));
+                    break;
+                case 2:
+                    _rotationZMatrix = Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]));
+                    break;
+            }
+
+            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+        }
+
+        public void UpdateTranslationMatrix()
+        {
+            _translationMatrix = Matrix4.CreateTranslation(_position);
+            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+        }
+        
         public Matrix4 GetModelMatrix()
         {
-            return Matrix4.CreateScale(_scale)
-                   * Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]))
-                   * Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]))
-                   * Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]))
-                   * Matrix4.CreateTranslation(_position);
+            return _modelMatrix;
         }
 
         public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,

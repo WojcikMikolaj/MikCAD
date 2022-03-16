@@ -13,6 +13,7 @@ namespace MikCAD
             set
             {
                 _position.X = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(posX));
             }
         }
@@ -23,6 +24,7 @@ namespace MikCAD
             set
             {
                 _position.Y = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(posY));
             }
         }
@@ -33,6 +35,7 @@ namespace MikCAD
             set
             {
                 _position.Z = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(posZ));
             }
         }
@@ -43,6 +46,7 @@ namespace MikCAD
             set
             {
                 _pitch = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(rotX));
             }
         }
@@ -53,6 +57,7 @@ namespace MikCAD
             set
             {
                 _yaw = value; 
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(rotY));
             }
         }
@@ -63,6 +68,7 @@ namespace MikCAD
             set
             {
                 _roll = value;
+                UpdateViewMatrix();
                 OnPropertyChanged(nameof(rotZ));
             }
         }
@@ -73,6 +79,7 @@ namespace MikCAD
             set
             {
                 _fov = MH.Max(MH.Min(value,179.9f), 60.0f);
+                UpdateProjectionMatrix();
                 OnPropertyChanged(nameof(fov));
             }
         }
@@ -83,6 +90,7 @@ namespace MikCAD
             set
             {
                 _near = MH.Max(MH.Min(value, _far-0.1f), 0.1f);
+                UpdateProjectionMatrix();
                 OnPropertyChanged(nameof(near));
             }
         }
@@ -93,6 +101,7 @@ namespace MikCAD
             set
             {
                 _far = MH.Max(value, _near+0.1f);
+                UpdateProjectionMatrix();
                 OnPropertyChanged(nameof(far));
             }
         }
@@ -107,6 +116,13 @@ namespace MikCAD
             }
         }
 
+        public void InitializeCamera()
+        {
+            UpdateProjectionMatrix();
+            UpdateViewMatrix();
+        }
+        
+        
         private Vector3 _position = new Vector3(0, 0, 5);
         private Vector3 _front = new Vector3(0, 0, -1);
         private Vector3 _up = new Vector3(0, 1, 0);
@@ -122,7 +138,9 @@ namespace MikCAD
         private float _far = 100;
 
         private bool _isOrbital = false;
-        public Matrix4 GetViewMatrix()
+
+        private Matrix4 _viewMatrix;
+        public void UpdateViewMatrix()
         {
             _front.X = (float)MH.Cos(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
             _front.Y = (float)MH.Sin(MH.DegreesToRadians(_pitch));
@@ -130,19 +148,28 @@ namespace MikCAD
 
             if (!_isOrbital)
             {
-                return Matrix4.LookAt(_position, _front + _position, _up);
+                _viewMatrix = Matrix4.LookAt(_position, _front + _position, _up);
             }
             else
             {
-                return Matrix4.LookAt( _position - _front*5 , _position, _up);    
+                _viewMatrix =Matrix4.LookAt( _position - _front*5 , _position, _up);    
             }
-            
+        }
+        public Matrix4 GetViewMatrix()
+        {
+            return _viewMatrix;
         }
 
+        private Matrix4 _projectionMatrix;
+        public void UpdateProjectionMatrix()
+        {
+            _projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(MH.DegreesToRadians(_fov), _width / _height, _near,
+                _far);
+        }
+        
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MH.DegreesToRadians(_fov), _width / _height, _near,
-                _far);
+            return _projectionMatrix;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

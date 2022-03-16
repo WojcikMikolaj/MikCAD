@@ -73,7 +73,7 @@
                         <Label Grid.Row="2" Grid.Column="0">Liczba wycinków</Label>
                         <n:LongUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.SectorsCount, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
-                        <Label Grid.Row="3" Grid.Column="0">Liczba kół</Label>
+                        <Label Grid.Row="3" Grid.Column="0">Liczba obręczy</Label>
                         <n:LongUpDown Grid.Row="3" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.CirclesCount, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>

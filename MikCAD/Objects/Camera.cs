@@ -134,9 +134,9 @@ namespace MikCAD
             }
             else
             {
-                
+                return Matrix4.LookAt( _position - _front*5 , _position, _up);    
             }
-            return Matrix4.LookAt(_position, _front + _position, _up);
+            
         }
 
         public Matrix4 GetProjectionMatrix()

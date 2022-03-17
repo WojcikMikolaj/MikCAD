@@ -1,22 +1,23 @@
 ﻿using System.Globalization;
+using System.Windows;
 using System.Windows.Input;
 using MikCAD.Annotations;
 
-namespace MikCAD;
-
-public partial class MainWindow
+namespace MikCAD
 {
-    private bool _rightPressed = false;
-    private bool _leftPressed = false;
-    private System.Windows.Point? _last;
-    
-    struct mouse_position
+    public partial class MainWindow
     {
-        public double X;
-        public double Y;
-    }
-    
-      private void Image_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private bool _rightPressed = false;
+        private bool _leftPressed = false;
+        private System.Windows.Point? _last;
+
+        struct mouse_position
+        {
+            public double X;
+            public double Y;
+        }
+
+        private void Image_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!_rightPressed)
             {
@@ -37,8 +38,8 @@ public partial class MainWindow
                 var pos = e.GetPosition(this);
                 if (_last.HasValue)
                 {
-                    var dx = (float)(pos.X - _last.Value.X);
-                    var dy = (float)(pos.Y - _last.Value.Y);
+                    var dx = (float) (pos.X - _last.Value.X);
+                    var dy = (float) (pos.Y - _last.Value.Y);
 
                     //Title = $"{dx}, {dy}";
 
@@ -70,7 +71,7 @@ public partial class MainWindow
             _leftPressed = false;
             _last = null;
         }
-        
+
         private void Image_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!_leftPressed)
@@ -78,7 +79,7 @@ public partial class MainWindow
                 _rightPressed = true;
             }
         }
-        
+
         private void Image_OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             _rightPressed = false;
@@ -87,11 +88,12 @@ public partial class MainWindow
         private void Image_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             //var value = scene.camera.fov;
-            var value = scene.camera.fov;
+            var value = scene.camera.Scale;
             value -= e.Delta * 0.005f;
             if (value < 0.1f)
                 value = 0.1f;
             //scene.camera.fov = value;
-            scene.camera.fov = value;
+            scene.camera.Scale = value;
         }
+    }
 }

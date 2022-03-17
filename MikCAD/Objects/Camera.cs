@@ -106,14 +106,14 @@ namespace MikCAD
             }
         }
 
-        public bool isOrbital
+        public float Scale
         {
-            get => _isOrbital;
+            get => _scale;
             set
             {
-                _isOrbital = value;
+                _scale = MH.Max(value, 0.1f);
                 UpdateViewMatrix();
-                OnPropertyChanged(nameof(isOrbital));
+                OnPropertyChanged(nameof(Scale));
             }
         }
 
@@ -124,7 +124,7 @@ namespace MikCAD
         }
         
         
-        private Vector3 _position = new Vector3(0, 0, 5);
+        private Vector3 _position = new Vector3(0, 0, 0);
         private Vector3 _front = new Vector3(0, 0, -1);
         private Vector3 _up = new Vector3(0, 1, 0);
         
@@ -138,7 +138,7 @@ namespace MikCAD
         private float _near = 0.1f;
         private float _far = 100;
 
-        private bool _isOrbital = false;
+        private float _scale = 5.0f;
 
         private Matrix4 _viewMatrix;
         public void UpdateViewMatrix()
@@ -146,15 +146,7 @@ namespace MikCAD
             _front.X = (float)MH.Cos(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
             _front.Y = (float)MH.Sin(MH.DegreesToRadians(_pitch));
             _front.Z = (float)MH.Sin(MH.DegreesToRadians(_yaw)) * (float)MH.Cos(MH.DegreesToRadians(_pitch));
-
-            if (!_isOrbital)
-            {
-                _viewMatrix = Matrix4.LookAt(_position, _front + _position, _up);
-            }
-            else
-            {
-                _viewMatrix =Matrix4.LookAt( _position - _front*5 , _position, _up);    
-            }
+            _viewMatrix =Matrix4.LookAt( _position - _front* _scale , _position, _up);
         }
         public Matrix4 GetViewMatrix()
         {

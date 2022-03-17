@@ -26,7 +26,7 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <Label>Position</Label>
+                        <Label>Target</Label>
                         <n:FloatUpDown Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.posX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
                         <n:FloatUpDown Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
@@ -51,6 +51,7 @@
                             <RowDefinition />
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -65,16 +66,11 @@
                         <Label Grid.Row="2" Grid.Column="0">Far</Label>
                         <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.far, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
+                        <Label Grid.Row="3" Grid.Column="0">Scale</Label>
+                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.Scale, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <CheckBox Grid.Column="0" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.isOrbital, Mode=TwoWay}">Orbital camera</CheckBox>
-                </Grid>
             </StackPanel>
         </GroupBox>
     </Grid>

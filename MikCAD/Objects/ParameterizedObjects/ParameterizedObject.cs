@@ -118,7 +118,9 @@ namespace MikCAD
                 OnPropertyChanged(nameof(scaleZ));
             }
         }
-        
+
+        public abstract uint[] lines { get; }
+
         protected Vector3 _position = new Vector3();
         protected Vector3 _rotation = new Vector3();
         protected Vector3 _scale = new Vector3(1, 1, 1);
@@ -129,7 +131,13 @@ namespace MikCAD
         
         protected ParameterizedObject(string name)
         {
-            _name = name;
+            int count = 1;
+            var objname = name;
+            while (Scene.CurrentScene.ObjectsController.IsNameTaken(objname))
+            {
+                objname = name + $"({count++})";
+            }
+            _name = objname;
         }
         
         public event PropertyChangedEventHandler PropertyChanged;
@@ -139,5 +147,8 @@ namespace MikCAD
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public abstract void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation, out int _vertexBufferObject, out int _vertexArrayObject);
+        public abstract Matrix4 GetModelMatrix();
     }
 }

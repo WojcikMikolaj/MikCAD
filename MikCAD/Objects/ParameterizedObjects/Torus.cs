@@ -8,9 +8,6 @@ namespace MikCAD
 {
     public class Torus : ParameterizedObject
     {
-        private static int _count = 0;
-        
-
         public float R
         {
             get => _R;
@@ -64,9 +61,11 @@ namespace MikCAD
 
         private Point[] _vertices;
         public int VerticesCount => _vertices.Length;
-        public uint[] lines;
 
-        public Torus(): base("Torus(" + _count++ +")")
+        public override uint[] lines => _lines;
+        public uint[] _lines;
+
+        public Torus(): base("Torus")
         {
             _R = 1;
             _r = 0.5f;
@@ -133,12 +132,12 @@ namespace MikCAD
             _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
         }
         
-        public Matrix4 GetModelMatrix()
+        public override Matrix4 GetModelMatrix()
         {
             return _modelMatrix;
         }
 
-        public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
+        public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
             out int _vertexBufferObject, out int _vertexArrayObject)
         {
             var vertices = new float[_vertices.Length * Point.Size];
@@ -166,8 +165,8 @@ namespace MikCAD
 
             var indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-            lines = GenerateLines();
-            GL.BufferData(BufferTarget.ElementArrayBuffer, lines.Length * sizeof(uint), lines,
+            _lines = GenerateLines();
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
                 BufferUsageHint.StaticDraw);
 
             GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);

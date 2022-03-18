@@ -8,23 +8,28 @@ namespace MikCAD
 {
     public class Scene
     {
+        public static Scene CurrentScene;
         public ObjectsController ObjectsController { get; private set; } = new ObjectsController();
         public Camera camera { get; set; }= new Camera();
 
-        public Torus torus { get; set; } = new Torus() { };
+        public Torus torus { get; set; }
         private int _vertexBufferObject;
         private int _vertexArrayObject;
-        private Shader _shader;
+        internal Shader _shader;
 
         private Matrix4 _projectionMatrix;
         private Matrix4 _viewMatrix;
         private Matrix4 _modelMatrix;
 
+        public Scene()
+        {
+            CurrentScene = this;
+        }
         public void Initialise(float width, float height)
         {
+            ObjectsController.AddObjectToScene(torus = new Torus());
             camera.InitializeCamera();
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            ObjectsController.AddObjectToScene(torus);
             torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             _shader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
             UpdatePVM();
@@ -34,11 +39,11 @@ namespace MikCAD
         {
             _projectionMatrix = camera.GetProjectionMatrix();
             _viewMatrix = camera.GetViewMatrix();
-            _modelMatrix = torus.GetModelMatrix();
+           // _modelMatrix = torus.GetModelMatrix();
 
             _shader.SetMatrix4("projectionMatrix", _projectionMatrix);
             _shader.SetMatrix4("viewMatrix", _viewMatrix);
-            _shader.SetMatrix4("modelMatrix", _modelMatrix);
+           // _shader.SetMatrix4("modelMatrix", _modelMatrix);
             _shader.Use();
         }
 
@@ -46,11 +51,12 @@ namespace MikCAD
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
-
-            torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             UpdatePVM();
-            GL.BindVertexArray(_vertexArrayObject);
-            GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
+            ObjectsController.DrawObjects(0,0, /*out*/ _vertexBufferObject , /*out*/ _vertexArrayObject);
+            //torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
+            
+            //GL.BindVertexArray(_vertexArrayObject);
+            //GL.DrawElements(PrimitiveType.Lines, torus._lines.Length, DrawElementsType.UnsignedInt, 0);
             //GL.DrawArrays(PrimitiveType.Lines, 0, _torus.VerticesCount);
 
 

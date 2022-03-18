@@ -12,6 +12,6 @@ public partial class ObjectsList : UserControl
 
     private void Select_list_item(object sender, MouseButtonEventArgs e)
     {
-        ;
+        var item = sender as ListViewItem;
     }
 }

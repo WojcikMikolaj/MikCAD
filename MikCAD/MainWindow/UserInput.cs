@@ -95,5 +95,10 @@ namespace MikCAD
             //scene.camera.fov = value;
             scene.camera.Scale = value;
         }
+
+        private void AddTorus(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new Torus());
+        }
     }
 }

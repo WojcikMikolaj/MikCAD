@@ -121,7 +121,7 @@ namespace MikCAD
         }
 
         // The shader sources provided with this project use hardcoded layout(location)-s. If you want to do it dynamically,
-        // you can omit the layout(location=X) lines in the vertex shader, and use this in VertexAttribPointer instead of the hardcoded values.
+        // you can omit the layout(location=X) _lines in the vertex shader, and use this in VertexAttribPointer instead of the hardcoded values.
         public int GetAttribLocation(string attribName)
         {
             return GL.GetAttribLocation(Handle, attribName);

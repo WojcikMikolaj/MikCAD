@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using MikCAD.Annotations;
 using OpenTK.Graphics.OpenGL;
 
@@ -16,9 +17,16 @@ public class ObjectsController: INotifyPropertyChanged
     public ParameterizedObject SelectedObject
     {
         get => _selectedObject;
-        private set
+        set
         {
             _selectedObject = value;
+            switch (_selectedObject)
+            {
+                case Torus torus:
+                    MainWindow.current.torusControl.Visibility = Visibility.Visible;
+                    break;
+
+            }
             OnPropertyChanged(nameof(SelectedObject));
         }
     }
@@ -29,6 +37,7 @@ public class ObjectsController: INotifyPropertyChanged
     public bool AddObjectToScene(ParameterizedObject parameterizedObject)
     {
         ParameterizedObjects.Add(parameterizedObject);
+        SelectedObject ??= parameterizedObject;
         return true;
     }
 

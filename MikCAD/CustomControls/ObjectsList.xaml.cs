@@ -13,5 +13,7 @@ public partial class ObjectsList : UserControl
     private void Select_list_item(object sender, MouseButtonEventArgs e)
     {
         var item = sender as ListViewItem;
+        var obj = item.Content as ParameterizedObject;
+        Scene.CurrentScene.ObjectsController.SelectedObject = obj;
     }
 }

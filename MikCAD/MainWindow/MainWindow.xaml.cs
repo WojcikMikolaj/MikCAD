@@ -15,9 +15,11 @@ namespace MikCAD
     public partial class MainWindow
     {
         public Scene scene { get; set; }
+        public static MainWindow current;
         
         public MainWindow()
         {
+            current = this;
             InitializeComponent();
             this.DataContext = this;
             var mainSettings = new GLWpfControlSettings {MajorVersion = 2, MinorVersion = 1};

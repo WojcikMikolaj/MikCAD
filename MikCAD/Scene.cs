@@ -8,12 +8,10 @@ namespace MikCAD
 {
     public class Scene
     {
+        public ObjectsController ObjectsController { get; private set; } = new ObjectsController();
         public Camera camera { get; set; }= new Camera();
-        public Torus torus { get; set; } = new Torus()
-        {
-            //theta = 120
-        };
 
+        public Torus torus { get; set; } = new Torus() { };
         private int _vertexBufferObject;
         private int _vertexArrayObject;
         private Shader _shader;
@@ -26,23 +24,8 @@ namespace MikCAD
         {
             camera.InitializeCamera();
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            
-            
+            ObjectsController.AddObjectToScene(torus);
             torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
-            
-            // _vertices = _torus.GetVertices();
-            // _vertexBufferObject = GL.GenBuffer();
-            // GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            // GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices,
-            //     BufferUsageHint.StaticDraw);
-            //
-            // _vertexArrayObject = GL.GenVertexArray();
-            // GL.BindVertexArray(_vertexArrayObject);
-            //
-            // GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            // GL.EnableVertexAttribArray(0);
-
-
             _shader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
             UpdatePVM();
         }

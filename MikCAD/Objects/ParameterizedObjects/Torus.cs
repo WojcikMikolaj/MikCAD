@@ -8,104 +8,8 @@ namespace MikCAD
 {
     public class Torus : ParameterizedObject
     {
-        public float posX
-        {
-            get => _position.X;
-            set
-            {
-                _position.X = value;
-                UpdateTranslationMatrix();
-                OnPropertyChanged(nameof(posX));
-            }
-        }
-
-        public float posY
-        {
-            get => _position.Y;
-            set
-            {
-                _position.Y = value;
-                UpdateTranslationMatrix();
-                OnPropertyChanged(nameof(posY));
-            }
-        }
-
-        public float posZ
-        {
-            get => _position.Z;
-            set
-            {
-                _position.Z = value;
-                UpdateTranslationMatrix();
-                OnPropertyChanged(nameof(posZ));
-            }
-        }
-
-        public float rotX
-        {
-            get => _rotation.X;
-            set
-            {
-                _rotation.X = value;
-                UpdateRotationMatrix(0);
-                OnPropertyChanged(nameof(rotX));
-            }
-        }
-
-        public float rotY
-        {
-            get => _rotation.Y;
-            set
-            {
-                _rotation.Y = value;
-                UpdateRotationMatrix(1);
-                OnPropertyChanged(nameof(rotY));
-            }
-        }
-
-        public float rotZ
-        {
-            get => _rotation.Z;
-            set
-            {
-                _rotation.Z = value;
-                UpdateRotationMatrix(2);
-                OnPropertyChanged(nameof(rotZ));
-            }
-        }
-
-        public float scaleX
-        {
-            get => _scale.X;
-            set
-            {
-                _scale.X = value;
-                UpdateScaleMatrix();
-                OnPropertyChanged(nameof(scaleX));
-            }
-        }
-
-        public float scaleY
-        {
-            get => _scale.Y;
-            set
-            {
-                _scale.Y = value;
-                UpdateScaleMatrix();
-                OnPropertyChanged(nameof(scaleY));
-            }
-        }
-
-        public float scaleZ
-        {
-            get => _scale.Z;
-            set
-            {
-                _scale.Z = value;
-                UpdateScaleMatrix();
-                OnPropertyChanged(nameof(scaleZ));
-            }
-        }
+        private static int _count = 0;
+        
 
         public float R
         {
@@ -150,12 +54,7 @@ namespace MikCAD
                 OnPropertyChanged(nameof(CirclesCount));
             }
         }
-
-        private Vector3 _position = new Vector3();
-        private Vector3 _rotation = new Vector3();
-        private Vector3 _scale = new Vector3(1, 1, 1);
-
-
+        
         private float _R;
         private float _r;
         private float _thetaStep;
@@ -167,7 +66,7 @@ namespace MikCAD
         public int VerticesCount => _vertices.Length;
         public uint[] lines;
 
-        public Torus()
+        public Torus(): base("Torus(" + _count++ +")")
         {
             _R = 1;
             _r = 0.5f;
@@ -204,23 +103,23 @@ namespace MikCAD
         private Matrix4 _rotationZMatrix = Matrix4.Identity;
         private Matrix4 _translationMatrix = Matrix4.Identity;
 
-        public void UpdateScaleMatrix()
+        public override void UpdateScaleMatrix()
         {
             _scaleMatrix = Matrix4.CreateScale(_scale);
             _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
         }
 
-        public void UpdateRotationMatrix(int i)
+        public override void UpdateRotationMatrix(Axis axis)
         {
-            switch (i)
+            switch (axis)
             {
-                case 0:
+                case Axis.X:
                     _rotationXMatrix = Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]));
                     break;
-                case 1:
+                case Axis.Y:
                     _rotationYMatrix = Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]));
                     break;
-                case 2:
+                case Axis.Z:
                     _rotationZMatrix = Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]));
                     break;
             }
@@ -228,7 +127,7 @@ namespace MikCAD
             _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
         }
 
-        public void UpdateTranslationMatrix()
+        public override void UpdateTranslationMatrix()
         {
             _translationMatrix = Matrix4.CreateTranslation(_position);
             _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;

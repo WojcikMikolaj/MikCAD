@@ -147,6 +147,8 @@ namespace MikCAD
                 objname = name + $"({count++})";
             }
             _name = objname;
+            if(this is not Pointer3D)
+                _position = Scene.CurrentScene.ObjectsController._pointer._position;
         }
         
         public event PropertyChangedEventHandler PropertyChanged;

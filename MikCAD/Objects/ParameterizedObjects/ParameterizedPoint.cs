@@ -11,6 +11,7 @@ public class ParameterizedPoint : ParameterizedObject
 
     public ParameterizedPoint() : base("Punkt")
     {
+        UpdateTranslationMatrix();
     }
 
     public override uint[] lines { get; }

@@ -72,6 +72,7 @@ namespace MikCAD
             _sectorsCount = 6;
             _circlesCount = 6;
             CalculateVertices();
+            UpdateTranslationMatrix();
         }
 
         private void CalculateVertices()

@@ -16,6 +16,7 @@ public class ObjectsController : INotifyPropertyChanged
     internal Pointer3D _pointer;
     private Shader _selectedObjectShader = new Shader("Shaders/SelectedObject.vert", "Shaders/SelectedObject.frag");
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
+    private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
 
     public ParameterizedObject SelectedObject
     {
@@ -36,6 +37,7 @@ public class ObjectsController : INotifyPropertyChanged
                     MainWindow.current.pointControl.Visibility = Visibility.Hidden;
                     break;
                 case ParameterizedPoint point:
+                case Pointer3D pointer3D:
                     MainWindow.current.torusControl.Visibility = Visibility.Hidden;
                     MainWindow.current.pointControl.Visibility = Visibility.Visible;
                     break;
@@ -57,6 +59,8 @@ public class ObjectsController : INotifyPropertyChanged
 
     public bool DeleteSelectedObjects()
     {
+        if (_selectedObject is Pointer3D)
+            return false;
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)
         {
@@ -74,7 +78,7 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
-        if (!MainWindow.IsMultiSelectEnabled)
+        if (!MainWindow.IsMultiSelectEnabled || o is Pointer3D)
         {
             if (_selectedObject != null)
                 SelectedObject.Selected = false;
@@ -132,7 +136,7 @@ public class ObjectsController : INotifyPropertyChanged
 
         {
             var _modelMatrix = _pointer.GetModelMatrix();
-            Scene.CurrentScene._shader = _standardObjectShader;
+            Scene.CurrentScene._shader = _pointerShader;
             Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             _pointer.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);

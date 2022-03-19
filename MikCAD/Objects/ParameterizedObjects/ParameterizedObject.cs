@@ -15,7 +15,7 @@ namespace MikCAD
         public virtual bool ScaleEnabled => true;
         
         private string _name = "";
-        public String Name
+        public virtual String Name
         {
             get => _name;
             set

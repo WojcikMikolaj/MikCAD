@@ -14,6 +14,6 @@ public partial class ObjectsList : UserControl
     {
         var item = sender as ListViewItem;
         var obj = item.Content as ParameterizedObject;
-        Scene.CurrentScene.ObjectsController.SelectedObject = obj;
+        Scene.CurrentScene.ObjectsController.SelectObject(obj);
     }
 }

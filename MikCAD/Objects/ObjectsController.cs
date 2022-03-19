@@ -50,10 +50,25 @@ public class ObjectsController: INotifyPropertyChanged
         return ParameterizedObjects.Remove(parameterizedObject);
     }
 
-    public void SelectObject(string name)
+    public void SelectObject(ParameterizedObject o)
     {
-        var item = ParameterizedObjects.FirstOrDefault(x => x.Name == name);
-        SelectedObject = item;
+        if (!MainWindow.IsShiftPressed)
+        {
+            SelectedObject = o;
+        }
+        else
+        {
+            if (SelectedObject is CompositeObject compositeObject)
+            {
+                compositeObject.AddObject(o);
+            }
+            else
+            {
+                var cmp = new CompositeObject(SelectedObject);
+                cmp.AddObject(o);
+                SelectedObject = cmp;
+            }
+        }
     }
     
     public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation)
@@ -72,9 +87,14 @@ public class ObjectsController: INotifyPropertyChanged
                     GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
                     break;
             }
-            
-            
-            
+        }
+
+        if (SelectedObject is CompositeObject o)
+        {
+            var _modelMatrix = o.GetModelMatrix();
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+            o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
         }
     }
 

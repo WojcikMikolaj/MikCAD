@@ -50,8 +50,9 @@ public class CompositeObject: ParameterizedObject
         };
     }
 
-    public CompositeObject() : base("composite")
+    public CompositeObject(ParameterizedObject o) : base("composite")
     {
+        AddObject(o);
     }
 
     public override uint[] lines { get; }
@@ -69,7 +70,8 @@ public class CompositeObject: ParameterizedObject
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        _center.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        if(_center!=null)
+            _center.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
     public override Matrix4 GetModelMatrix()

@@ -96,12 +96,12 @@ namespace MikCAD
             scene.camera.Scale = value;
         }
         
-        public bool ShiftPressed { get; private set; }
+        public static bool IsShiftPressed { get; private set; }
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftShift)
             {
-                ShiftPressed = true;
+                IsShiftPressed = true;
             }
         }
 
@@ -109,7 +109,7 @@ namespace MikCAD
         {
             if (e.Key == Key.LeftShift)
             {
-                ShiftPressed = false;
+                IsShiftPressed = false;
             }
         }
 

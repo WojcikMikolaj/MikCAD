@@ -52,7 +52,7 @@ public class ObjectsController: INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
-        if (!MainWindow.IsShiftPressed)
+        if (!MainWindow.IsMultiSelectEnabled)
         {
             SelectedObject = o;
         }
@@ -60,12 +60,12 @@ public class ObjectsController: INotifyPropertyChanged
         {
             if (SelectedObject is CompositeObject compositeObject)
             {
-                compositeObject.AddObject(o);
+                compositeObject.ProcessObject(o);
             }
             else
             {
                 var cmp = new CompositeObject(SelectedObject);
-                cmp.AddObject(o);
+                cmp.ProcessObject(o);
                 SelectedObject = cmp;
             }
         }

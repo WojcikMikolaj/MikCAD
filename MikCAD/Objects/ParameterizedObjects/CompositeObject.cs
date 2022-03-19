@@ -8,18 +8,20 @@ public class CompositeObject: ParameterizedObject
     private List<ParameterizedObject> _objects = new List<ParameterizedObject>();
     private ParameterizedPoint _center = null; 
         
-    public void AddObject(ParameterizedObject o)
+    public void ProcessObject(ParameterizedObject o)
     {
-        if(!_objects.Contains(o))
+        if (!_objects.Contains(o))
             _objects.Add(o);
+        else
+            _objects.Remove(o);
         CalculateCenter();
     }
 
     public void DeleteObject(ParameterizedObject o)
     {
-        if (_objects.Contains(o))
-            _objects.Remove(o);
-        CalculateCenter();
+        // if (_objects.Contains(o))
+        //     _objects.Remove(o);
+        // CalculateCenter();
     }
     
     private void CalculateCenter()
@@ -52,7 +54,7 @@ public class CompositeObject: ParameterizedObject
 
     public CompositeObject(ParameterizedObject o) : base("composite")
     {
-        AddObject(o);
+        ProcessObject(o);
     }
 
     public override uint[] lines { get; }

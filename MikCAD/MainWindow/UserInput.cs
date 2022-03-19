@@ -96,20 +96,20 @@ namespace MikCAD
             scene.camera.Scale = value;
         }
         
-        public static bool IsShiftPressed { get; private set; }
+        public static bool IsMultiSelectEnabled { get; private set; }
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftShift)
+            if (e.Key == Key.LeftCtrl)
             {
-                IsShiftPressed = true;
+                IsMultiSelectEnabled = true;
             }
         }
 
         private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftShift)
+            if (e.Key == Key.LeftCtrl)
             {
-                IsShiftPressed = false;
+                IsMultiSelectEnabled = false;
             }
         }
 

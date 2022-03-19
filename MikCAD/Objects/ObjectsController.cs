@@ -59,9 +59,19 @@ public class ObjectsController: INotifyPropertyChanged
             var _modelMatrix = obj.GetModelMatrix();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation, out _vertexBufferObject, out _vertexArrayObject);
-            
             GL.BindVertexArray(_vertexArrayObject);
-            GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
+            switch (obj)
+            {
+                case ParameterizedPoint point:
+                    GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+                    break;
+                default:
+                    GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
+                    break;
+            }
+            
+            
+            
         }
     }
 

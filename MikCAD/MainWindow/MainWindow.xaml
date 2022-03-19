@@ -28,6 +28,7 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="3">
             <MenuItem Header="Dodaj">
+                <MenuItem Header="Punkt" Click="AddPoint"></MenuItem>
                 <MenuItem Header="Torus" Click="AddTorus"/>
             </MenuItem>
         </Menu>

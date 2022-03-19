@@ -100,5 +100,10 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new Torus());
         }
+        
+        private void AddPoint(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
+        }
     }
 }

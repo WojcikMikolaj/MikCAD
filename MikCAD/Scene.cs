@@ -30,6 +30,8 @@ namespace MikCAD
             ObjectsController.AddObjectToScene(torus = new Torus());
             camera.InitializeCamera();
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.Enable(EnableCap.ProgramPointSize);
+            GL.Enable(EnableCap.PointSmooth);
             torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             _shader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
             UpdatePVM();

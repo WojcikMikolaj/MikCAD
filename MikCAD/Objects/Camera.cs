@@ -117,6 +117,8 @@ namespace MikCAD
             }
         }
 
+        public Vector3 WorldPosition => _position - ActForward * _scale;
+
         public void InitializeCamera()
         {
             UpdateProjectionMatrix();

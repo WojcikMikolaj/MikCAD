@@ -9,7 +9,7 @@ public class ParameterizedPoint : ParameterizedObject
 {
     private BoundingSphere _bb = new BoundingSphere()
     {
-        radius = 0.05f
+        radius = 0.25f
     };
     public BoundingSphere BB => _bb;
     public override bool RotationEnabled => false;

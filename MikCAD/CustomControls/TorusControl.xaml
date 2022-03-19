@@ -10,45 +10,12 @@
     <Grid>
         <GroupBox x:Name="Torus">
             <GroupBox.Header>
-                Torus
+                <TextBox MinWidth="100" MaxWidth="100" Text="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </GroupBox.Header>
             <StackPanel>
-                <GroupBox x:Name="TorusMatrix">
-                    <Grid Margin="0,5,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0">Pozycja</Label>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.posX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.posY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="0" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.posZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <Label Grid.Row="1" Grid.Column="0">Rotacja</Label>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.rotX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.rotY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.rotZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <Label Grid.Row="2" Grid.Column="0">Skala</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.scaleX, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="2" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.scaleY, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="3" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.scaleZ, Mode=TwoWay}" DisplayLength="5" IsReadOnly="False"></n:FloatUpDown>
-                    </Grid>
-                </GroupBox>
+                <local:ModelMatrixControl DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext, Mode=TwoWay}"/>
                 <GroupBox x:Name="TorusParameters">
                     <GroupBox.Header>
                         Parametry

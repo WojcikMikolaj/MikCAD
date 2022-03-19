@@ -9,12 +9,20 @@ namespace MikCAD
 {
     public abstract class ParameterizedObject : INotifyPropertyChanged
     {
+        public virtual bool PositionEnabled => true;
+        public virtual bool RotationEnabled => true;
+        public virtual bool ScaleEnabled => true;
+        
         private string _name = "";
         public String Name
         {
             get => _name;
             set
             {
+                if (Scene.CurrentScene.ObjectsController.IsNameTaken(value))
+                {
+                    return;
+                }    
                 _name = value;
                 OnPropertyChanged(nameof(Name));
             }

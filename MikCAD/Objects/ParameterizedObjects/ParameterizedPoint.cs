@@ -6,7 +6,10 @@ namespace MikCAD;
 
 public class ParameterizedPoint : ParameterizedObject
 {
-    public ParameterizedPoint() : base("Point")
+    public override bool RotationEnabled => false;
+    public override bool ScaleEnabled => false;
+
+    public ParameterizedPoint() : base("Punkt")
     {
     }
 

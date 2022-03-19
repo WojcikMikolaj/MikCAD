@@ -24,8 +24,12 @@ public class ObjectsController: INotifyPropertyChanged
             {
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
+                    MainWindow.current.pointControl.Visibility = Visibility.Hidden;
                     break;
-
+                case ParameterizedPoint point:
+                    MainWindow.current.torusControl.Visibility = Visibility.Hidden;
+                    MainWindow.current.pointControl.Visibility = Visibility.Visible;
+                    break;
             }
             OnPropertyChanged(nameof(SelectedObject));
         }

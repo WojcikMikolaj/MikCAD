@@ -19,6 +19,19 @@ namespace MikCAD
 
         private void Image_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount == 2)
+            {
+                var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
+                if (point != null)
+                {
+                    IsMultiSelectEnabled = false;
+                    Scene.CurrentScene.ObjectsController.SelectObject(point);
+                }
+                else
+                {
+                    Scene.CurrentScene.ObjectsController.UnselectAll();
+                }
+            }
             if (!_rightPressed)
             {
                 _leftPressed = true;

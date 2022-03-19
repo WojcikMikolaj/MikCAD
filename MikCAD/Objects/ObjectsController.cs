@@ -50,9 +50,15 @@ public class ObjectsController : INotifyPropertyChanged
     public ObservableCollection<ParameterizedObject> ParameterizedObjects { get; private set; } =
         new ObservableCollection<ParameterizedObject>();
 
+    private List<ParameterizedPoint> _parameterizedPoints = new List<ParameterizedPoint>();
+    public List<ParameterizedPoint> ParameterizedPoints => _parameterizedPoints;
+
+
     public bool AddObjectToScene(ParameterizedObject parameterizedObject)
     {
         ParameterizedObjects.Add(parameterizedObject);
+        if(parameterizedObject is ParameterizedPoint point)
+            _parameterizedPoints.Add(point);
         SelectedObject ??= parameterizedObject;
         return true;
     }
@@ -61,6 +67,8 @@ public class ObjectsController : INotifyPropertyChanged
     {
         if (_selectedObject is Pointer3D)
             return false;
+        if (_selectedObject is ParameterizedPoint point)
+            _parameterizedPoints.Remove(point);
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)
         {

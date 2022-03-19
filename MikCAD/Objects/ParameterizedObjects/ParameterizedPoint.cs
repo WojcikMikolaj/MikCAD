@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
 
@@ -6,6 +7,11 @@ namespace MikCAD;
 
 public class ParameterizedPoint : ParameterizedObject
 {
+    private BoundingSphere _bb = new BoundingSphere()
+    {
+        radius = 0.05f
+    };
+    public BoundingSphere BB => _bb;
     public override bool RotationEnabled => false;
     public override bool ScaleEnabled => false;
 
@@ -21,6 +27,7 @@ public class ParameterizedPoint : ParameterizedObject
     public override void UpdateTranslationMatrix()
     {
         _translationMatrix = Matrix4.CreateTranslation(_position);
+        _bb.position = _position;
     }
 
     public override void UpdateRotationMatrix(Axis axis)

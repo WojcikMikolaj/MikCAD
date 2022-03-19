@@ -107,6 +107,9 @@ namespace MikCAD
                 case Key.Escape:
                     Scene.CurrentScene.ObjectsController.UnselectAll();
                     break;
+                case Key.Delete:
+                    Scene.CurrentScene.ObjectsController.DeleteSelectedObjects();
+                    break;
             }
         }
 

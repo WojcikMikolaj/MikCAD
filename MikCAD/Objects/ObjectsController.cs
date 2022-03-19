@@ -10,9 +10,8 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD;
 
-public class ObjectsController: INotifyPropertyChanged
+public class ObjectsController : INotifyPropertyChanged
 {
-
     private ParameterizedObject _selectedObject;
     private Shader _selectedObjectShader = new Shader("Shaders/SelectedObject.vert", "Shaders/SelectedObject.frag");
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
@@ -23,6 +22,12 @@ public class ObjectsController: INotifyPropertyChanged
         set
         {
             _selectedObject = value;
+            if (_selectedObject is null)
+            {
+                MainWindow.current.torusControl.Visibility = Visibility.Hidden;
+                MainWindow.current.pointControl.Visibility = Visibility.Hidden;
+                return;
+            }
             switch (_selectedObject)
             {
                 case Torus torus:
@@ -34,10 +39,11 @@ public class ObjectsController: INotifyPropertyChanged
                     MainWindow.current.pointControl.Visibility = Visibility.Visible;
                     break;
             }
+
             OnPropertyChanged(nameof(SelectedObject));
         }
     }
-    
+
     public ObservableCollection<ParameterizedObject> ParameterizedObjects { get; private set; } =
         new ObservableCollection<ParameterizedObject>();
 
@@ -48,16 +54,28 @@ public class ObjectsController: INotifyPropertyChanged
         return true;
     }
 
-    public bool DeleteObjectFromScene(ParameterizedObject parameterizedObject)
+    public bool DeleteSelectedObjects()
     {
-        return ParameterizedObjects.Remove(parameterizedObject);
+        List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
+        foreach (var o in ParameterizedObjects)
+        {
+            if (o.Selected)
+                objectsToDelete.Add(o);
+            o.Selected = false;
+        }
+        foreach (var o in objectsToDelete)
+        {
+            ParameterizedObjects.Remove(o);
+        }
+        SelectedObject = null;
+        return true;
     }
 
     public void SelectObject(ParameterizedObject o)
     {
         if (!MainWindow.IsMultiSelectEnabled)
         {
-            if(_selectedObject != null)
+            if (_selectedObject != null)
                 SelectedObject.Selected = false;
             SelectedObject = o;
             o.Selected = true;
@@ -77,12 +95,12 @@ public class ObjectsController: INotifyPropertyChanged
             }
         }
     }
-    
+
     public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         foreach (var obj in ParameterizedObjects)
         {
-            if(obj.Selected)
+            if (obj.Selected)
                 Scene.CurrentScene._shader = _selectedObjectShader;
             else
                 Scene.CurrentScene._shader = _standardObjectShader;

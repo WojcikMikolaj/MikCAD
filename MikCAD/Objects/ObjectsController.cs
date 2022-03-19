@@ -13,6 +13,7 @@ namespace MikCAD;
 public class ObjectsController : INotifyPropertyChanged
 {
     private ParameterizedObject _selectedObject;
+    internal Pointer3D _pointer;
     private Shader _selectedObjectShader = new Shader("Shaders/SelectedObject.vert", "Shaders/SelectedObject.frag");
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
 
@@ -127,6 +128,15 @@ public class ObjectsController : INotifyPropertyChanged
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+        }
+
+        {
+            var _modelMatrix = _pointer.GetModelMatrix();
+            Scene.CurrentScene._shader = _standardObjectShader;
+            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+            _pointer.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            GL.DrawElements(PrimitiveType.Lines, _pointer.lines.Length, DrawElementsType.UnsignedInt, 0);
         }
     }
 

@@ -95,6 +95,23 @@ namespace MikCAD
             //scene.camera.fov = value;
             scene.camera.Scale = value;
         }
+        
+        public bool ShiftPressed { get; private set; }
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftShift)
+            {
+                ShiftPressed = true;
+            }
+        }
+
+        private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftShift)
+            {
+                ShiftPressed = false;
+            }
+        }
 
         private void AddTorus(object sender, RoutedEventArgs e)
         {

@@ -30,9 +30,7 @@ public class ParameterizedPoint : ParameterizedObject
     {
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
-        out int _vertexBufferObject,
-        out int _vertexArrayObject)
+    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         var vertices = new float[1 * Point.Size];
         var colors = new float[1 * Point.Size];
@@ -46,11 +44,9 @@ public class ParameterizedPoint : ParameterizedObject
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 3 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
-        _vertexBufferObject = vertexBufferObject;
 
         var vertexArrayObject = GL.GenVertexArray();
         GL.BindVertexArray(vertexArrayObject);
-        _vertexArrayObject = vertexArrayObject;
 
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);

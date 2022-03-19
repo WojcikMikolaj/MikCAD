@@ -137,8 +137,7 @@ namespace MikCAD
             return _modelMatrix;
         }
 
-        public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation,
-            out int _vertexBufferObject, out int _vertexArrayObject)
+        public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
         {
             var vertices = new float[_vertices.Length * Point.Size];
             var colors = new float[_vertices.Length * Point.Size];
@@ -154,11 +153,9 @@ namespace MikCAD
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
                 BufferUsageHint.StaticDraw);
-            _vertexBufferObject = vertexBufferObject;
 
             var vertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(vertexArrayObject);
-            _vertexArrayObject = vertexArrayObject;
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);

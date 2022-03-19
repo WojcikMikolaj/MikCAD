@@ -27,12 +27,10 @@ namespace MikCAD
         }
         public void Initialise(float width, float height)
         {
-            ObjectsController.AddObjectToScene(torus = new Torus());
             camera.InitializeCamera();
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
-            torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             _shader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
             UpdatePVM();
         }
@@ -54,7 +52,7 @@ namespace MikCAD
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
             UpdatePVM();
-            ObjectsController.DrawObjects(0,0, /*out*/ _vertexBufferObject , /*out*/ _vertexArrayObject);
+            ObjectsController.DrawObjects(0,0);
             //torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             
             //GL.BindVertexArray(_vertexArrayObject);

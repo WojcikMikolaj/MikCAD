@@ -38,5 +38,6 @@ namespace MikCAD
             scene.camera._width = (float)this.OpenTkControl.ActualWidth;
             scene.camera.UpdateProjectionMatrix();
         }
+        
     }
 }

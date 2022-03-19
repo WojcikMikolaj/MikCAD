@@ -156,7 +156,7 @@ namespace MikCAD
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public abstract void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation, out int _vertexBufferObject, out int _vertexArrayObject);
+        public abstract void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation);
         public abstract Matrix4 GetModelMatrix();
     }
 }

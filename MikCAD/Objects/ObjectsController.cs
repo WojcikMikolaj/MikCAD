@@ -56,14 +56,13 @@ public class ObjectsController: INotifyPropertyChanged
         SelectedObject = item;
     }
     
-    public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation, int _vertexBufferObject, int _vertexArrayObject)
+    public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         foreach (var obj in ParameterizedObjects)
         {
             var _modelMatrix = obj.GetModelMatrix();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
-            obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation, out _vertexBufferObject, out _vertexArrayObject);
-            GL.BindVertexArray(_vertexArrayObject);
+            obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             switch (obj)
             {
                 case ParameterizedPoint point:

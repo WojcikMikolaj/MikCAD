@@ -10,7 +10,9 @@
         Title="MikCAD" MinHeight="400" MinWidth="950"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
         PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp"
-        MouseLeave="Window_OnMouseLeave">
+        MouseLeave="Window_OnMouseLeave"
+        KeyDown="MainWindow_OnKeyDown"
+        KeyUp="MainWindow_OnKeyUp">
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Torus}" x:Key="Torus">
             <local:TorusControl DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"/>

@@ -9,6 +9,7 @@ namespace MikCAD
 {
     public abstract class ParameterizedObject : INotifyPropertyChanged
     {
+        public virtual bool Selected { get; internal set; }
         public virtual bool PositionEnabled => true;
         public virtual bool RotationEnabled => true;
         public virtual bool ScaleEnabled => true;

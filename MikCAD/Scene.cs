@@ -31,8 +31,7 @@ namespace MikCAD
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
-            _shader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
-            UpdatePVM();
+            //UpdatePVM();
         }
 
         public void UpdatePVM()
@@ -51,7 +50,7 @@ namespace MikCAD
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
-            UpdatePVM();
+            //UpdatePVM();
             ObjectsController.DrawObjects(0,0);
             //torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
             

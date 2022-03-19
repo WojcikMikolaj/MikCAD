@@ -99,9 +99,14 @@ namespace MikCAD
         public static bool IsMultiSelectEnabled { get; private set; }
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftCtrl)
+            switch (e.Key)
             {
-                IsMultiSelectEnabled = true;
+                case Key.LeftCtrl:
+                    IsMultiSelectEnabled = true;
+                    break;
+                case Key.Escape:
+                    Scene.CurrentScene.ObjectsController.UnselectAll();
+                    break;
             }
         }
 

@@ -6,14 +6,37 @@ namespace MikCAD;
 public class CompositeObject: ParameterizedObject
 {
     private List<ParameterizedObject> _objects = new List<ParameterizedObject>();
-    private ParameterizedPoint _center = null; 
-        
+    private ParameterizedPoint _center = null;
+    internal int objectsCount => _objects.Count;
+    internal ParameterizedObject first => _objects.Count == 1 ? _objects[0] : null;
+    private bool _selected = false;
+    public override bool Selected
+    {
+        get => _selected;
+        internal set
+        {
+            _selected = value;
+            foreach (var o in _objects)
+            {
+                o.Selected = value;
+            }
+        }
+    }
+
     public void ProcessObject(ParameterizedObject o)
     {
+        if(o == null)
+            return;
         if (!_objects.Contains(o))
+        {
             _objects.Add(o);
+            o.Selected = true;
+        }
         else
+        {
             _objects.Remove(o);
+            o.Selected = false;
+        }
         CalculateCenter();
     }
 

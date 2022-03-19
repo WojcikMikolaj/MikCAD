@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -13,6 +14,8 @@ public class ObjectsController: INotifyPropertyChanged
 {
 
     private ParameterizedObject _selectedObject;
+    private Shader _selectedObjectShader = new Shader("Shaders/SelectedObject.vert", "Shaders/SelectedObject.frag");
+    private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
 
     public ParameterizedObject SelectedObject
     {
@@ -54,7 +57,10 @@ public class ObjectsController: INotifyPropertyChanged
     {
         if (!MainWindow.IsMultiSelectEnabled)
         {
+            if(_selectedObject != null)
+                SelectedObject.Selected = false;
             SelectedObject = o;
+            o.Selected = true;
         }
         else
         {
@@ -67,6 +73,7 @@ public class ObjectsController: INotifyPropertyChanged
                 var cmp = new CompositeObject(SelectedObject);
                 cmp.ProcessObject(o);
                 SelectedObject = cmp;
+                o.Selected = true;
             }
         }
     }
@@ -75,6 +82,11 @@ public class ObjectsController: INotifyPropertyChanged
     {
         foreach (var obj in ParameterizedObjects)
         {
+            if(obj.Selected)
+                Scene.CurrentScene._shader = _selectedObjectShader;
+            else
+                Scene.CurrentScene._shader = _standardObjectShader;
+            Scene.CurrentScene.UpdatePVM();
             var _modelMatrix = obj.GetModelMatrix();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
@@ -92,6 +104,8 @@ public class ObjectsController: INotifyPropertyChanged
         if (SelectedObject is CompositeObject o)
         {
             var _modelMatrix = o.GetModelMatrix();
+            Scene.CurrentScene._shader = _selectedObjectShader;
+            Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
@@ -115,5 +129,14 @@ public class ObjectsController: INotifyPropertyChanged
         }
 
         return false;
+    }
+
+    public void UnselectAll()
+    {
+        foreach (var o in ParameterizedObjects)
+        {
+            o.Selected = false;
+            _selectedObject = null;
+        }
     }
 }

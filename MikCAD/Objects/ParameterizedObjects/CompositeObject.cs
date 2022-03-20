@@ -102,7 +102,7 @@ public class CompositeObject: ParameterizedObject
         foreach (var o in _objects)
         {
             var mat = o.GetOnlyModelMatrix();
-            var tr = _position - o._position;
+            var tr = new Vector3(_center.posX, _center.posY, _center.posZ) - o._position;
             var trMat = Matrix4.CreateTranslation(tr);
             var mtrMat = Matrix4.CreateTranslation(-tr);
             var rotationX = Matrix4.CreateRotationX(MH.DegreesToRadians(rotX));

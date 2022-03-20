@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Data.Common;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
@@ -7,6 +9,9 @@ namespace MikCAD;
 
 public class ParameterizedPoint : ParameterizedObject
 {
+    private static int _nextId;
+    private static Random random = new Random(0);
+    public readonly int PointId;
     private BoundingSphere _bb = new BoundingSphere()
     {
         radius = 0.25f
@@ -18,11 +23,15 @@ public class ParameterizedPoint : ParameterizedObject
     public ParameterizedPoint() : base("Punkt")
     {
         UpdateTranslationMatrix();
+        PointId = random.Next();
+        _pickingColor = new Vector3((PointId & 0xFF )/255.0f, ((PointId >> 8) &  0xFF)/255.0f, ((PointId >>16 ) & 0xFF)/255.0f);
     }
 
     public override uint[] lines { get; }
+    public Vector3 PickingColor => _pickingColor;
 
     private Matrix4 _translationMatrix = Matrix4.Identity;
+    private Vector3 _pickingColor;
 
     public override void UpdateTranslationMatrix()
     {
@@ -68,6 +77,11 @@ public class ParameterizedPoint : ParameterizedObject
     }
 
     public override Matrix4 GetModelMatrix()
+    {
+        return CompositeOperationMatrix * _translationMatrix;
+    }
+    
+    public override Matrix4 GetOnlyModelMatrix()
     {
         return _translationMatrix;
     }

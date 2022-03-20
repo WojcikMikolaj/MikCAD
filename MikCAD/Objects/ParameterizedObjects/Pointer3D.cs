@@ -76,4 +76,9 @@ public class Pointer3D : ParameterizedObject
     {
         return _translationMatrix;
     }
+
+    public override Matrix4 GetOnlyModelMatrix()
+    {
+        return GetModelMatrix();
+    }
 }

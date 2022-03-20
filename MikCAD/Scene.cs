@@ -30,8 +30,9 @@ namespace MikCAD
         }
         public void Initialise(float width, float height)
         {
+            GL.DepthRange(1.0f, 0.0f);
             camera.InitializeCamera();
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
             ObjectsController.AddObjectToScene(ObjectsController._pointer = new Pointer3D());
@@ -50,27 +51,42 @@ namespace MikCAD
             _shader.Use();
         }
 
-        public void OnRenderFrame()
+        public void OnRenderFrame(bool raycast, int x, int y, bool clear = true)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                      ClearBufferMask.StencilBufferBit);
-            //UpdatePVM();
+            // GL.Flush();
             ObjectsController.DrawObjects(0,0);
-            //torus.GenerateVertices(0,0,out _vertexBufferObject , out _vertexArrayObject);
-            
-            //GL.BindVertexArray(_vertexArrayObject);
-            //GL.DrawElements(PrimitiveType.Lines, torus._lines.Length, DrawElementsType.UnsignedInt, 0);
-            //GL.DrawArrays(PrimitiveType.Lines, 0, _torus.VerticesCount);
+            return;
+
+            if(clear)
+                ObjectsController.DrawObjects(0,0);
+            if (raycast)
+            {
+                //CurrentScene.ObjectsController.DrawPoints();
+                GL.Flush();
+                GL.Finish();
+                byte r = 0, g = 0, b = 0, r1=0, g1=0,b1=0;
+                GL.ReadBuffer(ReadBufferMode.Back);
+                GL.PixelStore(PixelStoreParameter.UnpackAlignment,1);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Red, PixelType.UnsignedByte, ref r);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Green, PixelType.UnsignedByte, ref g);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Blue, PixelType.UnsignedByte, ref b);
+                GL.ReadBuffer(ReadBufferMode.Front);
+                GL.PixelStore(PixelStoreParameter.UnpackAlignment,1);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Red, PixelType.UnsignedByte, ref r1);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Green, PixelType.UnsignedByte, ref g1);
+                GL.ReadPixels(x, y, 1, 1, PixelFormat.Blue, PixelType.UnsignedByte, ref b1);
+                MainWindow.current.Title = $"{r},{g},{b}    {r1},{g1},{b1}";
+                raycast = false;
+                // if (clear)
+                //     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
+                //              ClearBufferMask.StencilBufferBit);
+            }
 
 
-            // OpenTK windows are what's known as "double-buffered". In essence, the window manages two buffers.
-            // One is rendered to while the other is currently displayed by the window.
-            // This avoids screen tearing, a visual artifact that can happen if the buffer is modified while being displayed.
-            // After drawing, call this function to swap the buffers. If you don't, it won't display what you've rendered.
-            //SwapBuffers();
-
-            // And that's all you have to do for rendering! You should now see a yellow triangle on a black screen.
+        }
         }
         
-    }
+    
 }

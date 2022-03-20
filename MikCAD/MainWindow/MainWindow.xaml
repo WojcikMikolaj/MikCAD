@@ -33,6 +33,9 @@
                 <MenuItem Header="Punkt" Click="AddPoint"></MenuItem>
                 <MenuItem Header="Torus" Click="AddTorus"/>
             </MenuItem>
+            <MenuItem Header="Debug">
+                <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>
+            </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1">
             <local:CameraControl Grid.Column="0" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>

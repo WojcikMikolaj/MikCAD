@@ -17,6 +17,7 @@ public class ObjectsController : INotifyPropertyChanged
     private Shader _selectedObjectShader = new Shader("Shaders/SelectedObject.vert", "Shaders/SelectedObject.frag");
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
     private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
+    private Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
 
     public ParameterizedObject SelectedObject
     {
@@ -38,6 +39,7 @@ public class ObjectsController : INotifyPropertyChanged
                     break;
                 case ParameterizedPoint point:
                 case Pointer3D pointer3D:
+                case CompositeObject compositeObject:
                     MainWindow.current.torusControl.Visibility = Visibility.Hidden;
                     MainWindow.current.pointControl.Visibility = Visibility.Visible;
                     break;
@@ -178,5 +180,24 @@ public class ObjectsController : INotifyPropertyChanged
             o.Selected = false;
             _selectedObject = null;
         }
+    }
+
+    public void DrawPoints()
+    {
+       // GL.ClearColor(0f, 0f, 0f, 1.0f);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
+                 ClearBufferMask.StencilBufferBit);
+        Scene.CurrentScene._shader = _pickingShader;
+        Scene.CurrentScene.UpdatePVM();
+        foreach (var point in _parameterizedPoints)
+        {
+            var _modelMatrix = point.GetModelMatrix();
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+            Scene.CurrentScene._shader.SetVector3("PickingColor", point.PickingColor);
+            point.GenerateVertices(0, 0);
+            GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+        }
+        GL.Flush();
+        GL.Finish();
     }
 }

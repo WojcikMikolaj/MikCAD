@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-
+using MH = OpenTK.Mathematics.MathHelper;
 namespace MikCAD;
 
 public class CompositeObject: ParameterizedObject
@@ -83,14 +84,32 @@ public class CompositeObject: ParameterizedObject
     public override uint[] lines { get; }
     public override void UpdateTranslationMatrix()
     {
+        ApplyOnChilds();
     }
 
     public override void UpdateRotationMatrix(Axis axis)
     {
+        ApplyOnChilds();
     }
 
     public override void UpdateScaleMatrix()
     {
+        ApplyOnChilds();
+    }
+
+    public void ApplyOnChilds()
+    {
+        foreach (var o in _objects)
+        {
+            var mat = o.GetOnlyModelMatrix();
+            var tr = _position - o._position;
+            var trMat = Matrix4.CreateTranslation(tr);
+            var mtrMat = Matrix4.CreateTranslation(-tr);
+            var rotationX = Matrix4.CreateRotationX(MH.DegreesToRadians(rotX));
+            var rotationY = Matrix4.CreateRotationY(MH.DegreesToRadians(rotY));
+            var rotationZ = Matrix4.CreateRotationZ(MH.DegreesToRadians(rotZ));
+            o.CompositeOperationMatrix = (mtrMat * rotationX * rotationY * rotationZ * trMat);
+        }        
     }
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
@@ -104,5 +123,10 @@ public class CompositeObject: ParameterizedObject
         if(_center!=null)
             return _center.GetModelMatrix();
         return Matrix4.Identity;
+    }
+    
+    public override Matrix4 GetOnlyModelMatrix()
+    {
+        return GetModelMatrix();
     }
 }

@@ -28,8 +28,15 @@ namespace MikCAD
             scene.Initialise(400, 400);
         }
 
-        private void OpenTkControl_OnRender(TimeSpan delta) {
-            scene.OnRenderFrame();
+        bool disabled=false;
+        bool checkCollisions=false;
+        private int m_x = 0;
+        private int m_y = 0;
+        
+        private void OpenTkControl_OnRender(TimeSpan delta)
+        {
+            scene.OnRenderFrame(checkCollisions, m_x, m_y, _clear);
+            checkCollisions = false;
         }
 
         private void OpenTkControl_OnSizeChanged(object sender, SizeChangedEventArgs e)

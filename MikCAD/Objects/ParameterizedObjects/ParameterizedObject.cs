@@ -9,7 +9,41 @@ namespace MikCAD
 {
     public abstract class ParameterizedObject : INotifyPropertyChanged
     {
-        public virtual bool Selected { get; internal set; }
+        private bool _selected = false;
+
+        public virtual bool Selected
+        {
+            get => _selected;
+            internal set
+            {
+                if (_selected && !value)
+                {
+                    WriteCompositeToModel();
+                }
+                _selected = value;
+            }
+        }
+
+        protected virtual void WriteCompositeToModel()
+        {
+            var mat =CompositeOperationMatrix *  GetOnlyModelMatrix();
+            CompositeOperationMatrix = Matrix4.Identity;
+            var scalingFactor = MathHelper.Sqrt(mat[0,0] * mat[0,0] + mat[0,1] * mat[0,1] + mat[0,2] * mat[0,2]);
+            var pos = mat.ExtractTranslation();
+            var rot = mat.ExtractRotation();
+            rot.ToEulerAngles(out var angles);
+            angles[0] = MathHelper.RadiansToDegrees(angles[0]);
+            angles[1] = MathHelper.RadiansToDegrees(angles[1]);
+            angles[2] = MathHelper.RadiansToDegrees(angles[2]);
+            this._rotation = angles;
+            this._position = pos;
+            UpdateRotationMatrix(Axis.X);
+            UpdateRotationMatrix(Axis.Y);
+            UpdateRotationMatrix(Axis.Z);
+            UpdateScaleMatrix();
+            UpdateTranslationMatrix();
+        }
+
         public virtual bool PositionEnabled => true;
         public virtual bool RotationEnabled => true;
         public virtual bool ScaleEnabled => true;
@@ -127,12 +161,12 @@ namespace MikCAD
                 OnPropertyChanged(nameof(scaleZ));
             }
         }
-
+        
         public abstract uint[] lines { get; }
 
-        protected Vector3 _position = new Vector3();
-        protected Vector3 _rotation = new Vector3();
-        protected Vector3 _scale = new Vector3(1, 1, 1);
+        internal Vector3 _position = new Vector3();
+        internal Vector3 _rotation = new Vector3();
+        internal Vector3 _scale = new Vector3(1, 1, 1);
         
         public abstract void UpdateTranslationMatrix();
         public abstract void UpdateRotationMatrix(Axis axis);
@@ -161,5 +195,8 @@ namespace MikCAD
 
         public abstract void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation);
         public abstract Matrix4 GetModelMatrix();
+        public abstract Matrix4 GetOnlyModelMatrix();
+        
+        public Matrix4 CompositeOperationMatrix { get; set; } = Matrix4.Identity;
     }
 }

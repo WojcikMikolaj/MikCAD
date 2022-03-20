@@ -21,7 +21,12 @@ namespace MikCAD
         {
             if (e.ClickCount == 2)
             {
-                var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
+                disabled = true;
+                checkCollisions = true;
+                m_x = (int) e.GetPosition(OpenTkControl).X;
+                m_y = (int) e.GetPosition(OpenTkControl).Y;
+                //var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
+                ParameterizedPoint point = null;
                 if (point != null)
                 {
                     IsMultiSelectEnabled = false;
@@ -142,6 +147,12 @@ namespace MikCAD
         private void AddPoint(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
+        }
+
+        private bool _clear = false;
+        private void SetClear(object sender, RoutedEventArgs e)
+        {
+            _clear =!_clear;
         }
     }
 }

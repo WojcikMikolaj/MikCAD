@@ -33,6 +33,14 @@
     <EmbeddedResource Include="Shaders\Shader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Remove="Shaders\PickingShader.vert" />
+    <EmbeddedResource Include="Shaders\PickingShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Shaders\PickingShader.frag" />
+    <EmbeddedResource Include="Shaders\PickingShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />

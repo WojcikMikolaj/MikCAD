@@ -74,6 +74,7 @@ public class CompositeObject: ParameterizedObject
             posY = center.Y,
             posZ = center.Z,
         };
+        _oldPos = _position;
     }
 
     public CompositeObject(ParameterizedObject o) : base("composite")
@@ -84,9 +85,18 @@ public class CompositeObject: ParameterizedObject
     public override uint[] lines { get; }
     public override void UpdateTranslationMatrix()
     {
-        ApplyOnChilds();
+        var dpos = _position - _oldPos;
+        foreach (var o in _objects)
+        {
+            o.posX += dpos.X;
+            o.posY += dpos.Y;
+            o.posZ += dpos.Z;
+        }
+        CalculateCenter();
     }
 
+    private Vector3 _oldPos;
+    
     public override void UpdateRotationMatrix(Axis axis)
     {
         ApplyOnChilds();

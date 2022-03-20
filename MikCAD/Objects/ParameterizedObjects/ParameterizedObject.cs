@@ -28,15 +28,16 @@ namespace MikCAD
         {
             var mat =CompositeOperationMatrix *  GetOnlyModelMatrix();
             CompositeOperationMatrix = Matrix4.Identity;
-            var scalingFactor = MathHelper.Sqrt(mat[0,0] * mat[0,0] + mat[0,1] * mat[0,1] + mat[0,2] * mat[0,2]);
             var pos = mat.ExtractTranslation();
             var rot = mat.ExtractRotation();
+            var scale = mat.ExtractScale();
             rot.ToEulerAngles(out var angles);
             angles[0] = MathHelper.RadiansToDegrees(angles[0]);
             angles[1] = MathHelper.RadiansToDegrees(angles[1]);
             angles[2] = MathHelper.RadiansToDegrees(angles[2]);
             this._rotation = angles;
             this._position = pos;
+            this._scale = scale;
             UpdateRotationMatrix(Axis.X);
             UpdateRotationMatrix(Axis.Y);
             UpdateRotationMatrix(Axis.Z);

@@ -2,15 +2,23 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
+
 namespace MikCAD;
 
-public class CompositeObject: ParameterizedObject
+public class CompositeObject : ParameterizedObject
 {
+    public override string Name
+    {
+        get => "composite";
+        set { }
+    }
+
     private List<ParameterizedObject> _objects = new List<ParameterizedObject>();
     private ParameterizedPoint _center = null;
     internal int objectsCount => _objects.Count;
     internal ParameterizedObject first => _objects.Count == 1 ? _objects[0] : null;
     private bool _selected = false;
+
     public override bool Selected
     {
         get => _selected;
@@ -26,7 +34,7 @@ public class CompositeObject: ParameterizedObject
 
     public void ProcessObject(ParameterizedObject o)
     {
-        if(o == null)
+        if (o == null)
             return;
         if (!_objects.Contains(o))
         {
@@ -38,6 +46,7 @@ public class CompositeObject: ParameterizedObject
             _objects.Remove(o);
             o.Selected = false;
         }
+
         CalculateCenter();
     }
 
@@ -47,7 +56,7 @@ public class CompositeObject: ParameterizedObject
         //     _objects.Remove(o);
         // CalculateCenter();
     }
-    
+
     private void CalculateCenter()
     {
         if (_objects.Count == 0)
@@ -75,6 +84,7 @@ public class CompositeObject: ParameterizedObject
             posZ = center.Z,
         };
         _oldPos = _position;
+        _position = _center._position;
     }
 
     public CompositeObject(ParameterizedObject o) : base("composite")
@@ -83,6 +93,7 @@ public class CompositeObject: ParameterizedObject
     }
 
     public override uint[] lines { get; }
+
     public override void UpdateTranslationMatrix()
     {
         var dpos = _position - _oldPos;
@@ -92,11 +103,12 @@ public class CompositeObject: ParameterizedObject
             o.posY += dpos.Y;
             o.posZ += dpos.Z;
         }
+
         CalculateCenter();
     }
 
     private Vector3 _oldPos;
-    
+
     public override void UpdateRotationMatrix(Axis axis)
     {
         ApplyOnChilds();
@@ -116,26 +128,26 @@ public class CompositeObject: ParameterizedObject
         foreach (var o in _objects)
         {
             var mat = o.GetOnlyModelMatrix();
-            var tr = new Vector3(_center.posX, _center.posY, _center.posZ) - o._position;
+            var tr = _center._position;
             var trMat = Matrix4.CreateTranslation(tr);
             var mtrMat = Matrix4.CreateTranslation(-tr);
             o.CompositeOperationMatrix = (mtrMat * scale * rotationX * rotationY * rotationZ * trMat);
-        }        
+        }
     }
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        if(_center!=null)
+        if (_center != null)
             _center.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
     public override Matrix4 GetModelMatrix()
     {
-        if(_center!=null)
+        if (_center != null)
             return _center.GetModelMatrix();
         return Matrix4.Identity;
     }
-    
+
     public override Matrix4 GetOnlyModelMatrix()
     {
         return GetModelMatrix();

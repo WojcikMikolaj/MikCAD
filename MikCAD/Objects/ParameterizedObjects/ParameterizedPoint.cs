@@ -78,7 +78,7 @@ public class ParameterizedPoint : ParameterizedObject
 
     public override Matrix4 GetModelMatrix()
     {
-        return CompositeOperationMatrix * _translationMatrix;
+        return _translationMatrix * CompositeOperationMatrix;
     }
     
     public override Matrix4 GetOnlyModelMatrix()

@@ -135,7 +135,7 @@ namespace MikCAD
         
         public override Matrix4 GetModelMatrix()
         {
-            return CompositeOperationMatrix * _modelMatrix;
+            return _modelMatrix * CompositeOperationMatrix;
         }
 
         public override Matrix4 GetOnlyModelMatrix()

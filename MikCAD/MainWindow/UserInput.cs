@@ -155,11 +155,18 @@ namespace MikCAD
             _clear =!_clear;
         }
         
-        private void AddThree(object sender, RoutedEventArgs e)
+        private void AddThreePoints(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posY = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posZ = 1});
+        }
+
+        private void AddThreeToruses(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new Torus() {posX = 3});
+            scene.ObjectsController.AddObjectToScene(new Torus() {posY = 3});
+            scene.ObjectsController.AddObjectToScene(new Torus() {posZ = 3});
         }
     }
 }

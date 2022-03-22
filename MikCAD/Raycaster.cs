@@ -9,7 +9,6 @@ namespace MikCAD;
 
 public class Raycaster
 {
-    //Copied from: https://antongerdelan.net/opengl/raycasting.html
     public static ParameterizedObject FindIntersectingPoint(float mouse_x, float mouse_y)
     {
         float x = (2.0f * mouse_x) / (float)MainWindow.current.OpenTkControl.ActualWidth - 1.0f;

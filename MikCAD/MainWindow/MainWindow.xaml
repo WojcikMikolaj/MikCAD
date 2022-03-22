@@ -35,7 +35,10 @@
             </MenuItem>
             <MenuItem Header="Debug">
                 <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>
-                <MenuItem Header="Dodaj 3" Click="AddThree" x:Name="Add3"></MenuItem>
+                <MenuItem Header="Dodaj 3"  x:Name="Add3">
+                    <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
+                    <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>
+                </MenuItem>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1">

@@ -24,24 +24,25 @@ public class ObjectsController : INotifyPropertyChanged
         get => _selectedObject;
         set
         {
+            MainWindow.current.torusControl.Visibility = Visibility.Hidden;
+            MainWindow.current.pointControl.Visibility = Visibility.Hidden;
+            MainWindow.current.pointerControl.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
-                MainWindow.current.torusControl.Visibility = Visibility.Hidden;
-                MainWindow.current.pointControl.Visibility = Visibility.Hidden;
                 return;
             }
             switch (_selectedObject)
             {
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
-                    MainWindow.current.pointControl.Visibility = Visibility.Hidden;
                     break;
                 case ParameterizedPoint point:
-                case Pointer3D pointer3D:
                 case CompositeObject compositeObject:
-                    MainWindow.current.torusControl.Visibility = Visibility.Hidden;
                     MainWindow.current.pointControl.Visibility = Visibility.Visible;
+                    break;
+                case Pointer3D pointer3D:
+                    MainWindow.current.pointerControl.Visibility = Visibility.Visible;
                     break;
             }
 

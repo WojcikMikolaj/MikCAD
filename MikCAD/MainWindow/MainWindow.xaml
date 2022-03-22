@@ -55,5 +55,6 @@
                                    MinHeight="400" />
         <local:TorusControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="torusControl" Visibility="Hidden"/>
         <local:PointControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointControl" Visibility="Hidden"/>
+        <local:PointerControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointerControl" Visibility="Hidden"/>
     </Grid>
 </Window>

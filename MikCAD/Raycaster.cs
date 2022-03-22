@@ -13,41 +13,48 @@ public class Raycaster
     {
         float x = (2.0f * mouse_x) / (float)MainWindow.current.OpenTkControl.ActualWidth - 1.0f;
         float y = 1.0f - (2.0f * mouse_y) / (float)MainWindow.current.OpenTkControl.ActualHeight;
-        float z = -1.0f;
+        float z = 1.0f;
+
+        var ndc = new Vector4(x, y, z, 1);
+        var unprojected = ndc * Scene.CurrentScene.camera.GetProjectionMatrix().Inverted();
+        var unview = unprojected * Scene.CurrentScene.camera.GetViewMatrix().Inverted();
+        var raycastDir = unview;
+        raycastDir.W = 0;
         
+        var raycastSource = new Vector4(Scene.CurrentScene.camera.WorldPosition);
+        raycastSource.W = 1;
+
+        //dotąd jest ok
+        ParameterizedPoint currPoint = null;
+        float tmin = float.MaxValue;
+        foreach (var point in Scene.CurrentScene.ObjectsController.ParameterizedPoints)
+        {
+            var mat = Matrix4.Identity;
+            mat.M44 = -point.BB.radius * point.BB.radius;
+
+            var model = point.GetOnlyModelMatrix();
+            var finalMatrix = model.Inverted() * mat * Matrix4.Transpose(model.Inverted());
+
+            var a = Vector4.Dot(raycastDir * finalMatrix, raycastDir);
+            var b = Vector4.Dot(2 * raycastDir * finalMatrix, raycastSource);
+            var c = Vector4.Dot(raycastSource * finalMatrix, raycastSource);
+            
+            var delta = b * b - 4 * a * c;
+
+           // MainWindow.current.Title = $"Delta: {delta}";
+            if (delta > 0)
+            {
+                //działa do tego miejsca
+                var sqd = (float)MathHelper.Sqrt(delta);
+                var t = Math.Min(-b - delta / 2, -b + delta / 2);
+                if (t < tmin)
+                {
+                    tmin = t;
+                    currPoint = point;
+                }
+            }
+        }
         
-        return null;
-        // Vector3 ray_nds = new Vector3(x, y, z);
-        // Vector4 ray_clip = new Vector4(-ray_nds.X, -ray_nds.Y, 1.0f, 1.0f);
-        // Vector4 ray_eye = Scene.CurrentScene.camera.GetProjectionMatrix().Inverted() * ray_clip;
-        // ray_eye = new Vector4(ray_eye.X, ray_eye.Y, -1.0f, 0.0f);
-        // Vector3 ray_wor = (Scene.CurrentScene.camera.GetViewMatrix().Inverted() * ray_eye).Xyz;
-        // // don't forget to normalise the vector at some point
-        // ray_wor = ray_wor.Normalized();
-        // var t = float.MaxValue;
-        // ParameterizedPoint obj = null;
-        // var O = Scene.CurrentScene.camera.WorldPosition;
-        // foreach (var point in Scene.CurrentScene.ObjectsController.ParameterizedPoints)
-        // {
-        //     var omp = O - point.BB.position;
-        //     var b = Vector3.Dot(ray_wor, omp);
-        //     var c = Vector3.Dot(omp, omp) - point.BB.radius * point.BB.radius;
-        //     var delta = b * b - c;
-        //     if(delta<0)
-        //         continue;
-        //     else
-        //     {
-        //         var sd = Math.Sqrt(delta);
-        //         var pom = Math.Min(-b - sd, -b + sd);
-        //         if (pom < t)
-        //         {
-        //             t = (float) pom;
-        //             obj = point;
-        //         }
-        //     }
-        // }
-        //
-        // return obj;
-        // return null;
+        return currPoint;
     }
 }

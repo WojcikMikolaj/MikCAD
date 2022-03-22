@@ -25,8 +25,8 @@ namespace MikCAD
                 checkCollisions = true;
                 m_x = (int) e.GetPosition(OpenTkControl).X;
                 m_y = (int) e.GetPosition(OpenTkControl).Y;
-                //var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
-                ParameterizedPoint point = null;
+                var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
+               // ParameterizedPoint point = null;
                 if (point != null)
                 {
                     IsMultiSelectEnabled = false;

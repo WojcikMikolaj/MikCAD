@@ -35,6 +35,7 @@
             </MenuItem>
             <MenuItem Header="Debug">
                 <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>
+                <MenuItem Header="Dodaj 3" Click="AddThree" x:Name="Add3"></MenuItem>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1">

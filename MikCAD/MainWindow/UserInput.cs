@@ -154,5 +154,12 @@ namespace MikCAD
         {
             _clear =!_clear;
         }
+        
+        private void AddThree(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posY = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posZ = 1});
+        }
     }
 }

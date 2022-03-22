@@ -83,8 +83,10 @@ public class CompositeObject : ParameterizedObject
             posY = center.Y,
             posZ = center.Z,
         };
-        _oldPos = _position;
-        _position = _center._position;
+
+        posX = _center.posX;
+        posY = _center.posY;
+        posZ = _center.posZ;
     }
 
     public CompositeObject(ParameterizedObject o) : base("composite")
@@ -96,19 +98,10 @@ public class CompositeObject : ParameterizedObject
 
     public override void UpdateTranslationMatrix()
     {
-        var dpos = _position - _oldPos;
-        foreach (var o in _objects)
-        {
-            o.posX += dpos.X;
-            o.posY += dpos.Y;
-            o.posZ += dpos.Z;
-        }
-
-        CalculateCenter();
+        ApplyOnChilds();
+        
     }
-
-    private Vector3 _oldPos;
-
+    
     public override void UpdateRotationMatrix(Axis axis)
     {
         ApplyOnChilds();
@@ -130,9 +123,10 @@ public class CompositeObject : ParameterizedObject
             var mat = o.GetOnlyModelMatrix();
             var tr = _center._position;
             var trMat = Matrix4.CreateTranslation(tr);
-            var mtrMat = Matrix4.CreateTranslation(-tr);
+            var mtrMat = Matrix4.CreateTranslation(-_position);
             o.CompositeOperationMatrix = (mtrMat * scale * rotationX * rotationY * rotationZ * trMat);
         }
+
     }
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)

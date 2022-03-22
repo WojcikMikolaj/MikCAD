@@ -14,7 +14,9 @@ public class CompositeObject : ParameterizedObject
     }
 
     private List<ParameterizedObject> _objects = new List<ParameterizedObject>();
-    private ParameterizedPoint _center = null;
+    private ParameterizedPoint _centerP = null;
+    private ParameterizedPoint _centerRender = null;
+    
     internal int objectsCount => _objects.Count;
     internal ParameterizedObject first => _objects.Count == 1 ? _objects[0] : null;
     private bool _selected = false;
@@ -61,7 +63,7 @@ public class CompositeObject : ParameterizedObject
     {
         if (_objects.Count == 0)
         {
-            _center = null;
+            _centerP = null;
             return;
         }
 
@@ -77,16 +79,21 @@ public class CompositeObject : ParameterizedObject
         center.Y /= _objects.Count;
         center.Z /= _objects.Count;
 
-        _center = new ParameterizedPoint()
+        _centerP = new ParameterizedPoint()
         {
             posX = center.X,
             posY = center.Y,
             posZ = center.Z,
         };
 
-        posX = _center.posX;
-        posY = _center.posY;
-        posZ = _center.posZ;
+        posX = _centerP.posX;
+        posY = _centerP.posY;
+        posZ = _centerP.posZ;
+        _centerRender = new ParameterizedPoint
+        {
+            _position = _centerP._position
+        };
+        _centerRender.UpdateTranslationMatrix();
     }
 
     public CompositeObject(ParameterizedObject o) : base("composite")
@@ -99,7 +106,11 @@ public class CompositeObject : ParameterizedObject
     public override void UpdateTranslationMatrix()
     {
         ApplyOnChilds();
-        
+        if (_centerRender != null)
+        {
+            _centerRender._position = _position;
+            _centerRender.UpdateTranslationMatrix();
+        }
     }
     
     public override void UpdateRotationMatrix(Axis axis)
@@ -121,7 +132,7 @@ public class CompositeObject : ParameterizedObject
         foreach (var o in _objects)
         {
             var mat = o.GetOnlyModelMatrix();
-            var tr = _center._position;
+            var tr = _centerP._position;
             var trMat = Matrix4.CreateTranslation(tr);
             var mtrMat = Matrix4.CreateTranslation(-_position);
             o.CompositeOperationMatrix = (mtrMat * scale * rotationX * rotationY * rotationZ * trMat);
@@ -131,14 +142,14 @@ public class CompositeObject : ParameterizedObject
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        if (_center != null)
-            _center.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        if (_centerRender != null)
+            _centerRender.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
     public override Matrix4 GetModelMatrix()
     {
-        if (_center != null)
-            return _center.GetModelMatrix();
+        if (_centerRender != null)
+            return _centerRender.GetModelMatrix();
         return Matrix4.Identity;
     }
 

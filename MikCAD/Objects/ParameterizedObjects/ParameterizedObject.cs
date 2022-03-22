@@ -28,7 +28,7 @@ namespace MikCAD
         {
             if (CompositeOperationMatrix != Matrix4.Identity)
             {
-                var mat = CompositeOperationMatrix * GetOnlyModelMatrix();
+                var mat = GetOnlyModelMatrix() * CompositeOperationMatrix;
                 CompositeOperationMatrix = Matrix4.Identity;
                 var pos = mat.ExtractTranslation();
                 var rot = mat.ExtractRotation();

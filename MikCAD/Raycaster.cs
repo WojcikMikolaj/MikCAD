@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Globalization;
+using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -56,5 +57,33 @@ public class Raycaster
         }
         
         return currPoint;
+    }
+
+    public static Vector4 FindPointOnCameraPlain(float mouse_x, float mouse_y)
+    {
+        float x = (2.0f * mouse_x) / ((float)MainWindow.current.OpenTkControl.ActualWidth - 1) - 1.0f;
+        float y = 1.0f - (2.0f * mouse_y) / ((float)MainWindow.current.OpenTkControl.ActualHeight - 1);
+        float z = 1.0f;
+
+        var ndc = new Vector4(x, y, z, 1);
+        var unprojected = ndc * Scene.CurrentScene.camera.GetProjectionMatrix().Inverted();
+        var unview = unprojected * Scene.CurrentScene.camera.GetViewMatrix().Inverted();
+        var raycastDir = unview;
+        raycastDir.W = 0;
+        
+        var raycastSource = new Vector4(Scene.CurrentScene.camera.WorldPosition);
+        raycastSource.W = 1;
+
+        //dotąd jest ok
+        var cameraVec = Scene.CurrentScene.camera.ActForward;
+        var cameraTarget = Scene.CurrentScene.camera._position;
+        var D = Vector3.Dot(cameraVec, -cameraTarget);
+
+        var p = new Vector4(cameraVec);
+        p.W = D;
+        var t = -Vector4.Dot(p, raycastSource) / Vector4.Dot(p, raycastDir);
+
+        var worldPoint = raycastDir * t + raycastSource;
+        return worldPoint;
     }
 }

@@ -42,16 +42,16 @@
                                    DisplayLength="5" IsReadOnly="False">
                     </n:FloatUpDown>
                     <Label Grid.Row="1" Grid.Column="0">Ekran</Label>
-                    <n:FloatUpDown Grid.Row="1" Grid.Column="1"
-                                   Value="{Binding RelativeSource={RelativeSource AncestorType=GroupBox},
+                    <n:LongUpDown Grid.Row="1" Grid.Column="1"
+                                  Value="{Binding RelativeSource={RelativeSource AncestorType=GroupBox},
                              Path=DataContext.screenX, Mode=TwoWay}"
-                                   DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
-                    <n:FloatUpDown Grid.Row="1" Grid.Column="2"
+                                  DisplayLength="5" IsReadOnly="False">
+                    </n:LongUpDown>
+                    <n:LongUpDown Grid.Row="1" Grid.Column="2"
                                    Value="{Binding RelativeSource={RelativeSource AncestorType=GroupBox},
                              Path=DataContext.screenY, Mode=TwoWay}"
                                    DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
+                    </n:LongUpDown>
                 </Grid>
             </StackPanel>
         </GroupBox>

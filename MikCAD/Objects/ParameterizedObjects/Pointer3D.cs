@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
@@ -27,6 +28,16 @@ public class Pointer3D : ParameterizedObject
     public override void UpdateTranslationMatrix()
     {
         _translationMatrix = Matrix4.CreateTranslation(_position);
+        var vec = new Vector4(_position);
+        vec[3] = 1;
+        var screen = vec * Scene.CurrentScene.camera.GetViewMatrix() * Scene.CurrentScene.camera.GetProjectionMatrix();
+        screen[0] /= screen[3];
+        screen[1] /= screen[3];
+        screen[2] /= screen[3];
+        _screenX =(int)((screen.X + 1)*(MainWindow.current.OpenTkControl.ActualWidth / 2));
+        _screenY =(int)((-screen.Y + 1)*(MainWindow.current.OpenTkControl.ActualHeight / 2));
+        OnPropertyChanged(nameof(screenX));
+        OnPropertyChanged(nameof(screenY));
     }
 
     public override void UpdateRotationMatrix(Axis axis)
@@ -80,5 +91,45 @@ public class Pointer3D : ParameterizedObject
     public override Matrix4 GetOnlyModelMatrix()
     {
         return GetModelMatrix();
+    }
+
+
+    private int _screenX = 0;
+    public int screenX
+    {
+        get
+        {
+            return _screenX;
+        }
+        set
+        {
+            _screenX = (int) MH.Min(MainWindow.current.OpenTkControl.ActualWidth, MH.Max(0, value));
+            UpdatePosition();
+            OnPropertyChanged(nameof(screenX));
+        }
+    }
+    
+    private int _screenY = 0;
+    public int screenY
+    {
+        get
+        {
+            return _screenY;
+        }
+        set
+        {
+            _screenY = (int) MH.Min(MainWindow.current.OpenTkControl.ActualHeight, MH.Max(0, value));
+            UpdatePosition();
+            OnPropertyChanged(nameof(screenY));
+        }
+    }
+
+    private void UpdatePosition()
+    {
+        _position = Raycaster.FindPointOnCameraPlain(screenX, screenY).Xyz;
+        _translationMatrix = Matrix4.CreateTranslation(_position);
+        OnPropertyChanged(nameof(posX));
+        OnPropertyChanged(nameof(posY));
+        OnPropertyChanged(nameof(posZ));
     }
 }

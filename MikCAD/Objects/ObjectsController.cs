@@ -18,6 +18,7 @@ public class ObjectsController : INotifyPropertyChanged
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
     private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     private Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
+    private Shader _centerObjectShader = new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
 
     public ParameterizedObject SelectedObject
     {
@@ -138,7 +139,7 @@ public class ObjectsController : INotifyPropertyChanged
         if (SelectedObject is CompositeObject o)
         {
             var _modelMatrix = o.GetModelMatrix();
-            Scene.CurrentScene._shader = _selectedObjectShader;
+            Scene.CurrentScene._shader = _centerObjectShader;
             Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);

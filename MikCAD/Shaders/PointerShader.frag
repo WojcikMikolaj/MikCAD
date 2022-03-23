@@ -19,5 +19,5 @@ void main()
     if (localPos.y > 0)
         FragColor = vec4(0, 1, 0, 1);
     if (localPos.z > 0)
-        FragColor = vec4(0, 0, 1, 1);
+        FragColor = vec4(0, 1, 1, 1);
 } 

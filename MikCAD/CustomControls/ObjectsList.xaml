@@ -11,10 +11,18 @@
             <Label>Obiekty na scenie</Label>
             <ListView
                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.scene.ObjectsController.ParameterizedObjects}">
+                             Path=DataContext.scene.ObjectsController.ParameterizedObjects}"
+                MaxHeight="400"
+                >
+                <!--From: https://stackoverflow.com/questions/632519/how-can-i-hide-the-header-of-a-wpf-listview -->
+                <ListView.Resources>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Style>
+                </ListView.Resources>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
+                        <GridViewColumn  DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
                     </GridView>
                 </ListView.View>
                 <!--From: https://stackoverflow.com/questions/10207888/wpf-listview-detect-when-selected-item-is-clicked -->

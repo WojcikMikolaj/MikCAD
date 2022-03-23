@@ -38,8 +38,8 @@
                 <MenuItem Header="Dodaj 3"  x:Name="Add3">
                     <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
                     <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>
-                    <MenuItem Header="Rot test" Click="RotTest"></MenuItem>
                 </MenuItem>
+                <MenuItem Header="Rot test" Click="RotTest"></MenuItem>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1">

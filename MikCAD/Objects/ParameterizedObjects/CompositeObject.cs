@@ -151,6 +151,7 @@ public class CompositeObject : ParameterizedObject
         var rotationX = Matrix4.CreateRotationX(MH.DegreesToRadians(rotX));
         var rotationY = Matrix4.CreateRotationY(MH.DegreesToRadians(rotY));
         var rotationZ = Matrix4.CreateRotationZ(MH.DegreesToRadians(rotZ));
+        var rot = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(rotX), MH.DegreesToRadians(rotY), MH.DegreesToRadians(rotZ)));
         var scale = Matrix4.CreateScale(scaleX, scaleY, scaleZ);
         foreach (var o in _objects)
         {
@@ -158,7 +159,8 @@ public class CompositeObject : ParameterizedObject
             var tr = _position;
             var trMat = Matrix4.CreateTranslation(tr);
             var mtrMat = Matrix4.CreateTranslation(-_position);
-            o.CompositeOperationMatrix = (mtrMat * scale * rotationX * rotationY * rotationZ * trMat);
+            //o.CompositeOperationMatrix = (mtrMat * scale * rotationX * rotationY * rotationZ * trMat);
+            o.CompositeOperationMatrix = (mtrMat * scale * rot * trMat);
         }
     }
 

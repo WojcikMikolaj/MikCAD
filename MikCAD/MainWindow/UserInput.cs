@@ -168,5 +168,11 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new Torus() {posY = 3});
             scene.ObjectsController.AddObjectToScene(new Torus() {posZ = 3});
         }
+
+        private void RotTest(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new Torus() {posX = -3});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 3});
+        }
     }
 }

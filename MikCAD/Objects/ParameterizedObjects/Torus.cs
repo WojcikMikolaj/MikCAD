@@ -98,39 +98,29 @@ namespace MikCAD
 
         private Matrix4 _modelMatrix = Matrix4.Identity;
         private Matrix4 _scaleMatrix = Matrix4.Identity;
-        private Matrix4 _rotationXMatrix = Matrix4.Identity;
-        private Matrix4 _rotationYMatrix = Matrix4.Identity;
-        private Matrix4 _rotationZMatrix = Matrix4.Identity;
+        private Matrix4 _rotationMatrix = Matrix4.Identity;
         private Matrix4 _translationMatrix = Matrix4.Identity;
 
         public override void UpdateScaleMatrix()
         {
             _scaleMatrix = Matrix4.CreateScale(_scale);
-            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+            _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
         }
 
         public override void UpdateRotationMatrix(Axis axis)
         {
-            switch (axis)
-            {
-                case Axis.X:
-                    _rotationXMatrix = Matrix4.CreateRotationX(MH.DegreesToRadians(_rotation[0]));
-                    break;
-                case Axis.Y:
-                    _rotationYMatrix = Matrix4.CreateRotationY(MH.DegreesToRadians(_rotation[1]));
-                    break;
-                case Axis.Z:
-                    _rotationZMatrix = Matrix4.CreateRotationZ(MH.DegreesToRadians(_rotation[2]));
-                    break;
-            }
+            _rotationMatrix = Matrix4.CreateFromQuaternion(
+                new Quaternion(MH.DegreesToRadians(_rotation[0]),
+                    MH.DegreesToRadians(_rotation[1]),
+                    MH.DegreesToRadians(_rotation[2])));
 
-            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+            _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
         }
 
         public override void UpdateTranslationMatrix()
         {
             _translationMatrix = Matrix4.CreateTranslation(_position);
-            _modelMatrix = _scaleMatrix * _rotationXMatrix * _rotationYMatrix * _rotationZMatrix * _translationMatrix;
+            _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
         }
         
         public override Matrix4 GetModelMatrix()

@@ -41,10 +41,16 @@ public class ParameterizedPoint : ParameterizedObject
 
     public override void UpdateRotationMatrix(Axis axis)
     {
+        _rotation[0] = 1;
+        _rotation[1] = 1;
+        _rotation[2] = 1;
     }
 
     public override void UpdateScaleMatrix()
     {
+        _scale[0] = 1;
+        _scale[1] = 1;
+        _scale[2] = 1;
     }
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)

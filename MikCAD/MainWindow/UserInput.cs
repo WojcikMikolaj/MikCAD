@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using MikCAD.Annotations;
+using MikCAD.BezierCurves;
 
 namespace MikCAD
 {
@@ -173,6 +174,11 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new Torus() {posX = -3});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 3});
+        }
+
+        private void AddBezierCurveC0(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new BezierCurveC0(scene.ObjectsController.SelectedObject));
         }
     }
 }

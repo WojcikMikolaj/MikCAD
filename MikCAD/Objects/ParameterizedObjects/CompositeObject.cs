@@ -7,13 +7,15 @@ namespace MikCAD;
 
 public class CompositeObject : ParameterizedObject
 {
-    public override string Name
+    public virtual string Name
     {
         get => "composite";
         set { }
     }
 
-    private List<ParameterizedObject> _objects = new List<ParameterizedObject>();
+    public List<ParameterizedObject> Objects => _objects;
+
+    internal List<ParameterizedObject> _objects = new List<ParameterizedObject>();
     private ParameterizedPoint _centerP = null;
     private ParameterizedPoint _centerRender = null;
 
@@ -34,7 +36,7 @@ public class CompositeObject : ParameterizedObject
         }
     }
 
-    public void ProcessObject(ParameterizedObject o)
+    public virtual void ProcessObject(ParameterizedObject o)
     {
         if (o == null)
             return;
@@ -109,6 +111,11 @@ public class CompositeObject : ParameterizedObject
     public CompositeObject(ParameterizedObject o) : base("composite")
     {
         ProcessObject(o);
+    }
+
+    protected CompositeObject(string name) : base(name)
+    {
+        
     }
 
     public override uint[] lines { get; }

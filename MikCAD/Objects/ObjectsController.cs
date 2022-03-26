@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using MikCAD.Annotations;
+using MikCAD.BezierCurves;
 using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD;
@@ -28,6 +29,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.torusControl.Visibility = Visibility.Hidden;
             MainWindow.current.pointControl.Visibility = Visibility.Hidden;
             MainWindow.current.pointerControl.Visibility = Visibility.Hidden;
+            MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -37,6 +39,10 @@ public class ObjectsController : INotifyPropertyChanged
             {
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
+                    break;
+                //must be before CompositeObject
+                case BezierCurveC0 bezierCurveC0:
+                    MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Visible;
                     break;
                 case ParameterizedPoint point:
                 case CompositeObject compositeObject:
@@ -73,6 +79,17 @@ public class ObjectsController : INotifyPropertyChanged
             return false;
         if (_selectedObject is ParameterizedPoint point)
             _parameterizedPoints.Remove(point);
+        if (_selectedObject is BezierCurveC0 curve)
+        {
+            foreach (var o in curve._objects)
+            {
+                o.Selected = false;
+            }
+
+            curve.Selected = false;
+            ParameterizedObjects.Remove(curve);
+            return true;
+        }
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)
         {
@@ -129,6 +146,8 @@ public class ObjectsController : INotifyPropertyChanged
             {
                 case ParameterizedPoint point:
                     GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+                    break;
+                case BezierCurveC0 bezierCurveC0:
                     break;
                 default:
                     GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);

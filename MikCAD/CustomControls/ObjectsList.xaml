@@ -22,7 +22,7 @@
                 </ListView.Resources>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn  DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
+                        <GridViewColumn  DisplayMemberBinding="{Binding Path=Name}" Width="230"/>
                     </GridView>
                 </ListView.View>
                 <!--From: https://stackoverflow.com/questions/10207888/wpf-listview-detect-when-selected-item-is-clicked -->

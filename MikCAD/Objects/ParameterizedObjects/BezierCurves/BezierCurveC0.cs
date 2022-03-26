@@ -6,6 +6,17 @@ namespace MikCAD.BezierCurves;
 
 public class BezierCurveC0 : CompositeObject
 {
+    private bool _drawPolygon = false;
+
+    public bool DrawPolygon
+    {
+        get => _drawPolygon;
+        set
+        {
+            _drawPolygon = value;
+            OnPropertyChanged(nameof(DrawPolygon));
+        }
+    }
     private string _name = "";
     public virtual String Name
     {

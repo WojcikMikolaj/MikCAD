@@ -43,8 +43,8 @@
                                             </Grid.ColumnDefinitions>
                                             <Label Content="{Binding Path= Name}"/>
                                             <Button Grid.Column="1" Name="MoveUp" Content="˄" Click="MoveItemUp"/>
-                                            <Button Grid.Column="2" Name="MoveDown" Content="˅"/>
-                                            <Button Grid.Column="3" Name="Delete" Content="Del"/>
+                                            <Button Grid.Column="2" Name="MoveDown" Content="˅" Click="MoveItemDown"/>
+                                            <Button Grid.Column="3" Name="Delete" Content="Del" Click="DeleteItem"/>
                                         </Grid>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>

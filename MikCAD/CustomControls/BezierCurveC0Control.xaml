@@ -21,6 +21,7 @@
                 <ListView
                     ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.Objects}"
+                    Name="PointsList"
                     MaxHeight="400">
                     <!--From: https://stackoverflow.com/questions/632519/how-can-i-hide-the-header-of-a-wpf-listview -->
                     <ListView.Resources>
@@ -41,7 +42,7 @@
                                                 <ColumnDefinition Width="40"/>
                                             </Grid.ColumnDefinitions>
                                             <Label Content="{Binding Path= Name}"/>
-                                            <Button Grid.Column="1" Name="MoveUp" Content="˄"/>
+                                            <Button Grid.Column="1" Name="MoveUp" Content="˄" Click="MoveItemUp"/>
                                             <Button Grid.Column="2" Name="MoveDown" Content="˅"/>
                                             <Button Grid.Column="3" Name="Delete" Content="Del"/>
                                         </Grid>
@@ -52,9 +53,9 @@
                     </ListView.View>
                     <!-- From:https://stackoverflow.com/questions/7127920/wpf-listview-with-buttons-on-each-line -->
                 </ListView>
-                <Button>
+                <!-- <Button>
                     <Label>Dodaj punkty</Label>
-                </Button>
+                </Button> -->
             </StackPanel>
         </GroupBox>
     </Grid>

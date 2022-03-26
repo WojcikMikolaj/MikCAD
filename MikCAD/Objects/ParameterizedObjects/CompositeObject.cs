@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD;
 
-public class CompositeObject : ParameterizedObject
+public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
 {
     public virtual string Name
     {
@@ -183,4 +186,10 @@ public class CompositeObject : ParameterizedObject
     {
         return GetModelMatrix();
     }
+    
+    protected virtual void OnCollectionChanged(NotifyCollectionChangedAction action)
+    {
+        CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
+    }
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
 }

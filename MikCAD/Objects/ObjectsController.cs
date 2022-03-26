@@ -107,6 +107,12 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
+        if (MainWindow.AddToSelected && SelectedObject is BezierCurveC0 curveC0)
+        {
+            curveC0.ProcessObject(o);
+            MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
+            return;
+        }
         if (!MainWindow.IsMultiSelectEnabled || o is Pointer3D)
         {
             if (_selectedObject != null)

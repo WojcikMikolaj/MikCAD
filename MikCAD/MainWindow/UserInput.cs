@@ -116,10 +116,14 @@ namespace MikCAD
         }
         
         public static bool IsMultiSelectEnabled { get; private set; }
+        public static bool AddToSelected { get; private set; }
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
+                case Key.A:
+                    AddToSelected = true;
+                    break;
                 case Key.LeftCtrl:
                     IsMultiSelectEnabled = true;
                     break;
@@ -132,11 +136,19 @@ namespace MikCAD
             }
         }
 
+        
+
+
         private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftCtrl)
             {
                 IsMultiSelectEnabled = false;
+            }
+
+            if (e.Key == Key.A)
+            {
+                AddToSelected = false;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using OpenTK.Mathematics;
 
 namespace MikCAD.BezierCurves;
@@ -49,8 +50,10 @@ public class BezierCurveC0 : CompositeObject
 
     public override void ProcessObject(ParameterizedObject o)
     {
+        int size = _objects.Count;
         if(o is ParameterizedPoint p)
             ProcessPoint(p);
+        OnPropertyChanged(nameof(Objects));
     }
     
     public override uint[] lines { get; }

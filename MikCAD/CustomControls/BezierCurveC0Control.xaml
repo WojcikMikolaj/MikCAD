@@ -17,8 +17,8 @@
                 <local:ModelMatrixControl
                     DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext, Mode=TwoWay}" />
-                <CheckBox DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.DrawPolygon, Mode=TwoWay}">Rysuj wielokąt</CheckBox>
+                <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.DrawPolygon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Rysuj wielokąt</CheckBox>
                 <Label>Punkty</Label>
                 <ListView
                     ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},

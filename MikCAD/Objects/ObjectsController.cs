@@ -8,6 +8,7 @@ using System.Windows;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 
 namespace MikCAD;
 
@@ -154,6 +155,11 @@ public class ObjectsController : INotifyPropertyChanged
                     GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
                     break;
                 case BezierCurveC0 bezierCurveC0:
+                    if (bezierCurveC0.DrawPolygon)
+                    {
+                        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+                        GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
+                    }
                     break;
                 default:
                     GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
@@ -167,7 +173,10 @@ public class ObjectsController : INotifyPropertyChanged
             Scene.CurrentScene._shader = _centerObjectShader;
             Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
-            o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            if(o is BezierCurveC0 c)
+                c.GenerateVerticesBase(vertexAttributeLocation, normalAttributeLocation);
+            else
+                o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
         }
 

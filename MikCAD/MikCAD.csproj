@@ -15,6 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <EmbeddedResource Include="Shaders\BezierShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\CenterObjectShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -45,6 +51,14 @@
     </EmbeddedResource>
     <None Remove="Shaders\PickingShader.frag" />
     <EmbeddedResource Include="Shaders\PickingShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Shaders\BezierCurveC0TessControlShader.tesc" />
+    <EmbeddedResource Include="Shaders\BezierCurveC0TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Shaders\BezierCurveC0TessEvaluationShader.tese" />
+    <EmbeddedResource Include="Shaders\BezierCurveC0TessEvaluationShader.tese">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

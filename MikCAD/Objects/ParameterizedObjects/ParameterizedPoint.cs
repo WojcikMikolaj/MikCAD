@@ -1,12 +1,14 @@
 ﻿
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD;
 
+[DebuggerDisplay("{_position}")]
 public class ParameterizedPoint : ParameterizedObject
 {
     private static int _nextId;

@@ -21,6 +21,11 @@ public class ObjectsController : INotifyPropertyChanged
     private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     private Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
     private Shader _centerObjectShader = new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
+    private Shader _bezierCurveC0Shader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag", 
+        "Shaders/BezierCurveC0TessControlShader.tesc",
+        "Shaders/BezierCurveC0TessEvaluationShader.tese");
 
     public ParameterizedObject SelectedObject
     {
@@ -155,11 +160,29 @@ public class ObjectsController : INotifyPropertyChanged
                     GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
                     break;
                 case BezierCurveC0 bezierCurveC0:
+                    int indexBufferObject;
                     if (bezierCurveC0.DrawPolygon)
                     {
                         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+                        
+                        indexBufferObject = GL.GenBuffer();
+                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+                        GL.BufferData(BufferTarget.ElementArrayBuffer, bezierCurveC0._lines.Length * sizeof(uint), bezierCurveC0._lines, BufferUsageHint.StaticDraw);
+                        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+                        GL.EnableVertexAttribArray(1);    
                         GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
                     }
+                    Scene.CurrentScene._shader = _bezierCurveC0Shader;
+                    Scene.CurrentScene.UpdatePVM();
+                    GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
+                    
+                    indexBufferObject = GL.GenBuffer();
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, bezierCurveC0._patches.Length * sizeof(uint), bezierCurveC0._patches, BufferUsageHint.StaticDraw);
+                    GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+                    GL.EnableVertexAttribArray(1);
+                    
+                    GL.DrawElements(PrimitiveType.Patches, bezierCurveC0.patches.Length, DrawElementsType.UnsignedInt, 0);
                     break;
                 default:
                     GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);

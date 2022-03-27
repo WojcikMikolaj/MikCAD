@@ -41,6 +41,7 @@
                     <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>
                 </MenuItem>
                 <MenuItem Header="Rot test" Click="RotTest"></MenuItem>
+                <MenuItem Header="Bezier Curve C0 test" Click="BezierCurveC0Test"></MenuItem>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Row="1">

@@ -192,5 +192,13 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new BezierCurveC0(scene.ObjectsController.SelectedObject));
         }
+        
+        private void BezierCurveC0Test(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() );
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
+        }
     }
 }

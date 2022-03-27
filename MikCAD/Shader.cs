@@ -17,7 +17,7 @@ namespace MikCAD
         // Shaders are written in GLSL, which is a language very similar to C in its semantics.
         // The GLSL source is compiled *at runtime*, so it can optimize itself for the graphics card it's currently being used on.
         // A commented example of GLSL can be found in shader.vert.
-        public Shader(string vertPath, string fragPath)
+        public Shader(string vertPath, string fragPath, string tcsPath = null, string tesPath = null)
         {
             // There are several different types of shaders, but the only two you need for basic rendering are the vertex and fragment shaders.
             // The vertex shader is responsible for moving around vertices, and uploading that data to the fragment shader.
@@ -43,6 +43,22 @@ namespace MikCAD
             GL.ShaderSource(fragmentShader, shaderSource);
             CompileShader(fragmentShader);
 
+            int tessControlShader = -1;
+            int tessEvaluationShader = -1;
+            
+            if (tcsPath != null && tesPath != null)
+            {
+                shaderSource = File.ReadAllText(tcsPath);
+                tessControlShader = GL.CreateShader(ShaderType.TessControlShader);
+                GL.ShaderSource(tessControlShader, shaderSource);
+                CompileShader(tessControlShader);
+                
+                shaderSource = File.ReadAllText(tesPath);
+                tessEvaluationShader = GL.CreateShader(ShaderType.TessEvaluationShader);
+                GL.ShaderSource(tessEvaluationShader, shaderSource);
+                CompileShader(tessEvaluationShader);
+            }
+            
             // These two shaders must then be merged into a shader program, which can then be used by OpenGL.
             // To do this, create a program...
             Handle = GL.CreateProgram();
@@ -50,6 +66,12 @@ namespace MikCAD
             // Attach both shaders...
             GL.AttachShader(Handle, vertexShader);
             GL.AttachShader(Handle, fragmentShader);
+
+            if (tcsPath != null && tesPath != null)
+            {
+                GL.AttachShader(Handle, tessControlShader);
+                GL.AttachShader(Handle, tessEvaluationShader);
+            }
 
             // And then link them together.
             LinkProgram(Handle);
@@ -61,6 +83,14 @@ namespace MikCAD
             GL.DeleteShader(fragmentShader);
             GL.DeleteShader(vertexShader);
 
+            if (tcsPath != null && tesPath != null)
+            {
+                GL.DetachShader(Handle, tessControlShader);
+                GL.DetachShader(Handle, tessEvaluationShader);
+                GL.DeleteShader(tessControlShader);
+                GL.DeleteShader(tessEvaluationShader);
+            }
+            
             // The shader is now ready to go, but first, we're going to cache all the shader uniform locations.
             // Querying this from the shader is very slow, so we do it once on initialization and reuse those values
             // later.
@@ -110,7 +140,7 @@ namespace MikCAD
             if (code != (int) All.True)
             {
                 // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
-                throw new Exception($"Error occurred whilst linking Program({program})");
+                throw new Exception($"Error occurred whilst linking Program({program})\nError{GL.GetProgramInfoLog(program)}");
             }
         }
 

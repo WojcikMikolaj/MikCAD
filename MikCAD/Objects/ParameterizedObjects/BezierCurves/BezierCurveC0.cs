@@ -78,6 +78,8 @@ public class BezierCurveC0 : CompositeObject
         OnPropertyChanged(nameof(Objects));
     }
 
+    public int tessLevel;
+    
     public override uint[] lines => _lines;
     public uint[] _lines;
 
@@ -120,8 +122,12 @@ public class BezierCurveC0 : CompositeObject
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
+        float minX = 1;
+        float maxX = -1;
+        float minY = 1;
+        float maxY = -1;
+        
         var vertices = new float[(_objects.Count ) * 4 ];
-
         for (int i = 0; i < (_objects.Count ); i++)
         {
             var posVector = _objects[i]._position;
@@ -129,6 +135,17 @@ public class BezierCurveC0 : CompositeObject
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;
             vertices[4 * i + 3] = 1;
+
+            var posNDC = new Vector4(posVector, 1) * Scene.CurrentScene.camera.GetViewMatrix() * Scene.CurrentScene.camera.GetProjectionMatrix();
+            posNDC/=posNDC.W;
+            if (posNDC.X < minX)
+                minX = posNDC.X;
+            if (posNDC.Y < minY)
+                minY = posNDC.Y;
+            if (posNDC.X > maxX)
+                maxX = posNDC.X;
+            if (posNDC.Y > maxY)
+                maxY = posNDC.Y;
         }
 
         var vertexBufferObject = GL.GenBuffer();
@@ -141,8 +158,10 @@ public class BezierCurveC0 : CompositeObject
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-
-
+#if DEBUG
+        MainWindow.current.Title = $"X:{minX}, {maxX}; Y:{minY}, {maxY}";
+#endif
+        tessLevel = (int) Math.Max(32, 256 * (maxX - minX) * (maxY - minY) / 4);
         _lines = GenerateLines();
         _patches = GeneratePatches();
     }

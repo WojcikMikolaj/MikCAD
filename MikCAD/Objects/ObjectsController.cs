@@ -210,7 +210,7 @@ public class ObjectsController : INotifyPropertyChanged
                     }
 
                     Scene.CurrentScene._shader = _bezierCurveC0Shader;
-                    Scene.CurrentScene._shader.SetInt("tessLevels",16);
+                    Scene.CurrentScene._shader.SetInt("tessLevels", bezierCurveC0.tessLevel);
                     Scene.CurrentScene.UpdatePVM();
                     GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 

@@ -20,15 +20,16 @@ public class ObjectsController : INotifyPropertyChanged
     private Shader _standardObjectShader = new Shader("Shaders/Shader.vert", "Shaders/Shader.frag");
     private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     private Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
-
+    private Shader _colorShader = new Shader("Shaders/ColorShader.vert", "Shaders/ColorShader.frag");
     private Shader _centerObjectShader =
         new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
-
     private Shader _bezierCurveC0Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC0TessControlShader.tesc",
         "Shaders/BezierCurveC0TessEvaluationShader.tese");
+
+    private Vector4 curveColor = new Vector4(0.3f, 1f, 0.6f, 1f);
 
     public ParameterizedObject SelectedObject
     {
@@ -198,8 +199,10 @@ public class ObjectsController : INotifyPropertyChanged
                     int indexBufferObject;
                     if (bezierCurveC0.DrawPolygon)
                     {
+                        Scene.CurrentScene._shader = _colorShader;
                         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-
+                        Scene.CurrentScene.UpdatePVM();
+                        Scene.CurrentScene._shader.SetVector4("color", curveColor);
                         indexBufferObject = GL.GenBuffer();
                         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
                         GL.BufferData(BufferTarget.ElementArrayBuffer, bezierCurveC0._lines.Length * sizeof(uint),

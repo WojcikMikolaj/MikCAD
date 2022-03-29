@@ -27,6 +27,12 @@
     <EmbeddedResource Include="Shaders\CenterObjectShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\ColorShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\ColorShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\PointerShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

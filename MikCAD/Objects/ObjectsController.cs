@@ -77,8 +77,34 @@ public class ObjectsController : INotifyPropertyChanged
     public bool AddObjectToScene(ParameterizedObject parameterizedObject)
     {
         ParameterizedObjects.Add(parameterizedObject);
-        if (parameterizedObject is ParameterizedPoint point)
-            _parameterizedPoints.Add(point);
+        switch (parameterizedObject)
+        {
+            case ParameterizedPoint point:
+            {
+                _parameterizedPoints.Add(point);
+                if (SelectedObject is BezierCurveC0 curveC0)
+                {
+                    curveC0.ProcessObject(parameterizedObject);
+                    MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
+                }
+                break;
+            }
+            case BezierCurveC0 curveC0:
+            {
+                switch (SelectedObject)
+                {
+                    case ParameterizedPoint point:
+                        curveC0.ProcessPoint(point);
+                        break;
+                    case CompositeObject compositeObject:
+                        compositeObject.Selected = false;
+                        curveC0.ProcessObject(compositeObject);
+                        break;
+                }
+                SelectedObject = parameterizedObject;
+                break;
+            }
+        }
         SelectedObject ??= parameterizedObject;
         return true;
     }
@@ -98,6 +124,7 @@ public class ObjectsController : INotifyPropertyChanged
 
             curve.Selected = false;
             ParameterizedObjects.Remove(curve);
+            SelectedObject = null;
             return true;
         }
 
@@ -183,6 +210,7 @@ public class ObjectsController : INotifyPropertyChanged
                     }
 
                     Scene.CurrentScene._shader = _bezierCurveC0Shader;
+                    Scene.CurrentScene._shader.SetInt("tessLevels",16);
                     Scene.CurrentScene.UpdatePVM();
                     GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 

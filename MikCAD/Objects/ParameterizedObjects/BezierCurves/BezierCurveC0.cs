@@ -68,6 +68,13 @@ public class BezierCurveC0 : CompositeObject
         int size = _objects.Count;
         if (o is ParameterizedPoint p)
             ProcessPoint(p);
+        if (o is CompositeObject cmp)
+        {
+            foreach (var obj in cmp._objects)   
+            {
+                ProcessObject(obj);
+            }
+        }
         OnPropertyChanged(nameof(Objects));
     }
 

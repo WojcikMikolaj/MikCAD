@@ -31,7 +31,26 @@ namespace MikCAD
                 if (point != null)
                 {
                     IsMultiSelectEnabled = false;
-                    Scene.CurrentScene.ObjectsController.SelectObject(point);
+                    if (AddToSelected )
+                    {
+                        if (Scene.CurrentScene.ObjectsController.SelectedObject is BezierCurveC0 curveC0)
+                        {
+                            curveC0.ProcessObject(point);
+                            bezierCurveC0Control.PointsList.Items.Refresh();
+                        }
+                        else if (Scene.CurrentScene.ObjectsController.SelectedObject is CompositeObject compositeObject)
+                        {
+                            compositeObject.ProcessObject(point);
+                        }
+                        else
+                        {
+                            Scene.CurrentScene.ObjectsController.SelectObject(point);    
+                        }
+                    }
+                    else
+                    {
+                        Scene.CurrentScene.ObjectsController.SelectObject(point);
+                    }
                 }
                 else
                 {
@@ -190,7 +209,8 @@ namespace MikCAD
 
         private void AddBezierCurveC0(object sender, RoutedEventArgs e)
         {
-            scene.ObjectsController.AddObjectToScene(new BezierCurveC0(scene.ObjectsController.SelectedObject));
+            scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
+            bezierCurveC0Control.PointsList.Items.Refresh();
         }
         
         private void BezierCurveC0Test(object sender, RoutedEventArgs e)

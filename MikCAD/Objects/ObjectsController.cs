@@ -92,16 +92,13 @@ public class ObjectsController : INotifyPropertyChanged
 
                 #region bezierCurve
 
-                if (SelectedObject is BezierCurveC0 curveC0)
-                {
-                    curveC0.ProcessObject(parameterizedObject);
-                    MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
-                }
-                else if (SelectedObject is BezierCurveC2 curveC2)
-                {
-                    curveC2.ProcessObject(parameterizedObject);
-                    MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
-                }
+                if (SelectedObject is IBezierCurve)
+                    if (SelectedObject is CompositeObject curve)
+                    {
+                        curve.ProcessObject(parameterizedObject);
+                        MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
+                        MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
+                    }
 
                 #endregion
 
@@ -110,39 +107,22 @@ public class ObjectsController : INotifyPropertyChanged
 
             #region bezierCurve
 
-            case BezierCurveC0 curveC0:
+            case IBezierCurve curve:
             {
                 switch (SelectedObject)
                 {
                     case ParameterizedPoint point:
-                        curveC0.ProcessPoint(point);
+                        curve.ProcessPoint(point);
                         break;
                     case CompositeObject compositeObject:
                         compositeObject.Selected = false;
-                        curveC0.ProcessObject(compositeObject);
+                        (curve as CompositeObject).ProcessObject(compositeObject);
                         break;
                 }
 
                 SelectedObject = parameterizedObject;
                 break;
             }
-            case BezierCurveC2 curveC2:
-            {
-                switch (SelectedObject)
-                {
-                    case ParameterizedPoint point:
-                        curveC2.ProcessPoint(point);
-                        break;
-                    case CompositeObject compositeObject:
-                        compositeObject.Selected = false;
-                        curveC2.ProcessObject(compositeObject);
-                        break;
-                }
-
-                SelectedObject = parameterizedObject;
-                break;
-            }
-
             #endregion
         }
 

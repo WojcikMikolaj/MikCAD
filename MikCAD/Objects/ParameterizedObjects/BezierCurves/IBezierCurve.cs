@@ -2,5 +2,5 @@
 
 public interface IBezierCurve
 {
-    
+    void ProcessPoint(ParameterizedPoint point);
 }

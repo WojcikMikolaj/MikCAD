@@ -15,7 +15,7 @@ public partial class BezierCurveC2Control : UserControl
     {
         var item = sender as Button;
         var obj = (item.Parent as Grid).DataContext as ParameterizedPoint;
-        ((BezierCurveC0)Scene.CurrentScene.ObjectsController.SelectedObject).MoveUp(obj);
+        ((BezierCurveC2)Scene.CurrentScene.ObjectsController.SelectedObject).MoveUp(obj);
         MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
     }
 
@@ -23,7 +23,7 @@ public partial class BezierCurveC2Control : UserControl
     {
         var item = sender as Button;
         var obj = (item.Parent as Grid).DataContext as ParameterizedPoint;
-        ((BezierCurveC0)Scene.CurrentScene.ObjectsController.SelectedObject).MoveDown(obj);
+        ((BezierCurveC2)Scene.CurrentScene.ObjectsController.SelectedObject).MoveDown(obj);
         MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
     }
 
@@ -31,7 +31,7 @@ public partial class BezierCurveC2Control : UserControl
     {
         var item = sender as Button;
         var obj = (item.Parent as Grid).DataContext as ParameterizedPoint;
-        ((BezierCurveC0)Scene.CurrentScene.ObjectsController.SelectedObject).ProcessObject(obj);
+        ((BezierCurveC2)Scene.CurrentScene.ObjectsController.SelectedObject).ProcessObject(obj);
         MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
     }
 }

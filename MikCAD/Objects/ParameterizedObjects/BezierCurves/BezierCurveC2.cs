@@ -172,4 +172,31 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
     
+    public void MoveUp(ParameterizedObject parameterizedObject)
+    {
+        if (parameterizedObject is ParameterizedPoint p)
+        {
+            if (_objects.Contains(p))
+            {
+                int i = _objects.FindIndex(x => x == p);
+                if (i == 0)
+                    return;
+                (_objects[i - 1], _objects[i]) = (_objects[i], _objects[i - 1]);
+            }
+        }
+    }
+
+    public void MoveDown(ParameterizedObject parameterizedObject)
+    {
+        if (parameterizedObject is ParameterizedPoint p)
+        {
+            if (_objects.Contains(p))
+            {
+                int i = _objects.FindIndex(x => x == p);
+                if (i == _objects.Count - 1)
+                    return;
+                (_objects[i + 1], _objects[i]) = (_objects[i], _objects[i + 1]);
+            }
+        }
+    }
 }

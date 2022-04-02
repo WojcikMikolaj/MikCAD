@@ -139,32 +139,19 @@ public class ObjectsController : INotifyPropertyChanged
 
         #region bezierCurve
 
-        if (_selectedObject is BezierCurveC0 curve)
+        if (_selectedObject is IBezierCurve)
         {
+            var curve = _selectedObject as CompositeObject;
             foreach (var o in curve._objects)
             {
                 o.Selected = false;
             }
-
             curve.Selected = false;
             ParameterizedObjects.Remove(curve);
             SelectedObject = null;
             return true;
         }
-
-        if (_selectedObject is BezierCurveC2 curve2)
-        {
-            foreach (var o in curve2._objects)
-            {
-                o.Selected = false;
-            }
-
-            curve2.Selected = false;
-            ParameterizedObjects.Remove(curve2);
-            SelectedObject = null;
-            return true;
-        }
-
+        
         #endregion
 
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
@@ -188,16 +175,10 @@ public class ObjectsController : INotifyPropertyChanged
     {
         #region bezierCurve
 
-        if (MainWindow.AddToSelected && SelectedObject is BezierCurveC0 curveC0)
+        if (MainWindow.AddToSelected && SelectedObject is IBezierCurve)
         {
-            curveC0.ProcessObject(o);
+            (SelectedObject as CompositeObject).ProcessObject(o);
             MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
-            return;
-        }
-
-        if (MainWindow.AddToSelected && SelectedObject is BezierCurveC2 curveC2)
-        {
-            curveC2.ProcessObject(o);
             MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
             return;
         }

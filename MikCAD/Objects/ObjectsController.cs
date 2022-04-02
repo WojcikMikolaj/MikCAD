@@ -128,6 +128,18 @@ public class ObjectsController : INotifyPropertyChanged
             SelectedObject = null;
             return true;
         }
+        if (_selectedObject is BezierCurveC2 curve2)
+        {
+            foreach (var o in curve2._objects)
+            {
+                o.Selected = false;
+            }
+
+            curve2.Selected = false;
+            ParameterizedObjects.Remove(curve2);
+            SelectedObject = null;
+            return true;
+        }
 
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)

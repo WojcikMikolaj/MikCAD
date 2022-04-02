@@ -33,6 +33,7 @@
                 <MenuItem Header="Punkt" Click="AddPoint"></MenuItem>
                 <MenuItem Header="Torus" Click="AddTorus"/>
                 <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0"/>
+                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2"/>
             </MenuItem>
             <MenuItem Header="Debug">
                 <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>

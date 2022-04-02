@@ -1,6 +1,6 @@
 ﻿namespace MikCAD;
 
-public class FakePoint
+public class FakePoint : ParameterizedPoint
 {
     
 }

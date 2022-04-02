@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using MikCAD.Annotations;
@@ -211,6 +212,12 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
             bezierCurveC0Control.PointsList.Items.Refresh();
+        }
+        
+        private void AddBezierCurveC2(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
+            bezierCurveC2Control.PointsList.Items.Refresh();
         }
         
         private void BezierCurveC0Test(object sender, RoutedEventArgs e)

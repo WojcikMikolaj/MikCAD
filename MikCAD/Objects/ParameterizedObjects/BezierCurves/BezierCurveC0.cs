@@ -65,7 +65,7 @@ public class BezierCurveC0 : CompositeObject
 
     public override void ProcessObject(ParameterizedObject o)
     {
-        if(o is BezierCurveC0)
+        if(o is BezierCurveC0 or BezierCurveC2)
             return;
         int size = _objects.Count;
         if (o is ParameterizedPoint p)

@@ -64,5 +64,6 @@
         <local:PointControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointControl" Visibility="Hidden"/>
         <local:PointerControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointerControl" Visibility="Hidden"/>
         <local:BezierCurveC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC0Control" Visibility="Hidden"/>
+        <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC2Control" Visibility="Hidden"/>
     </Grid>
 </Window>

@@ -27,25 +27,36 @@ namespace MikCAD
                 checkCollisions = true;
                 m_x = (int) e.GetPosition(OpenTkControl).X;
                 m_y = (int) e.GetPosition(OpenTkControl).Y;
-                var point = Raycaster.FindIntersectingPoint((float)e.GetPosition(OpenTkControl).X, (float)e.GetPosition(OpenTkControl).Y);
-               // ParameterizedPoint point = null;
+                var point = Raycaster.FindIntersectingPoint((float) e.GetPosition(OpenTkControl).X,
+                    (float) e.GetPosition(OpenTkControl).Y);
+                // ParameterizedPoint point = null;
                 if (point != null)
                 {
                     IsMultiSelectEnabled = false;
-                    if (AddToSelected )
+                    if (AddToSelected)
                     {
+                        #region bezierCurve
+
                         if (Scene.CurrentScene.ObjectsController.SelectedObject is BezierCurveC0 curveC0)
                         {
                             curveC0.ProcessObject(point);
                             bezierCurveC0Control.PointsList.Items.Refresh();
                         }
+                        else if (Scene.CurrentScene.ObjectsController.SelectedObject is BezierCurveC2 curveC2)
+                        {
+                            curveC2.ProcessObject(point);
+                            bezierCurveC2Control.PointsList.Items.Refresh();
+                        }
+
+                        #endregion
+
                         else if (Scene.CurrentScene.ObjectsController.SelectedObject is CompositeObject compositeObject)
                         {
                             compositeObject.ProcessObject(point);
                         }
                         else
                         {
-                            Scene.CurrentScene.ObjectsController.SelectObject(point);    
+                            Scene.CurrentScene.ObjectsController.SelectObject(point);
                         }
                     }
                     else
@@ -58,6 +69,7 @@ namespace MikCAD
                     Scene.CurrentScene.ObjectsController.UnselectAll();
                 }
             }
+
             if (!_rightPressed)
             {
                 _leftPressed = true;
@@ -134,9 +146,10 @@ namespace MikCAD
             //scene.camera.fov = value;
             scene.camera.Scale = value;
         }
-        
+
         public static bool IsMultiSelectEnabled { get; private set; }
         public static bool AddToSelected { get; private set; }
+
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -156,8 +169,6 @@ namespace MikCAD
             }
         }
 
-        
-
 
         private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
         {
@@ -176,18 +187,19 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new Torus());
         }
-        
+
         private void AddPoint(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
         }
 
         private bool _clear = false;
+
         private void SetClear(object sender, RoutedEventArgs e)
         {
-            _clear =!_clear;
+            _clear = !_clear;
         }
-        
+
         private void AddThreePoints(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
@@ -213,16 +225,16 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
             bezierCurveC0Control.PointsList.Items.Refresh();
         }
-        
+
         private void AddBezierCurveC2(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
             bezierCurveC2Control.PointsList.Items.Refresh();
         }
-        
+
         private void BezierCurveC0Test(object sender, RoutedEventArgs e)
         {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() );
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});

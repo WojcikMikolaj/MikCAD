@@ -4,7 +4,7 @@ using OpenTK.Mathematics;
 
 namespace MikCAD.BezierCurves;
 
-public class BezierCurveC2 : CompositeObject
+public class BezierCurveC2 : CompositeObject, IBezierCurve
 {
     private bool _drawPolygon = false;
 

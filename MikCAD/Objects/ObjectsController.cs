@@ -21,8 +21,10 @@ public class ObjectsController : INotifyPropertyChanged
     private Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     private Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
     private Shader _colorShader = new Shader("Shaders/ColorShader.vert", "Shaders/ColorShader.frag");
+
     private Shader _centerObjectShader =
         new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
+
     private Shader _bezierCurveC0Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -40,6 +42,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.pointControl.Visibility = Visibility.Hidden;
             MainWindow.current.pointerControl.Visibility = Visibility.Hidden;
             MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Hidden;
+            MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -54,6 +57,9 @@ public class ObjectsController : INotifyPropertyChanged
                 //must be before CompositeObject
                 case BezierCurveC0 bezierCurveC0:
                     MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Visible;
+                    break;
+                case BezierCurveC2 bezierCurveC2:
+                    MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Visible;
                     break;
                 case ParameterizedPoint point:
                 case CompositeObject compositeObject:
@@ -83,13 +89,27 @@ public class ObjectsController : INotifyPropertyChanged
             case ParameterizedPoint point:
             {
                 _parameterizedPoints.Add(point);
+
+                #region bezierCurve
+
                 if (SelectedObject is BezierCurveC0 curveC0)
                 {
                     curveC0.ProcessObject(parameterizedObject);
                     MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
                 }
+                else if (SelectedObject is BezierCurveC2 curveC2)
+                {
+                    curveC2.ProcessObject(parameterizedObject);
+                    MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
+                }
+
+                #endregion
+
                 break;
             }
+
+            #region bezierCurve
+
             case BezierCurveC0 curveC0:
             {
                 switch (SelectedObject)
@@ -102,10 +122,30 @@ public class ObjectsController : INotifyPropertyChanged
                         curveC0.ProcessObject(compositeObject);
                         break;
                 }
+
                 SelectedObject = parameterizedObject;
                 break;
             }
+            case BezierCurveC2 curveC2:
+            {
+                switch (SelectedObject)
+                {
+                    case ParameterizedPoint point:
+                        curveC2.ProcessPoint(point);
+                        break;
+                    case CompositeObject compositeObject:
+                        compositeObject.Selected = false;
+                        curveC2.ProcessObject(compositeObject);
+                        break;
+                }
+
+                SelectedObject = parameterizedObject;
+                break;
+            }
+
+            #endregion
         }
+
         SelectedObject ??= parameterizedObject;
         return true;
     }
@@ -116,6 +156,9 @@ public class ObjectsController : INotifyPropertyChanged
             return false;
         if (_selectedObject is ParameterizedPoint point)
             _parameterizedPoints.Remove(point);
+
+        #region bezierCurve
+
         if (_selectedObject is BezierCurveC0 curve)
         {
             foreach (var o in curve._objects)
@@ -128,6 +171,7 @@ public class ObjectsController : INotifyPropertyChanged
             SelectedObject = null;
             return true;
         }
+
         if (_selectedObject is BezierCurveC2 curve2)
         {
             foreach (var o in curve2._objects)
@@ -140,6 +184,8 @@ public class ObjectsController : INotifyPropertyChanged
             SelectedObject = null;
             return true;
         }
+
+        #endregion
 
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)
@@ -160,12 +206,23 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
+        #region bezierCurve
+
         if (MainWindow.AddToSelected && SelectedObject is BezierCurveC0 curveC0)
         {
             curveC0.ProcessObject(o);
             MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
             return;
         }
+
+        if (MainWindow.AddToSelected && SelectedObject is BezierCurveC2 curveC2)
+        {
+            curveC2.ProcessObject(o);
+            MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
+            return;
+        }
+
+        #endregion
 
         if (!MainWindow.IsMultiSelectEnabled || o is Pointer3D)
         {
@@ -207,7 +264,11 @@ public class ObjectsController : INotifyPropertyChanged
                 case ParameterizedPoint point:
                     GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
                     break;
+
+                #region bezierCurve
+
                 case BezierCurveC0 bezierCurveC0:
+                {
                     int indexBufferObject;
                     if (bezierCurveC0.DrawPolygon)
                     {
@@ -239,23 +300,71 @@ public class ObjectsController : INotifyPropertyChanged
                     GL.DrawElements(PrimitiveType.Patches, bezierCurveC0.patches.Length, DrawElementsType.UnsignedInt,
                         0);
                     break;
+                }
+
+                case BezierCurveC2 bezierCurveC2:
+                {
+                    int indexBufferObject;
+                    if (bezierCurveC2.DrawPolygon)
+                    {
+                        Scene.CurrentScene._shader = _colorShader;
+                        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+                        Scene.CurrentScene.UpdatePVM();
+                        Scene.CurrentScene._shader.SetVector4("color", curveColor);
+                        indexBufferObject = GL.GenBuffer();
+                        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+                        GL.BufferData(BufferTarget.ElementArrayBuffer, bezierCurveC2._lines.Length * sizeof(uint),
+                            bezierCurveC2._lines, BufferUsageHint.StaticDraw);
+                        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+                        GL.EnableVertexAttribArray(1);
+                        GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
+                    }
+
+                    Scene.CurrentScene._shader = _bezierCurveC0Shader;
+                    Scene.CurrentScene._shader.SetInt("tessLevels", bezierCurveC2.tessLevel);
+                    Scene.CurrentScene.UpdatePVM();
+                    GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
+
+                    indexBufferObject = GL.GenBuffer();
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, bezierCurveC2._patches.Length * sizeof(uint),
+                        bezierCurveC2._patches, BufferUsageHint.StaticDraw);
+                    GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+                    GL.EnableVertexAttribArray(1);
+
+                    GL.DrawElements(PrimitiveType.Patches, bezierCurveC2.patches.Length, DrawElementsType.UnsignedInt,
+                        0);
+                    break;
+                }
+
+                #endregion
+
                 default:
                     GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
                     break;
             }
         }
 
-        if (SelectedObject is not BezierCurveC0)
+        if (SelectedObject is not IBezierCurve)
             if (SelectedObject is CompositeObject o)
             {
                 var _modelMatrix = o.GetModelMatrix();
                 Scene.CurrentScene._shader = _centerObjectShader;
                 Scene.CurrentScene.UpdatePVM();
                 Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+
+                #region bezierCurve
+
                 if (o is BezierCurveC0 c)
                     c.GenerateVerticesBase(vertexAttributeLocation, normalAttributeLocation);
+                else if (o is BezierCurveC2 c2)
+                    c2.GenerateVerticesBase(vertexAttributeLocation, normalAttributeLocation);
+
+                #endregion
+
                 else
                     o.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+
                 GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
             }
 

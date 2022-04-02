@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using MikCAD.BezierCurves;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
@@ -42,6 +43,8 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     public virtual void ProcessObject(ParameterizedObject o)
     {
         if (o == null)
+            return;
+        if(o is BezierCurveC0)
             return;
         if (!_objects.Contains(o))
         {

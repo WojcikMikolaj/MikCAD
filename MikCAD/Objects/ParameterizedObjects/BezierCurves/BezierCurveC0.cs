@@ -65,6 +65,8 @@ public class BezierCurveC0 : CompositeObject
 
     public override void ProcessObject(ParameterizedObject o)
     {
+        if(o is BezierCurveC0)
+            return;
         int size = _objects.Count;
         if (o is ParameterizedPoint p)
             ProcessPoint(p);
@@ -130,7 +132,7 @@ public class BezierCurveC0 : CompositeObject
         var vertices = new float[(_objects.Count ) * 4 ];
         for (int i = 0; i < (_objects.Count ); i++)
         {
-            var posVector = _objects[i]._position;
+            var posVector = _objects[i].GetModelMatrix().ExtractTranslation();
             vertices[4 * i] = posVector.X;
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;

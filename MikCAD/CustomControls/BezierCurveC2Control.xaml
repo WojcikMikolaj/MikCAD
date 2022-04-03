@@ -17,7 +17,7 @@
                 <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.DrawPolygon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Rysuj wielokąt</CheckBox>
                 <CheckBox IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.DrawPolygon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Baza Bersteina</CheckBox>
+                             Path=DataContext.Bernstein, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Baza Bersteina</CheckBox>
                 <Label>Punkty</Label>
                 <ListView
                     ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},

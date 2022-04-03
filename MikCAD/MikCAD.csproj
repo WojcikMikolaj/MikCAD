@@ -15,6 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <EmbeddedResource Include="Shaders\BezierCurveC2\BezierCurveC2TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierCurveC2\BezierCurveC2TessEvaluationShader.tese">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\BezierShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

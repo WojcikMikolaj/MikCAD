@@ -30,6 +30,12 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC0TessControlShader.tesc",
         "Shaders/BezierCurveC0TessEvaluationShader.tese");
+    
+    private Shader _bezierCurveC2Shader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag",
+        "Shaders/BezierCurveC2/BezierCurveC2TessControlShader.tesc",
+        "Shaders/BezierCurveC2/BezierCurveC2TessEvaluationShader.tese");
 
     private Vector4 curveColor = new Vector4(0.3f, 1f, 0.6f, 1f);
 
@@ -223,7 +229,8 @@ public class ObjectsController : INotifyPropertyChanged
             switch (obj)
             {
                 case ParameterizedPoint point:
-                    GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+                    if(point.Draw)
+                        GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
                     break;
 
                 #region bezierCurve
@@ -266,6 +273,20 @@ public class ObjectsController : INotifyPropertyChanged
                 case BezierCurveC2 bezierCurveC2:
                 {
                     int indexBufferObject;
+                    Scene.CurrentScene._shader = _standardObjectShader;
+                    Scene.CurrentScene.UpdatePVM();
+                    Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+                    if (bezierCurveC2.Bernstein)
+                    {
+                        bezierCurveC2.GenerateVerticesForBernsteinPoints(vertexAttributeLocation, normalAttributeLocation);
+                        GL.DrawElements(PrimitiveType.Points, bezierCurveC2.BernsteinPoints.Count, DrawElementsType.UnsignedInt, 0);
+                    }
+                    else
+                    {
+                        bezierCurveC2.GenerateVerticesForBSplinePoints(vertexAttributeLocation, normalAttributeLocation);
+                        GL.DrawElements(PrimitiveType.Points, bezierCurveC2.Objects.Count, DrawElementsType.UnsignedInt, 0);
+                    }
+                    
                     if (bezierCurveC2.DrawPolygon)
                     {
                         Scene.CurrentScene._shader = _colorShader;
@@ -281,6 +302,8 @@ public class ObjectsController : INotifyPropertyChanged
                         GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
                     }
 
+                    
+                    bezierCurveC2.GenerateVertices(vertexAttributeLocation,normalAttributeLocation);
                     Scene.CurrentScene._shader = _bezierCurveC0Shader;
                     Scene.CurrentScene._shader.SetInt("tessLevels", bezierCurveC2.tessLevel);
                     Scene.CurrentScene.UpdatePVM();

@@ -93,4 +93,6 @@ public class ParameterizedPoint : ParameterizedObject
     {
         return _translationMatrix;
     }
+    
+    public bool Draw { get; set; } = true;
 }

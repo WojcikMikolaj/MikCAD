@@ -225,7 +225,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
             if (i != 0)
             {
-                points.Add(new Point(lastPoint.XYZ + (first.XYZ - lastPoint.XYZ) / 2));
+                points.Add(new Point(lastPoint.XYZ + (second.XYZ - lastPoint.XYZ) / 2));
                 if (i != _objects.Count - 2)
                 {
                     points.Add(second);

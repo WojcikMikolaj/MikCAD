@@ -30,7 +30,7 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC0TessControlShader.tesc",
         "Shaders/BezierCurveC0TessEvaluationShader.tese");
-    
+
     private Shader _bezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -86,6 +86,26 @@ public class ObjectsController : INotifyPropertyChanged
     private List<ParameterizedPoint> _parameterizedPoints = new List<ParameterizedPoint>();
     public List<ParameterizedPoint> ParameterizedPoints => _parameterizedPoints;
 
+    public IEnumerable<ParameterizedPoint> AllPoints
+    {
+        get
+        {
+            List<ParameterizedPoint> points = new List<ParameterizedPoint>(ParameterizedPoints);
+            foreach (var parameterizedObject in ParameterizedObjects)
+            {
+                if (parameterizedObject is BezierCurveC2 curve)
+                {
+                    if (curve.Bernstein)
+                    {
+                        points.AddRange(curve.BernsteinPoints);
+                    }
+                }
+            }
+
+            return points;
+        }
+    }
+
 
     public bool AddObjectToScene(ParameterizedObject parameterizedObject)
     {
@@ -129,6 +149,7 @@ public class ObjectsController : INotifyPropertyChanged
                 SelectedObject = parameterizedObject;
                 break;
             }
+
             #endregion
         }
 
@@ -152,12 +173,13 @@ public class ObjectsController : INotifyPropertyChanged
             {
                 o.Selected = false;
             }
+
             curve.Selected = false;
             ParameterizedObjects.Remove(curve);
             SelectedObject = null;
             return true;
         }
-        
+
         #endregion
 
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
@@ -229,7 +251,7 @@ public class ObjectsController : INotifyPropertyChanged
             switch (obj)
             {
                 case ParameterizedPoint point:
-                    if(point.Draw)
+                    if (point.Draw)
                         GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
                     break;
 
@@ -272,21 +294,35 @@ public class ObjectsController : INotifyPropertyChanged
 
                 case BezierCurveC2 bezierCurveC2:
                 {
+                    if (bezierCurveC2.Bernstein)
+                    {
+                        foreach (var point in bezierCurveC2.BernsteinPoints)
+                        {
+                            if (point.Selected)
+                            {
+                                Scene.CurrentScene._shader = _selectedObjectShader;
+                                Scene.CurrentScene.UpdatePVM();
+                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+                                Scene.CurrentScene._shader.SetMatrix4("modelMatrix", point.GetModelMatrix());
+                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+                                GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+                            }
+                        }
+                    }
+                    
+                    bezierCurveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
                     int indexBufferObject;
                     Scene.CurrentScene._shader = _standardObjectShader;
                     Scene.CurrentScene.UpdatePVM();
                     Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
                     if (bezierCurveC2.Bernstein)
                     {
-                        bezierCurveC2.GenerateVerticesForBernsteinPoints(vertexAttributeLocation, normalAttributeLocation);
-                        GL.DrawElements(PrimitiveType.Points, bezierCurveC2.BernsteinPoints.Count, DrawElementsType.UnsignedInt, 0);
+                        bezierCurveC2.GenerateVerticesForBernsteinPoints(vertexAttributeLocation,
+                            normalAttributeLocation);
+                        GL.DrawElements(PrimitiveType.Points, bezierCurveC2.BernsteinPoints.Count,
+                            DrawElementsType.UnsignedInt, 0);
                     }
-                    else
-                    {
-                        bezierCurveC2.GenerateVerticesForBSplinePoints(vertexAttributeLocation, normalAttributeLocation);
-                        GL.DrawElements(PrimitiveType.Points, bezierCurveC2.Objects.Count, DrawElementsType.UnsignedInt, 0);
-                    }
-                    
+
                     if (bezierCurveC2.DrawPolygon)
                     {
                         Scene.CurrentScene._shader = _colorShader;
@@ -302,8 +338,8 @@ public class ObjectsController : INotifyPropertyChanged
                         GL.DrawElements(PrimitiveType.Lines, obj.lines.Length, DrawElementsType.UnsignedInt, 0);
                     }
 
-                    
-                    bezierCurveC2.GenerateVertices(vertexAttributeLocation,normalAttributeLocation);
+
+                    bezierCurveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
                     Scene.CurrentScene._shader = _bezierCurveC0Shader;
                     Scene.CurrentScene._shader.SetInt("tessLevels", bezierCurveC2.tessLevel);
                     Scene.CurrentScene.UpdatePVM();

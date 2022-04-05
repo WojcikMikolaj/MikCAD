@@ -60,7 +60,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
     public void ProcessPoint(ParameterizedPoint point)
     {
-        point.Draw = !_bernstein;
+        //point.Draw = !_bernstein;
         base.ProcessObject(point);
     }
 
@@ -78,7 +78,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                 ProcessObject(obj);
             }
         }
-
+        ConvertBSplineToBernstein();
         OnPropertyChanged(nameof(Objects));
     }
 
@@ -95,10 +95,10 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         get => _bernstein;
         set
         {
-            foreach (var o in _objects)
-            {
-                (o as ParameterizedPoint).Draw = !value;
-            }
+            // foreach (var o in _objects)
+            // {
+            //     (o as ParameterizedPoint).Draw = !value;
+            // }
 
             _bernstein = value;
         }
@@ -106,8 +106,8 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
     public uint[] _patches;
     
-    public List<ParameterizedPoint> BernsteinPoints => _bernsteinPoints;
-    private List<ParameterizedPoint> _bernsteinPoints = new List<ParameterizedPoint>();
+    public List<FakePoint> BernsteinPoints => _bernsteinPoints;
+    private List<FakePoint> _bernsteinPoints = new List<FakePoint>();
     
     private uint[] GenerateLines()
     {
@@ -152,22 +152,12 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         float minY = 1;
         float maxY = -1;
 
-        var points = ConvertBSplineToBernstein();
-        _bernsteinPoints = new List<ParameterizedPoint>();
-        foreach (var point in points)
-        {
-            _bernsteinPoints.Add(new ParameterizedPoint()
-            {
-                posX = point.X,
-                posY = point.Y,
-                posZ = point.Z,
-            });
-        }
+        var points = _bernsteinPoints;
         
         var vertices = new float[(points.Count) * 4];
         for (int i = 0; i < (points.Count); i++)
         {
-            var posVector = points[i].XYZ;
+            var posVector = points[i].GetModelMatrix().ExtractTranslation();
             vertices[4 * i] = posVector.X;
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;
@@ -210,7 +200,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
-    private List<Point> ConvertBSplineToBernstein()
+    private void ConvertBSplineToBernstein()
     {
         Point lastPoint = null;
         var points = new List<Point>();
@@ -235,7 +225,17 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             lastPoint = third;
         }
 
-        return points;
+        _bernsteinPoints.Clear();
+        foreach (var point in points)
+        {
+            _bernsteinPoints.Add(new FakePoint()
+            {
+                posX = point.X,
+                posY = point.Y,
+                posZ = point.Z,
+                parent = this
+            });
+        }
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)
@@ -268,21 +268,11 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
     public void GenerateVerticesForBernsteinPoints(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        var points = ConvertBSplineToBernstein();
-        _bernsteinPoints = new List<ParameterizedPoint>();
-        foreach (var point in points)
-        {
-            _bernsteinPoints.Add(new ParameterizedPoint()
-            {
-                posX = point.X,
-                posY = point.Y,
-                posZ = point.Z,
-            });
-        }
+        var points = _bernsteinPoints;
         var vertices = new float[(points.Count) * 4];
         for (int i = 0; i < (points.Count); i++)
         {
-            var posVector = points[i].XYZ;
+            var posVector = points[i].GetModelMatrix().ExtractTranslation();
             vertices[4 * i] = posVector.X;
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;

@@ -27,7 +27,7 @@ public class Raycaster
         //dotąd jest ok
         ParameterizedPoint currPoint = null;
         float tmin = float.MaxValue;
-        foreach (var point in Scene.CurrentScene.ObjectsController.ParameterizedPoints)
+        foreach (var point in Scene.CurrentScene.ObjectsController.AllPoints)
         {
             var mat = Matrix4.Identity;
             mat.M44 = -point.BB.radius * point.BB.radius;

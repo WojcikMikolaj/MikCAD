@@ -22,7 +22,7 @@ public class ParameterizedPoint : ParameterizedObject
     public override bool RotationEnabled => false;
     public override bool ScaleEnabled => false;
 
-    public ParameterizedPoint() : base("Punkt")
+    public ParameterizedPoint(string name="Punkt") : base(name)
     {
         UpdateTranslationMatrix();
         PointId = random.Next();

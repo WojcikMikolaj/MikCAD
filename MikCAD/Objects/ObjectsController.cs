@@ -294,21 +294,7 @@ public class ObjectsController : INotifyPropertyChanged
 
                 case BezierCurveC2 bezierCurveC2:
                 {
-                    if (bezierCurveC2.Bernstein)
-                    {
-                        foreach (var point in bezierCurveC2.BernsteinPoints)
-                        {
-                            if (point.Selected)
-                            {
-                                Scene.CurrentScene._shader = _selectedObjectShader;
-                                Scene.CurrentScene.UpdatePVM();
-                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-                                Scene.CurrentScene._shader.SetMatrix4("modelMatrix", point.GetModelMatrix());
-                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-                                GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
-                            }
-                        }
-                    }
+                    
                     
                     bezierCurveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
                     int indexBufferObject;
@@ -354,6 +340,21 @@ public class ObjectsController : INotifyPropertyChanged
 
                     GL.DrawElements(PrimitiveType.Patches, bezierCurveC2.patches.Length, DrawElementsType.UnsignedInt,
                         0);
+                    if (bezierCurveC2.Bernstein)
+                    {
+                        foreach (var point in bezierCurveC2.BernsteinPoints)
+                        {
+                            if (point.Selected)
+                            {
+                                Scene.CurrentScene._shader = _selectedObjectShader;
+                                Scene.CurrentScene.UpdatePVM();
+                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+                                Scene.CurrentScene._shader.SetMatrix4("modelMatrix", point.GetModelMatrix());
+                                point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+                                GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+                            }
+                        }
+                    }
                     break;
                 }
 

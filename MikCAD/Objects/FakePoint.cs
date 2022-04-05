@@ -4,10 +4,12 @@ namespace MikCAD;
 
 public class FakePoint : ParameterizedPoint
 {
-    public FakePoint(): base("FakePoint")
+    public FakePoint() : base("FakePoint")
     {
-        
     }
 
-    public BezierCurveC2 parent { get; set; }
+    public override void OnPositionUpdate()
+    {
+        (parent as BezierCurveC2)?.UpdatePoints();
+    }
 }

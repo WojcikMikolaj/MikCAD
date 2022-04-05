@@ -201,6 +201,9 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
+        if(o is null)
+            return;
+        
         #region bezierCurve
 
         if (MainWindow.AddToSelected && SelectedObject is IBezierCurve)

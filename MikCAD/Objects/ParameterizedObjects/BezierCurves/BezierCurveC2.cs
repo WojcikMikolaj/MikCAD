@@ -200,7 +200,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
-    private void ConvertBSplineToBernstein()
+    public void ConvertBSplineToBernstein()
     {
         Point lastPoint = null;
         var points = new List<Point>();
@@ -212,7 +212,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             var first = new Point(posA);
             var second = new Point(posA + dXYZ / 3);
             var third = new Point(posA + 2 * dXYZ / 3);
-
+            
             if (i != 0)
             {
                 points.Add(new Point(lastPoint.XYZ + (second.XYZ - lastPoint.XYZ) / 2));
@@ -236,6 +236,44 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                 parent = this
             });
         }
+    }
+
+    public void UpdatePoints()
+    {
+        //źle
+        return;
+        if(Objects.Count<4)
+            return;
+        for (int i = 2; i < BernsteinPoints.Count-1; i+=3)
+        {
+            var posi1 = BernsteinPoints[i + 1].GetModelMatrix().ExtractTranslation();
+            var posi = BernsteinPoints[i].GetModelMatrix().ExtractTranslation();
+            var dxyz = posi1 - posi;
+            var npos = (posi - dxyz);
+            var nposp = (posi1 + dxyz);
+            _objects[i - 1].posX = npos.X;
+            _objects[i - 1].posY = npos.Y;
+            _objects[i - 1].posZ = npos.Z;
+
+            if (i == 2)
+            {
+                var dxyz0 = npos - BernsteinPoints[0].GetModelMatrix().ExtractTranslation();
+                var npos0 = BernsteinPoints[0].GetModelMatrix().ExtractTranslation() - 2*dxyz0; 
+                _objects[0].posX = npos0.X;
+                _objects[0].posY = npos0.Y;
+                _objects[0].posZ = npos0.Z;
+            }
+            
+            _objects[i].posX = nposp.X;
+            _objects[i].posY = nposp.Y;
+            _objects[i].posZ = nposp.Z;
+        }
+
+        var dxyzl = BernsteinPoints[^1].GetModelMatrix().ExtractTranslation() - _objects[^2].GetModelMatrix().ExtractTranslation();
+        var nposl = BernsteinPoints[^1].GetModelMatrix().ExtractTranslation() + 2*dxyzl;
+        _objects[^1].posX = nposl.X;
+        _objects[^1].posY = nposl.Y;
+        _objects[^1].posZ = nposl.Z;
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)

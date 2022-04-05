@@ -75,6 +75,7 @@ namespace MikCAD
                 _position.X = value;
                 UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posX));
+                OnPositionUpdate();
             }
         }
 
@@ -86,6 +87,7 @@ namespace MikCAD
                 _position.Y = value;
                 UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posY));
+                OnPositionUpdate();
             }
         }
 
@@ -97,6 +99,7 @@ namespace MikCAD
                 _position.Z = value;
                 UpdateTranslationMatrix();
                 OnPropertyChanged(nameof(posZ));
+                OnPositionUpdate();
             }
         }
 
@@ -187,6 +190,11 @@ namespace MikCAD
             _name = objname;
             if(this is not Pointer3D)
                 _position = Scene.CurrentScene.ObjectsController._pointer._position;
+        }
+
+        public virtual void OnPositionUpdate()
+        {
+            ;
         }
         
         public event PropertyChangedEventHandler PropertyChanged;

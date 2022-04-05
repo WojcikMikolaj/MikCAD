@@ -2,6 +2,7 @@
 using System;
 using System.Data.Common;
 using System.Diagnostics;
+using MikCAD.BezierCurves;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
@@ -95,4 +96,11 @@ public class ParameterizedPoint : ParameterizedObject
     }
     
     public bool Draw { get; set; } = true;
+    
+    public CompositeObject parent { get; set; }
+
+    public override void OnPositionUpdate()
+    {
+        (parent as BezierCurveC2)?.ConvertBSplineToBernstein();
+    }
 }

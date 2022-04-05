@@ -49,11 +49,15 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         if (!_objects.Contains(o))
         {
             _objects.Add(o);
+            if (o is ParameterizedPoint p)
+                p.parent = this;
             o.Selected = true;
         }
         else
         {
             _objects.Remove(o);
+            if (o is ParameterizedPoint p)
+                p.parent = null;
             o.Selected = false;
         }
 

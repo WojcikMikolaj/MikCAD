@@ -10,6 +10,18 @@ public class FakePoint : ParameterizedPoint
 
     public override void OnPositionUpdate()
     {
-        (parent as BezierCurveC2)?.UpdatePoints();
+        (parent as BezierCurveC2)?.UpdatePoints(this);
+    }
+
+    public int ID
+    {
+        get;
+        init;
+    }
+    
+    public int BSplinePointToMove
+    {
+        get;
+        init;
     }
 }

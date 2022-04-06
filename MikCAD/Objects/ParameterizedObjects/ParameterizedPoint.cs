@@ -101,6 +101,6 @@ public class ParameterizedPoint : ParameterizedObject
 
     public override void OnPositionUpdate()
     {
-        (parent as BezierCurveC2)?.ConvertBSplineToBernstein();
+        (parent as BezierCurveC2)?.ConvertBSplineToBernstein(true);
     }
 }

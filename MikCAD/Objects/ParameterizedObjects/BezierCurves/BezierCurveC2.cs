@@ -78,6 +78,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                 ProcessObject(obj);
             }
         }
+
         ConvertBSplineToBernstein();
         OnPropertyChanged(nameof(Objects));
     }
@@ -90,6 +91,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     public uint[] patches => _patches;
 
     private bool _bernstein;
+
     public bool Bernstein
     {
         get => _bernstein;
@@ -105,10 +107,10 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     }
 
     public uint[] _patches;
-    
+
     public List<FakePoint> BernsteinPoints => _bernsteinPoints;
     private List<FakePoint> _bernsteinPoints = new List<FakePoint>();
-    
+
     private uint[] GenerateLines()
     {
         int count = _bernstein ? _bernsteinPoints.Count : _objects.Count;
@@ -153,7 +155,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         float maxY = -1;
 
         var points = _bernsteinPoints;
-        
+
         var vertices = new float[(points.Count) * 4];
         for (int i = 0; i < (points.Count); i++)
         {
@@ -194,17 +196,17 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         _patches = GeneratePatches();
     }
 
-    
+
     public void GenerateVerticesBase(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
-    public void ConvertBSplineToBernstein()
+    public void ConvertBSplineToBernstein(bool update = false)
     {
         Point lastPoint = null;
         var points = new List<Point>();
-        for (int i = 0; i < _objects.Count-1; i++)
+        for (int i = 0; i < _objects.Count - 1; i++)
         {
             var posA = _objects[i].GetModelMatrix().ExtractTranslation();
             var posB = _objects[i + 1].GetModelMatrix().ExtractTranslation();
@@ -212,7 +214,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             var first = new Point(posA);
             var second = new Point(posA + dXYZ / 3);
             var third = new Point(posA + 2 * dXYZ / 3);
-            
+
             if (i != 0)
             {
                 points.Add(new Point(lastPoint.XYZ + (second.XYZ - lastPoint.XYZ) / 2));
@@ -222,58 +224,66 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                     points.Add(third);
                 }
             }
+
             lastPoint = third;
         }
 
-        _bernsteinPoints.Clear();
-        foreach (var point in points)
+        int id = 0;
+        if (!update)
         {
-            _bernsteinPoints.Add(new FakePoint()
+            _bernsteinPoints.Clear();
+            foreach (var point in points)
             {
-                posX = point.X,
-                posY = point.Y,
-                posZ = point.Z,
-                parent = this
-            });
+                _bernsteinPoints.Add(new FakePoint()
+                {
+                    posX = point.X,
+                    posY = point.Y,
+                    posZ = point.Z,
+                    parent = this,
+                    ID = id++
+                });
+            }
+        }
+        else
+        {
+            foreach (var point in points)
+            {
+                _bernsteinPoints[id]._position.X = point.X;
+                _bernsteinPoints[id]._position.Y = point.Y;
+                _bernsteinPoints[id]._position.Z = point.Z;
+                id++;
+            }
         }
     }
 
-    public void UpdatePoints()
+    public void UpdatePoints(FakePoint point)
     {
-        //źle
-        return;
-        if(Objects.Count<4)
+        if (_objects.Count < 4)
             return;
-        for (int i = 2; i < BernsteinPoints.Count-1; i+=3)
+        //pierwszy punkt
+        if (point.ID == 0)
         {
-            var posi1 = BernsteinPoints[i + 1].GetModelMatrix().ExtractTranslation();
-            var posi = BernsteinPoints[i].GetModelMatrix().ExtractTranslation();
-            var dxyz = posi1 - posi;
-            var npos = (posi - dxyz);
-            var nposp = (posi1 + dxyz);
-            _objects[i - 1].posX = npos.X;
-            _objects[i - 1].posY = npos.Y;
-            _objects[i - 1].posZ = npos.Z;
-
-            if (i == 2)
-            {
-                var dxyz0 = npos - BernsteinPoints[0].GetModelMatrix().ExtractTranslation();
-                var npos0 = BernsteinPoints[0].GetModelMatrix().ExtractTranslation() - 2*dxyz0; 
-                _objects[0].posX = npos0.X;
-                _objects[0].posY = npos0.Y;
-                _objects[0].posZ = npos0.Z;
-            }
-            
-            _objects[i].posX = nposp.X;
-            _objects[i].posY = nposp.Y;
-            _objects[i].posZ = nposp.Z;
+            var t = _bernsteinPoints[0].GetModelMatrix().ExtractTranslation();
+            var second = _bernsteinPoints[1].GetModelMatrix().ExtractTranslation();
+            var II = _objects[1].GetModelMatrix().ExtractTranslation();
+            var pom = t + t - second;
+            var pos = II + 3 * (pom - II);
+            _objects[0].posX = pos.X;
+            _objects[0].posY = pos.Y;
+            _objects[0].posZ = pos.Z;
         }
 
-        var dxyzl = BernsteinPoints[^1].GetModelMatrix().ExtractTranslation() - _objects[^2].GetModelMatrix().ExtractTranslation();
-        var nposl = BernsteinPoints[^1].GetModelMatrix().ExtractTranslation() + 2*dxyzl;
-        _objects[^1].posX = nposl.X;
-        _objects[^1].posY = nposl.Y;
-        _objects[^1].posZ = nposl.Z;
+        // //ostatni
+        // if ()
+        // {
+        //     
+        // }
+        //
+        // //na prostej
+        // if ()
+        // {
+        //     _bernsteinPoints[]
+        // }
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)
@@ -327,15 +337,17 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-        
+
         var indexArr = new uint[points.Count];
         for (int i = 0; i < points.Count; i++)
         {
-            indexArr[i] = (uint)i;
+            indexArr[i] = (uint) i;
         }
+
         var indexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, points.Count * sizeof(uint), indexArr, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, points.Count * sizeof(uint), indexArr,
+            BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
@@ -343,8 +355,8 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
     public void GenerateVerticesForBSplinePoints(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        var vertices = new float[(_objects.Count ) * 4 ];
-        for (int i = 0; i < (_objects.Count ); i++)
+        var vertices = new float[(_objects.Count) * 4];
+        for (int i = 0; i < (_objects.Count); i++)
         {
             var posVector = _objects[i].GetModelMatrix().ExtractTranslation();
             vertices[4 * i] = posVector.X;
@@ -355,7 +367,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count ) * 4 * sizeof(float), vertices,
+        GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count) * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
@@ -367,11 +379,13 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         var indexArr = new uint[_objects.Count];
         for (int i = 0; i < _objects.Count; i++)
         {
-            indexArr[i] = (uint)i;
+            indexArr[i] = (uint) i;
         }
+
         var indexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, _objects.Count * sizeof(uint), indexArr, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _objects.Count * sizeof(uint), indexArr,
+            BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);

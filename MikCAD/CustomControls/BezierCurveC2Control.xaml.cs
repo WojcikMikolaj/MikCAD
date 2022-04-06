@@ -34,4 +34,9 @@ public partial class BezierCurveC2Control : UserControl
         ((BezierCurveC2)Scene.CurrentScene.ObjectsController.SelectedObject).ProcessObject(obj);
         MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
     }
+
+    private void Update_BSpline_Points(object sender, RoutedEventArgs e)
+    {
+        ((BezierCurveC2)Scene.CurrentScene.ObjectsController.SelectedObject).ConvertBSplineToBernstein();
+    }
 }

@@ -54,9 +54,7 @@
                     </ListView.View>
                     <!-- From:https://stackoverflow.com/questions/7127920/wpf-listview-with-buttons-on-each-line -->
                 </ListView>
-                <!-- <Button>
-                    <Label>Dodaj punkty</Label>
-                </Button> -->
+                <Button Name="Update" Click="Update_BSpline_Points"/>
             </StackPanel>
         </GroupBox>
     </Grid>

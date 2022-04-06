@@ -334,7 +334,8 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             _objects[point.BSplinePointToMove-1].posZ = prevPos.Z;
         }
         
-        ConvertBSplineToBernstein(true);
+        ConvertBSplineToBernstein();
+        Scene.CurrentScene.ObjectsController.SelectObject(_bernsteinPoints[point.ID]);
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)

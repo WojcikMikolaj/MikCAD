@@ -205,7 +205,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     public void ConvertBSplineToBernstein(bool update = false)
     {
         Point lastPoint = null;
-        var points = new List<Point>();
+        var points = new List<(Point, int)>();
         for (int i = 0; i < _objects.Count - 1; i++)
         {
             var posA = _objects[i].GetModelMatrix().ExtractTranslation();
@@ -217,11 +217,11 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
             if (i != 0)
             {
-                points.Add(new Point(lastPoint.XYZ + (second.XYZ - lastPoint.XYZ) / 2));
+                points.Add((new Point(lastPoint.XYZ + (second.XYZ - lastPoint.XYZ) / 2), i));
                 if (i != _objects.Count - 2)
                 {
-                    points.Add(second);
-                    points.Add(third);
+                    points.Add((second, i));
+                    points.Add((third, i+1));
                 }
             }
 
@@ -232,7 +232,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         if (!update)
         {
             _bernsteinPoints.Clear();
-            foreach (var point in points)
+            foreach (var (point, pointToMove) in points)
             {
                 _bernsteinPoints.Add(new FakePoint()
                 {
@@ -240,13 +240,14 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                     posY = point.Y,
                     posZ = point.Z,
                     parent = this,
-                    ID = id++
+                    ID = id++,
+                    BSplinePointToMove = pointToMove
                 });
             }
         }
         else
         {
-            foreach (var point in points)
+            foreach (var (point, _) in points)
             {
                 _bernsteinPoints[id]._position.X = point.X;
                 _bernsteinPoints[id]._position.Y = point.Y;

@@ -1,7 +1,9 @@
-﻿using MikCAD.BezierCurves;
+﻿using System.Diagnostics;
+using MikCAD.BezierCurves;
 
 namespace MikCAD;
 
+[DebuggerDisplay("BSpline {BSplinePointToMove}")]
 public class FakePoint : ParameterizedPoint
 {
     public FakePoint() : base("FakePoint")

@@ -250,5 +250,14 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 1, posZ = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 3, posZ = 0});
         }
+        
+        private void BezierCurveC2BernsteinTest(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 6, posZ = 2});
+        }
     }
 }

@@ -221,7 +221,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
                 if (i != _objects.Count - 2)
                 {
                     points.Add((second, i));
-                    points.Add((third, i+1));
+                    points.Add((third, i + 1));
                 }
             }
 
@@ -275,7 +275,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         }
 
         //ostatni
-        if (point.ID == _bernsteinPoints.Count - 1)
+        else if (point.ID == _bernsteinPoints.Count - 1)
         {
             var t = _bernsteinPoints[^1].GetModelMatrix().ExtractTranslation();
             var second = _bernsteinPoints[^2].GetModelMatrix().ExtractTranslation();
@@ -286,12 +286,55 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             _objects[^1].posY = pos.Y;
             _objects[^1].posZ = pos.Z;
         }
-        //
-        // //na prostej
-        // if ()
-        // {
-        //     _bernsteinPoints[]
-        // }
+
+        // na prostej pomiędzy kolejnymi punktami De Boora
+        else if (_bernsteinPoints[point.ID - 1].BSplinePointToMove != _bernsteinPoints[point.ID + 1].BSplinePointToMove)
+        {
+            //kolejny punkt też pomiędzy kolejnymi punktami De Boora
+            if (point.BSplinePointToMove < _bernsteinPoints[point.ID + 1].BSplinePointToMove)
+            {
+                var t = point.GetModelMatrix().ExtractTranslation();
+                var db = _objects[point.BSplinePointToMove + 1].GetModelMatrix().ExtractTranslation();
+                var dist = (t - db)/2.0f;
+                var pos = t + dist;
+                _objects[point.BSplinePointToMove].posX = pos.X;
+                _objects[point.BSplinePointToMove].posY = pos.Y;
+                _objects[point.BSplinePointToMove].posZ = pos.Z;
+            }
+            else
+            {
+                var t = point.GetModelMatrix().ExtractTranslation();
+                var db = _objects[point.BSplinePointToMove - 1].GetModelMatrix().ExtractTranslation();
+                var dist = (t - db)/2.0f;
+                var pos = t + dist;
+                _objects[point.BSplinePointToMove].posX = pos.X;
+                _objects[point.BSplinePointToMove].posY = pos.Y;
+                _objects[point.BSplinePointToMove].posZ = pos.Z;
+            }
+        }
+
+        // "pod" punktem De Boora
+        else
+        {
+            var prevB = _bernsteinPoints[point.ID - 1].GetModelMatrix().ExtractTranslation();
+            var nextB = _bernsteinPoints[point.ID + 1].GetModelMatrix().ExtractTranslation();
+            var lastPos = ( prevB + nextB) / 2.0f;
+            var dpos = point.GetModelMatrix().ExtractTranslation() - lastPos;
+            nextB += dpos;
+            prevB += dpos;
+
+            var pos = nextB + (nextB - _objects[point.BSplinePointToMove + 1].GetModelMatrix().ExtractScale()) / 2.0f;
+            _objects[point.BSplinePointToMove].posX = pos.X;
+            _objects[point.BSplinePointToMove].posY = pos.Y;
+            _objects[point.BSplinePointToMove].posZ = pos.Z;
+
+            var prevPos = prevB + 2*(prevB - pos);
+            _objects[point.BSplinePointToMove-1].posX = prevPos.X;
+            _objects[point.BSplinePointToMove-1].posY = prevPos.Y;
+            _objects[point.BSplinePointToMove-1].posZ = prevPos.Z;
+        }
+        
+        ConvertBSplineToBernstein(true);
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)

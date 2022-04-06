@@ -273,11 +273,18 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             _objects[0].posZ = pos.Z;
         }
 
-        // //ostatni
-        // if ()
-        // {
-        //     
-        // }
+        //ostatni
+        if (point.ID == _bernsteinPoints.Count - 1)
+        {
+            var t = _bernsteinPoints[^1].GetModelMatrix().ExtractTranslation();
+            var second = _bernsteinPoints[^2].GetModelMatrix().ExtractTranslation();
+            var LII = _objects[^2].GetModelMatrix().ExtractTranslation();
+            var pom = t + t - second;
+            var pos = LII + 3 * (pom - LII);
+            _objects[^1].posX = pos.X;
+            _objects[^1].posY = pos.Y;
+            _objects[^1].posZ = pos.Z;
+        }
         //
         // //na prostej
         // if ()

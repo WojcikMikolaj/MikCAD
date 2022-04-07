@@ -103,4 +103,9 @@ public class ParameterizedPoint : ParameterizedObject
     {
         (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);
     }
+
+    public override void OnDelete()
+    {
+        parent?.ProcessObject(this);
+    }
 }

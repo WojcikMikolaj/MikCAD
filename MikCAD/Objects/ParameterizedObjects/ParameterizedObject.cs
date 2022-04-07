@@ -210,5 +210,10 @@ namespace MikCAD
         public abstract Matrix4 GetOnlyModelMatrix();
         
         public Matrix4 CompositeOperationMatrix { get; set; } = Matrix4.Identity;
+
+        public virtual void OnDelete()
+        {
+            
+        }
     }
 }

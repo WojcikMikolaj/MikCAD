@@ -159,6 +159,7 @@ public class ObjectsController : INotifyPropertyChanged
 
     public bool DeleteSelectedObjects()
     {
+        var obj = _selectedObject;
         if (_selectedObject is Pointer3D)
             return false;
         if (_selectedObject is ParameterizedPoint point)
@@ -196,6 +197,7 @@ public class ObjectsController : INotifyPropertyChanged
         }
 
         SelectedObject = null;
+        obj.OnDelete();
         return true;
     }
 

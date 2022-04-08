@@ -4,27 +4,27 @@ using OpenTK.Mathematics;
 
 namespace MikCAD;
 
-public class Rasterizer
+public class DrawProcessor
 {
     private ObjectsController _controller;
 
-    public Rasterizer(ObjectsController controller)
+    public DrawProcessor(ObjectsController controller)
     {
         _controller = controller;
     }
 
-    public void RasterizeObject(ParameterizedPoint point, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(ParameterizedPoint point, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         if (point.Draw)
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void RasterizeObject(Torus torus, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(Torus torus, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void RasterizeObject(BezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(BezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         int indexBufferObject;
@@ -86,7 +86,7 @@ public class Rasterizer
         }
     }
 
-    public void RasterizeObject(BezierCurveC0 curveC0, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(BezierCurveC0 curveC0, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         int indexBufferObject;
         if (curveC0.DrawPolygon)
@@ -119,7 +119,7 @@ public class Rasterizer
         GL.DrawElements(PrimitiveType.Patches, curveC0.patches.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void RasterizeObject(CompositeObject compositeObject, uint vertexAttributeLocation,
+    public void ProcessObject(CompositeObject compositeObject, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
         var _modelMatrix = compositeObject.GetModelMatrix();
@@ -142,7 +142,7 @@ public class Rasterizer
         GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void RasterizeObject(Pointer3D pointer3D, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(Pointer3D pointer3D, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._pointerShader;
         Scene.CurrentScene.UpdatePVM();

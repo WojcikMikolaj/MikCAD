@@ -224,9 +224,9 @@ namespace MikCAD
             return vertices;
         }
 
-        public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+        public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation, uint normalAttributeLocation)
         {
-            rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
+            drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
         }
     }
 }

@@ -34,11 +34,11 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierCurveC2/BezierCurveC2TessControlShader.tesc",
         "Shaders/BezierCurveC2/BezierCurveC2TessEvaluationShader.tese");
 
-    private Rasterizer _rasterizer;
+    private DrawProcessor _drawProcessor;
 
     public ObjectsController()
     {
-        _rasterizer = new Rasterizer(this);
+        _drawProcessor = new DrawProcessor(this);
     }
     public ParameterizedObject SelectedObject
     {
@@ -253,16 +253,16 @@ public class ObjectsController : INotifyPropertyChanged
             Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            obj.Rasterize(_rasterizer, vertexAttributeLocation, normalAttributeLocation);
+            obj.PassToDrawProcessor(_drawProcessor, vertexAttributeLocation, normalAttributeLocation);
         }
 
         if (SelectedObject is not IBezierCurve)
             if (SelectedObject is CompositeObject o)
             {
-                _rasterizer.RasterizeObject(o, vertexAttributeLocation, normalAttributeLocation);
+                _drawProcessor.ProcessObject(o, vertexAttributeLocation, normalAttributeLocation);
             }
 
-        _rasterizer.RasterizeObject(_pointer, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.ProcessObject(_pointer, vertexAttributeLocation, normalAttributeLocation);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

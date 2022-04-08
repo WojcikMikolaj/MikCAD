@@ -44,7 +44,7 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     {
         if (o == null)
             return;
-        if(o is BezierCurveC0 or BezierCurveC2)
+        if(o is BezierCurveC0 or BezierCurveC2 or FakePoint)
             return;
         if (!_objects.Contains(o))
         {

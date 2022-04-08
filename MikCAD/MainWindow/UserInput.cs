@@ -120,17 +120,17 @@ namespace MikCAD
                         case Axis.X:
                             if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
                                 Scene.CurrentScene.ObjectsController.SelectedObject.posX +=
-                                    MathM.AbsMax(dx, dy) * 0.01f;
+                                    MathM.AbsMax(dx, -dy) * 0.01f;
                             break;
                         case Axis.Y:
                             if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
                                 Scene.CurrentScene.ObjectsController.SelectedObject.posY +=
-                                    MathM.AbsMax(dx, dy) * 0.01f;
+                                    MathM.AbsMax(dx, -dy) * 0.01f;
                             break;
                         case Axis.Z:
                             if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
                                 Scene.CurrentScene.ObjectsController.SelectedObject.posZ +=
-                                    MathM.AbsMax(dx, dy) * 0.01f;
+                                    MathM.AbsMax(dx, -dy) * 0.01f;
                             break;
                     }
                 }

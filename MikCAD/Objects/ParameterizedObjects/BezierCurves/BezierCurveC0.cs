@@ -41,6 +41,7 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
     public BezierCurveC0() : base("BezierCurveC0")
     {
         Name = "BezierCurveC0";
+        CurveColor = new Vector4(1, 186.0f / 255, 0, 1);
     }
 
     public BezierCurveC0(CompositeObject compositeObject) : this()
@@ -62,6 +63,8 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
     {
         base.ProcessObject(point);
     }
+    
+    public Vector4 CurveColor { get; set; }
 
     public override void ProcessObject(ParameterizedObject o)
     {
@@ -199,5 +202,10 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
                 (_objects[i + 1], _objects[i]) = (_objects[i], _objects[i + 1]);
             }
         }
+    }
+    
+    public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
     }
 }

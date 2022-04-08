@@ -223,5 +223,10 @@ namespace MikCAD
 
             return vertices;
         }
+
+        public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+        {
+            rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
+        }
     }
 }

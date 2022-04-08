@@ -41,6 +41,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     public BezierCurveC2() : base("BezierCurveC2")
     {
         Name = "BezierCurveC2";
+        CurveColor = new Vector4(1, 186.0f / 255, 0, 1);
     }
 
     public BezierCurveC2(CompositeObject compositeObject) : this()
@@ -63,6 +64,8 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         //point.Draw = !_bernstein;
         base.ProcessObject(point);
     }
+
+    public Vector4 CurveColor { get; set; }
 
     public override void ProcessObject(ParameterizedObject o)
     {
@@ -234,15 +237,16 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             _bernsteinPoints.Clear();
             foreach (var (point, pointToMove) in points)
             {
-                _bernsteinPoints.Add(new FakePoint()
+                var p = new FakePoint()
                 {
                     posX = point.X,
                     posY = point.Y,
                     posZ = point.Z,
-                    parent = this,
                     ID = id++,
-                    BSplinePointToMove = pointToMove
-                });
+                    BSplinePointToMove = pointToMove,
+                };
+                p.parents.Add(this);
+                _bernsteinPoints.Add(p);
             }
         }
         else
@@ -441,5 +445,10 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
+    }
+    
+    public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
     }
 }

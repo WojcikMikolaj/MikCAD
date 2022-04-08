@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
 using MikCAD.BezierCurves;
@@ -25,6 +26,7 @@ public class ParameterizedPoint : ParameterizedObject
 
     public ParameterizedPoint(string name="Punkt") : base(name)
     {
+        parents = new List<CompositeObject>();
         UpdateTranslationMatrix();
         PointId = random.Next();
         _pickingColor = new Vector3((PointId & 0xFF )/255.0f, ((PointId >> 8) &  0xFF)/255.0f, ((PointId >>16 ) & 0xFF)/255.0f);
@@ -97,15 +99,26 @@ public class ParameterizedPoint : ParameterizedObject
     
     public bool Draw { get; set; } = true;
     
-    public CompositeObject parent { get; set; }
+    public List<CompositeObject> parents { get; set; }
 
     public override void OnPositionUpdate()
     {
-        (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);
+        foreach (var parent in parents)   
+        {
+            (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);    
+        }
     }
 
     public override void OnDelete()
     {
-        parent?.ProcessObject(this);
+        foreach (var parent in parents)
+        {
+            parent?.ProcessObject(this);
+        }
+    }
+    
+    public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
     }
 }

@@ -215,5 +215,7 @@ namespace MikCAD
         {
             
         }
+
+        public abstract void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation);
     }
 }

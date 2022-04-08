@@ -50,14 +50,14 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         {
             _objects.Add(o);
             if (o is ParameterizedPoint p)
-                p.parent = this;
+                p.parents.Add(this);
             o.Selected = true;
         }
         else
         {
             _objects.Remove(o);
             if (o is ParameterizedPoint p)
-                p.parent = null;
+                p.parents.Remove(this);
             o.Selected = false;
         }
 
@@ -173,6 +173,7 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
             var trMat = Matrix4.CreateTranslation(tr);
             var mtrMat = Matrix4.CreateTranslation(-_position);
             o.CompositeOperationMatrix = (mtrMat * scale * rot * trMat);
+            (o as ParameterizedPoint)?.OnPositionUpdate();
         }
     }
 
@@ -199,4 +200,9 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(action));
     }
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
+    
+    public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
+    }
 }

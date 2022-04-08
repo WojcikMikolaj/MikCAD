@@ -132,4 +132,9 @@ public class Pointer3D : ParameterizedObject
         OnPropertyChanged(nameof(posY));
         OnPropertyChanged(nameof(posZ));
     }
+    
+    public override void Rasterize(Rasterizer rasterizer, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        rasterizer.RasterizeObject(this, vertexAttributeLocation, normalAttributeLocation);
+    }
 }

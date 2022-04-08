@@ -12,7 +12,10 @@ public class FakePoint : ParameterizedPoint
 
     public override void OnPositionUpdate()
     {
-        (parent as BezierCurveC2)?.UpdatePoints(this);
+        foreach (var parent in parents)
+        {
+            (parent as BezierCurveC2)?.UpdatePoints(this);    
+        }
     }
 
     public int ID

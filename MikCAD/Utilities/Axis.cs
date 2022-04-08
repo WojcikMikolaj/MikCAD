@@ -1,8 +1,9 @@
-﻿namespace MikCAD;
+﻿namespace MikCAD.Utilities;
 
 public enum Axis
 {
-    X = 0,
-    Y = 1,
-    Z = 2
+    None = 0,
+    X = 1,
+    Y = 2,
+    Z = 3
 }

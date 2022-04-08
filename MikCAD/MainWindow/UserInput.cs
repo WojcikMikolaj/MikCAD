@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
+using MikCAD.Utilities;
 
 namespace MikCAD
 {
@@ -12,6 +13,7 @@ namespace MikCAD
         private bool _rightPressed = false;
         private bool _leftPressed = false;
         private System.Windows.Point? _last;
+        public Axis ActiveAxis { get; private set; } = 0;
 
         struct mouse_position
         {
@@ -94,21 +96,42 @@ namespace MikCAD
 
                     //Title = $"{dx}, {dy}";
 
-                    if (_leftPressed)
+                    switch (ActiveAxis)
                     {
-                        var rotX = scene.camera.rotX;
-                        var rotY = scene.camera.rotY;
+                        case Axis.None:
+                            if (_leftPressed)
+                            {
+                                var rotX = scene.camera.rotX;
+                                var rotY = scene.camera.rotY;
 
-                        scene.camera.rotX = rotX + dy * 0.1f;
-                        scene.camera.rotY = rotY + dx * 0.1f;
-                    }
-                    else
-                    {
-                        var posX = scene.camera.posX;
-                        var posY = scene.camera.posY;
+                                scene.camera.rotX = rotX + dy * 0.1f;
+                                scene.camera.rotY = rotY + dx * 0.1f;
+                            }
+                            else
+                            {
+                                var posX = scene.camera.posX;
+                                var posY = scene.camera.posY;
 
-                        scene.camera.posX = posX + dx * 0.05f;
-                        scene.camera.posY = posY + dy * 0.05f;
+                                scene.camera.posX = posX + dx * 0.05f;
+                                scene.camera.posY = posY + dy * 0.05f;
+                            }
+
+                            break;
+                        case Axis.X:
+                            if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
+                                Scene.CurrentScene.ObjectsController.SelectedObject.posX +=
+                                    MathM.AbsMax(dx, dy) * 0.01f;
+                            break;
+                        case Axis.Y:
+                            if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
+                                Scene.CurrentScene.ObjectsController.SelectedObject.posY +=
+                                    MathM.AbsMax(dx, dy) * 0.01f;
+                            break;
+                        case Axis.Z:
+                            if (Scene.CurrentScene.ObjectsController.SelectedObject != null)
+                                Scene.CurrentScene.ObjectsController.SelectedObject.posZ +=
+                                    MathM.AbsMax(dx, dy) * 0.01f;
+                            break;
                     }
                 }
 
@@ -157,6 +180,15 @@ namespace MikCAD
                 case Key.A:
                     AddToSelected = true;
                     break;
+                case Key.Q:
+                    ActiveAxis = Axis.X;
+                    break;
+                case Key.W:
+                    ActiveAxis = Axis.Y;
+                    break;
+                case Key.E:
+                    ActiveAxis = Axis.Z;
+                    break;
                 case Key.LeftCtrl:
                     IsMultiSelectEnabled = true;
                     break;
@@ -169,17 +201,21 @@ namespace MikCAD
             }
         }
 
-
         private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftCtrl)
+            switch (e.Key)
             {
-                IsMultiSelectEnabled = false;
-            }
-
-            if (e.Key == Key.A)
-            {
-                AddToSelected = false;
+                case Key.LeftCtrl:
+                    IsMultiSelectEnabled = false;
+                    break;
+                case Key.A:
+                    AddToSelected = false;
+                    break;
+                case Key.Q:
+                case Key.W:
+                case Key.E:
+                    ActiveAxis = Axis.None;
+                    break;
             }
         }
 
@@ -239,7 +275,7 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
         }
-        
+
         private void BezierCurveC2Test(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
@@ -250,7 +286,7 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 1, posZ = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 3, posZ = 0});
         }
-        
+
         private void BezierCurveC2BernsteinTest(object sender, RoutedEventArgs e)
         {
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());

@@ -263,6 +263,7 @@ public class ObjectsController : INotifyPropertyChanged
             }
 
         _drawProcessor.ProcessObject(_pointer, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, vertexAttributeLocation, normalAttributeLocation);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

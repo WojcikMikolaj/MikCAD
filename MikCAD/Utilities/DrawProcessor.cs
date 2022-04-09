@@ -1,4 +1,5 @@
 ﻿using MikCAD.BezierCurves;
+using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -149,5 +150,62 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", pointer3D.GetModelMatrix());
         pointer3D.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         GL.DrawElements(PrimitiveType.Lines, pointer3D.lines.Length, DrawElementsType.UnsignedInt, 0);
+    }
+
+    public void DrawAxis(Axis selectedAxis, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        var vertices = new float[6];
+        var lines = new uint[]{0,1};
+        var selected = Scene.CurrentScene.ObjectsController.SelectedObject;
+        Vector4 color = default;
+        if (selected != null)
+        {
+            vertices[0] = vertices[3] = selected.posX;
+            vertices[1] = vertices[4] = selected.posY;
+            vertices[2] = vertices[5] = selected.posZ;
+        }
+        switch (selectedAxis)
+        {
+            case Axis.None:
+                return;
+            case Axis.X:
+                vertices[0] += 100;
+                vertices[3] -= 100;
+                color = new Vector4(1, 0, 0, 1);
+                break;
+            case Axis.Y:
+                vertices[1] += 100;
+                vertices[4] -= 100;
+                color = new Vector4(0, 1, 0, 1);
+                break;
+            case Axis.Z:
+                vertices[2] += 100;
+                vertices[5] -= 100;
+                color = new Vector4(0, 1, 1, 1);
+                break;
+        }
+
+        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix",Matrix4.Identity);
+        Scene.CurrentScene._shader.SetVector4("color", color);
+        
+        var vertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+        var vertexArrayObject = GL.GenVertexArray();
+        GL.BindVertexArray(vertexArrayObject);
+
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+
+        var indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, lines.Length * sizeof(uint), lines,
+            BufferUsageHint.StaticDraw);
+
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.DrawElements(PrimitiveType.Lines, lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 }

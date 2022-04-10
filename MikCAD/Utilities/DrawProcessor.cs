@@ -213,8 +213,7 @@ public class DrawProcessor
 
     public void DrawGrid(Camera camera, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        var pos = new Vector3((float) MH.Floor(camera.posX), (float) MH.Floor(camera.posY),
-            (float) MH.Floor(camera.posZ));
+        var pos = new Vector3((float) MH.Floor(camera.posX), 0, (float) MH.Floor(camera.posZ));
         var width = 300;
         var height = 300;
         var startPos = pos - new Vector3(width / 2.0f, 0, height / 2.0f);
@@ -239,27 +238,28 @@ public class DrawProcessor
         var it = 0;
         for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < height-1; j++)
+            for (int j = 0; j < height - 1; j++)
             {
-                lines[it++] = (uint) (i*height + j);
-                lines[it++] = (uint) (i*height + j+1);
+                lines[it++] = (uint) (i * height + j);
+                lines[it++] = (uint) (i * height + j + 1);
             }
         }
-        
-        for (int i = 0; i < height * (width -1); i++)
+
+        for (int i = 0; i < height * (width - 1); i++)
         {
             lines[it++] = (uint) i;
             lines[it++] = (uint) (i + width);
         }
-        
+
         Scene.CurrentScene._shader = _controller._colorShader;
         Scene.CurrentScene.UpdatePVM();
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-        Scene.CurrentScene._shader.SetVector4("color", new Vector4(0.5f,0.5f,0.5f,1));
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(0.5f, 0.5f, 0.5f, 1));
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, verticesFloatArray.Length * sizeof(float), verticesFloatArray, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ArrayBuffer, verticesFloatArray.Length * sizeof(float), verticesFloatArray,
+            BufferUsageHint.StaticDraw);
         var vertexArrayObject = GL.GenVertexArray();
         GL.BindVertexArray(vertexArrayObject);
 

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
+using MikCAD.Objects;
 using OpenTK.Mathematics;
 using MH = OpenTK.Mathematics.MathHelper;
 namespace MikCAD
@@ -123,8 +124,12 @@ namespace MikCAD
         {
             UpdateProjectionMatrix();
             UpdateViewMatrix();
+            if (grid == null)
+                _grid = new Grid(this);
         }
-        
+
+        private Grid _grid =null;
+        public Grid grid => _grid;
         
         internal Vector3 _position = new Vector3(0, 0, 0);
         private Vector3 _front = new Vector3(0, 0, -1);
@@ -153,6 +158,7 @@ namespace MikCAD
             ActForward = _front;
             _viewMatrix =Matrix4.LookAt( _position - _front* _scale , _position, _up);
             Scene.CurrentScene.ObjectsController?._pointer?.UpdateTranslationMatrix();
+            _grid?.UpdateGrid();
         }
         public Matrix4 GetViewMatrix()
         {

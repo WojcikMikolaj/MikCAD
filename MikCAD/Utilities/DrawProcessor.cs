@@ -1,4 +1,5 @@
 ﻿using MikCAD.BezierCurves;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -211,46 +212,8 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Lines, lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void DrawGrid(Camera camera, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawGrid(Grid grid, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        var pos = new Vector3((float) MH.Floor(camera.posX), 0, (float) MH.Floor(camera.posZ));
-        var width = 300;
-        var height = 300;
-        var startPos = pos - new Vector3(width / 2.0f, 0, height / 2.0f);
-        var vertices = new Vector3[width * height];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                vertices[i * height + j] = startPos + new Vector3(i, 0, j);
-            }
-        }
-
-        var verticesFloatArray = new float[3 * width * height];
-        for (int i = 0; i < width * height; i++)
-        {
-            verticesFloatArray[3 * i] = vertices[i].X;
-            verticesFloatArray[3 * i + 1] = vertices[i].Y;
-            verticesFloatArray[3 * i + 2] = vertices[i].Z;
-        }
-
-        var lines = new uint[2 * 2 * width * height];
-        var it = 0;
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height - 1; j++)
-            {
-                lines[it++] = (uint) (i * height + j);
-                lines[it++] = (uint) (i * height + j + 1);
-            }
-        }
-
-        for (int i = 0; i < height * (width - 1); i++)
-        {
-            lines[it++] = (uint) i;
-            lines[it++] = (uint) (i + width);
-        }
-
         Scene.CurrentScene._shader = _controller._colorShader;
         Scene.CurrentScene.UpdatePVM();
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
@@ -258,7 +221,7 @@ public class DrawProcessor
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, verticesFloatArray.Length * sizeof(float), verticesFloatArray,
+        GL.BufferData(BufferTarget.ArrayBuffer, grid.vertices.Length * sizeof(float), grid.vertices,
             BufferUsageHint.StaticDraw);
         var vertexArrayObject = GL.GenVertexArray();
         GL.BindVertexArray(vertexArrayObject);
@@ -268,11 +231,11 @@ public class DrawProcessor
 
         var indexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, lines.Length * sizeof(uint), lines,
+        GL.BufferData(BufferTarget.ElementArrayBuffer, grid.lines.Length * sizeof(uint), grid.lines,
             BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-        GL.DrawElements(PrimitiveType.Lines, lines.Length, DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(PrimitiveType.Lines, grid.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 }

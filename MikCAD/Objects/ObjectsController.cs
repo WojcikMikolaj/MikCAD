@@ -161,6 +161,8 @@ public class ObjectsController : INotifyPropertyChanged
     public bool DeleteSelectedObjects()
     {
         var obj = _selectedObject;
+        if (obj is null)
+            return false;
         if (_selectedObject is Pointer3D)
             return false;
         if (_selectedObject is ParameterizedPoint point)
@@ -187,7 +189,7 @@ public class ObjectsController : INotifyPropertyChanged
         List<ParameterizedObject> objectsToDelete = new List<ParameterizedObject>();
         foreach (var o in ParameterizedObjects)
         {
-            if (o.Selected)
+            if (o.Selected || o == obj)
                 objectsToDelete.Add(o);
             o.Selected = false;
         }
@@ -244,6 +246,7 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
+        _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, vertexAttributeLocation, normalAttributeLocation);
         foreach (var obj in ParameterizedObjects)
         {
             if (obj.Selected)
@@ -264,7 +267,6 @@ public class ObjectsController : INotifyPropertyChanged
 
         _drawProcessor.ProcessObject(_pointer, vertexAttributeLocation, normalAttributeLocation);
         _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, vertexAttributeLocation, normalAttributeLocation);
-        _drawProcessor.DrawGrid(Scene.CurrentScene.camera, vertexAttributeLocation, normalAttributeLocation);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

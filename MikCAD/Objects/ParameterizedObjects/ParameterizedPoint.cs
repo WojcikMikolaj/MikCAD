@@ -112,9 +112,9 @@ public class ParameterizedPoint : ParameterizedObject
 
     public override void OnDelete()
     {
-        foreach (var parent in parents)
+        for(int i=0; i<parents.Count;)
         {
-            parent?.ProcessObject(this);
+            parents[i]?.ProcessObject(this);
         }
     }
     

@@ -116,7 +116,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
 
     private uint[] GenerateLines()
     {
-        int count = _bernstein ? _bernsteinPoints.Count : _objects.Count;
+        int count = _bernsteinPoints.Count;
         if (count == 0)
             return new uint[0];
         //2 - ends of each line

@@ -327,7 +327,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             nextB += dpos;
             prevB += dpos;
 
-            var pos = nextB + (nextB - _objects[point.BSplinePointToMove + 1].GetModelMatrix().ExtractScale()) / 2.0f;
+            var pos = nextB + (nextB - _objects[point.BSplinePointToMove + 1].GetModelMatrix().ExtractTranslation()) / 2.0f;
             _objects[point.BSplinePointToMove].posX = pos.X;
             _objects[point.BSplinePointToMove].posY = pos.Y;
             _objects[point.BSplinePointToMove].posZ = pos.Z;

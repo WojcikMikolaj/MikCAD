@@ -50,6 +50,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.pointerControl.Visibility = Visibility.Hidden;
             MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Hidden;
+            MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -67,6 +68,9 @@ public class ObjectsController : INotifyPropertyChanged
                     break;
                 case BezierCurveC2 bezierCurveC2:
                     MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Visible;
+                    break;
+                case InterpolatingBezierCurveC2 interpolatingBezierCurveC2:
+                    MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Visible;
                     break;
                 case ParameterizedPoint point:
                 case CompositeObject compositeObject:
@@ -125,6 +129,7 @@ public class ObjectsController : INotifyPropertyChanged
                         curve.ProcessObject(parameterizedObject);
                         MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
                         MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
+                        MainWindow.current.interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
                     }
 
                 #endregion
@@ -216,6 +221,7 @@ public class ObjectsController : INotifyPropertyChanged
             (SelectedObject as CompositeObject).ProcessObject(o);
             MainWindow.current.bezierCurveC0Control.PointsList.Items.Refresh();
             MainWindow.current.bezierCurveC2Control.PointsList.Items.Refresh();
+            MainWindow.current.interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
             return;
         }
 

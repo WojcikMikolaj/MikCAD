@@ -49,7 +49,11 @@ namespace MikCAD
                             curveC2.ProcessObject(point);
                             bezierCurveC2Control.PointsList.Items.Refresh();
                         }
-
+                        else if (Scene.CurrentScene.ObjectsController.SelectedObject is InterpolatingBezierCurveC2 interpolatingBezierCurveC2)
+                        {
+                            interpolatingBezierCurveC2.ProcessObject(point);
+                            interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
+                        }
                         #endregion
 
                         else if (Scene.CurrentScene.ObjectsController.SelectedObject is CompositeObject compositeObject)
@@ -266,6 +270,11 @@ namespace MikCAD
         {
             scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
             bezierCurveC2Control.PointsList.Items.Refresh();
+        }
+        private void AddInterpolatingBezierCurveC2(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new InterpolatingBezierCurveC2());
+            interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
         }
 
         private void BezierCurveC0Test(object sender, RoutedEventArgs e)

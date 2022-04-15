@@ -34,6 +34,7 @@
                 <MenuItem Header="Torus" Click="AddTorus"/>
                 <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0"/>
                 <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2"/>
+                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2"/>
             </MenuItem>
             <MenuItem Header="Debug">
                 <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>
@@ -67,5 +68,6 @@
         <local:PointerControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointerControl" Visibility="Hidden"/>
         <local:BezierCurveC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC0Control" Visibility="Hidden"/>
         <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC2Control" Visibility="Hidden"/>
+        <local:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden"/>
     </Grid>
 </Window>

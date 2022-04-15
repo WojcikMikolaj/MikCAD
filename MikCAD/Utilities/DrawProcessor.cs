@@ -27,6 +27,11 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
+    public void ProcessObject(InterpolatingBezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        return;
+    }
+    
     public void ProcessObject(BezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);

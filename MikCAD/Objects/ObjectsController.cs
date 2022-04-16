@@ -255,10 +255,7 @@ public class ObjectsController : INotifyPropertyChanged
         _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, vertexAttributeLocation, normalAttributeLocation);
         foreach (var obj in ParameterizedObjects)
         {
-            if (obj.Selected)
-                Scene.CurrentScene._shader = _selectedObjectShader;
-            else
-                Scene.CurrentScene._shader = _standardObjectShader;
+            Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
             Scene.CurrentScene.UpdatePVM();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);

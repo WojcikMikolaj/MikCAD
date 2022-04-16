@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -7,7 +8,7 @@ namespace MikCAD.BezierCurves;
 
 public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 {
-     private bool _drawPolygon = false;
+    private bool _drawPolygon = false;
 
     public bool DrawPolygon
     {
@@ -80,7 +81,21 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
                 ProcessObject(obj);
             }
         }
-        
+
+        if (size != _objects.Count)
+        {
+            _d = new float[_objects.Count];
+            _alpha = new float[_objects.Count];
+            _beta = new float[_objects.Count];
+            _r = new Vector3[_objects.Count];
+            _a = new Vector3[_objects.Count];
+            _b = new Vector3[_objects.Count];
+            _c = new Vector3[_objects.Count];
+            _db = new Vector3[_objects.Count];
+            _vertices = new Vector3[4 * _objects.Count];
+            CalculateBezierCoefficients();
+        }
+
         OnPropertyChanged(nameof(Objects));
     }
 
@@ -91,21 +106,154 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
     public uint[] patches => _patches;
     public uint[] _patches;
-    
-    
+
+
     private uint[] GenerateLines()
     {
-        return _lines;
+        int count = _vertices.Length;
+        if (count == 0)
+            return new uint[0];
+        //2 - ends of each line
+        uint[] lines = new uint[2 * (count - 1)];
+        uint it = 0;
+        for (int i = 0; i < count - 1; i++)
+        {
+            lines[it++] = (uint) i;
+            lines[it++] = (uint) i + 1;
+        }
+
+        return lines;
     }
 
     private uint[] GeneratePatches()
     {
-        return _patches;
+        if (_vertices.Length == 0)
+            return new uint[0];
+        int patchesCount = (int) Math.Ceiling(_vertices.Length / 4.0f);
+        uint[] patches = new uint[patchesCount * 4];
+        int it = 0;
+        for (int i = 0; i < patchesCount; i++)
+        {
+            patches[it++] = (uint) (3 * i);
+            patches[it++] = (uint) (3 * i + 1);
+            patches[it++] = (uint) (3 * i + 2);
+            patches[it++] = (uint) (3 * i + 3);
+        }
+
+        return patches;
+    }
+
+    private float[] _d = Array.Empty<float>();
+    private float[] _alpha = Array.Empty<float>();
+    private float[] _beta = Array.Empty<float>();
+    private Vector3[] _r = Array.Empty<Vector3>();
+    private Vector3[] _a = Array.Empty<Vector3>();
+    private Vector3[] _b = Array.Empty<Vector3>();
+    private Vector3[] _c = Array.Empty<Vector3>();
+    private Vector3[] _db = Array.Empty<Vector3>();
+    private Vector3[] _vertices = Array.Empty<Vector3>();
+
+    public void CalculateBezierCoefficients()
+    {
+        for (int i = 0; i < _objects.Count - 1; i++)
+        {
+            _d[i] = MathM.Distance(_objects[i], _objects[i + 1]);
+        }
+
+        for (int i = 1; i < _objects.Count - 1; i++)
+        {
+            var deltad = _d[i - 1] + _d[i];
+            _alpha[i] = _d[i - 1] / deltad;
+            _beta[i] = _d[i] / deltad;
+
+            var pmPos = _objects[i - 1].GetModelMatrix().ExtractTranslation();
+            var pPos = _objects[i].GetModelMatrix().ExtractTranslation();
+            var ppPos = _objects[i + 1].GetModelMatrix().ExtractTranslation();
+
+            _r[i] = ((ppPos - pPos) / _d[i] - (pPos - pmPos) / _d[i - 1]) / deltad;
+        }
+
+        //using: https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
+        _beta[1] = _beta[1] / 2;
+        _r[1] = _r[1] / 2;
+        for (int i = 2; i < _objects.Count - 1; i++)
+        {
+            _beta[i] = _beta[i] / (2 - _alpha[i] * _beta[i - 1]);
+            _r[i] = (_r[i] - _alpha[i] * _r[i - 1]) / (2 - _alpha[i] * _beta[i - 1]);
+        }
+
+        _c[_objects.Count - 2] = _r[_objects.Count - 2];
+        for (int i = objectsCount - 3; i > 0; i--)
+        {
+            _c[i] = _r[i] - _beta[i] * _c[i + 1];
+        }
+
+        _c[0] = _c[^1] = Vector3.Zero;
+        _a[0] = _a[^1] = Vector3.Zero;
+        _b[0] = _b[^1] = Vector3.Zero;
+        _db[0] = _db[^2] = _db[^1] = Vector3.Zero;
+        for (int i = 1; i < _objects.Count - 1; i++)
+        {
+            var dd = _d[i - 1] * _d[i - 1];
+            _db[i - 1] = (2 * _c[i] - 2 * _c[i - 1]) / (6 * _d[i - 1]);
+            _a[i] = _a[i - 1] + _b[i - 1] * _d[i - 1] + _c[i - 1] * dd + _db[i - 1] * _d[i - 1] * dd;
+            _b[i] = _b[i - 1] + 2 * _c[i - 1] * _d[i - 1] + 3 * _db[i - 1] * dd;
+        }
+
+        for (int i = 0; i < _objects.Count; i++)
+        {
+            _vertices[4 * i] = _a[i];
+            _vertices[4 * i + 1] = _b[i];
+            _vertices[4 * i + 2] = _c[i];
+            _vertices[4 * i + 3] = _db[i];
+        }
     }
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        
+        float minX = 1;
+        float maxX = -1;
+        float minY = 1;
+        float maxY = -1;
+
+        var points = _vertices;
+
+        var vertices = new float[(points.Length) * 4];
+        for (int i = 0; i < (points.Length); i++)
+        {
+            var posVector = points[i];
+            vertices[4 * i] = posVector.X;
+            vertices[4 * i + 1] = posVector.Y;
+            vertices[4 * i + 2] = posVector.Z;
+            vertices[4 * i + 3] = 1;
+
+            var posNDC = new Vector4(posVector, 1) * Scene.CurrentScene.camera.GetViewMatrix() *
+                         Scene.CurrentScene.camera.GetProjectionMatrix();
+            posNDC /= posNDC.W;
+            if (posNDC.X < minX)
+                minX = posNDC.X;
+            if (posNDC.Y < minY)
+                minY = posNDC.Y;
+            if (posNDC.X > maxX)
+                maxX = posNDC.X;
+            if (posNDC.Y > maxY)
+                maxY = posNDC.Y;
+        }
+
+        var vertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, (points.Length) * 4 * sizeof(float), vertices,
+            BufferUsageHint.StaticDraw);
+
+        var vertexArrayObject = GL.GenVertexArray();
+        GL.BindVertexArray(vertexArrayObject);
+
+        GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+
+        tessLevel = (int) Math.Max(32, 256 * (maxX - minX) * (maxY - minY) / 4);
+        _lines = GenerateLines();
+        _patches = GeneratePatches();
     }
 
 
@@ -114,7 +262,6 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
     }
 
-   
     public void MoveUp(ParameterizedObject parameterizedObject)
     {
         if (parameterizedObject is ParameterizedPoint p)
@@ -143,7 +290,8 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         }
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
     }

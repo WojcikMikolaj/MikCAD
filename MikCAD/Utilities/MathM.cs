@@ -8,4 +8,9 @@ public static class MathM
     {
         return MathF.Abs(a) > MathF.Abs(b) ? a : b;
     }
+
+    public static float Distance(ParameterizedObject a, ParameterizedObject b)
+    {
+        return (b.GetModelMatrix().ExtractTranslation() - a.GetModelMatrix().ExtractTranslation()).Length;
+    }
 }

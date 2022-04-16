@@ -39,6 +39,12 @@
     <EmbeddedResource Include="Shaders\ColorShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\InterpolatingBezierCurveC2\InterpolatingBezierCurveC2TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\InterpolatingBezierCurveC2\InterpolatingBezierCurveC2TessEvaluationShader.tese">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\PointerShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

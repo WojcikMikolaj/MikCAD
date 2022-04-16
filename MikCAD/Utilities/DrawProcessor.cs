@@ -29,7 +29,42 @@ public class DrawProcessor
 
     public void ProcessObject(InterpolatingBezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        return;
+        curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        int indexBufferObject;
+        Scene.CurrentScene._shader = _controller._standardObjectShader;
+        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+
+        if (curveC2.DrawPolygon)
+        {
+            Scene.CurrentScene._shader = _controller._colorShader;
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene._shader.SetVector4("color", curveC2.CurveColor);
+            indexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, curveC2._lines.Length * sizeof(uint),
+                curveC2._lines, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+            GL.EnableVertexAttribArray(1);
+            GL.DrawElements(PrimitiveType.Lines, curveC2.lines.Length, DrawElementsType.UnsignedInt, 0);
+        }
+
+        curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        Scene.CurrentScene._shader = _controller._interpolatingBezierCurveC2Shader;
+        Scene.CurrentScene._shader.SetInt("tessLevels", curveC2.tessLevel);
+        Scene.CurrentScene.UpdatePVM();
+        GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
+
+        indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, curveC2._patches.Length * sizeof(uint),
+            curveC2._patches, BufferUsageHint.StaticDraw);
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+
+        GL.DrawElements(PrimitiveType.Patches, curveC2.patches.Length, DrawElementsType.UnsignedInt,
+            0);
     }
     
     public void ProcessObject(BezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)

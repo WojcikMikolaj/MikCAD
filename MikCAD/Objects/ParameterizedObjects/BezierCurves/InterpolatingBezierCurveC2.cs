@@ -92,7 +92,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             _b = new Vector3[_objects.Count];
             _c = new Vector3[_objects.Count];
             _db = new Vector3[_objects.Count];
-            _vertices = new Vector3[4 * _objects.Count];
+            _vertices = new Vector4[4 * _objects.Count];
             CalculateBezierCoefficients();
         }
 
@@ -151,10 +151,12 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     private Vector3[] _b = Array.Empty<Vector3>();
     private Vector3[] _c = Array.Empty<Vector3>();
     private Vector3[] _db = Array.Empty<Vector3>();
-    private Vector3[] _vertices = Array.Empty<Vector3>();
+    private Vector4[] _vertices = Array.Empty<Vector4>();
 
     public void CalculateBezierCoefficients()
     {
+        if (_objects.Count < 2)
+            return;
         for (int i = 0; i < _objects.Count - 1; i++)
         {
             _d[i] = MathM.Distance(_objects[i], _objects[i + 1]);
@@ -202,10 +204,10 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         for (int i = 0; i < _objects.Count; i++)
         {
-            _vertices[4 * i] = _a[i];
-            _vertices[4 * i + 1] = _b[i];
-            _vertices[4 * i + 2] = _c[i];
-            _vertices[4 * i + 3] = _db[i];
+            _vertices[4 * i] = new Vector4(_a[i], _d[i]);
+            _vertices[4 * i + 1] = new Vector4(_b[i], 1);
+            _vertices[4 * i + 2] = new Vector4(_c[i], 1);
+            _vertices[4 * i + 3] = new Vector4(_db[i], 1);
         }
     }
 
@@ -225,9 +227,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             vertices[4 * i] = posVector.X;
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;
-            vertices[4 * i + 3] = 1;
+            vertices[4 * i + 3] = posVector.W;
 
-            var posNDC = new Vector4(posVector, 1) * Scene.CurrentScene.camera.GetViewMatrix() *
+            var posNDC = new Vector4(posVector) * Scene.CurrentScene.camera.GetViewMatrix() *
                          Scene.CurrentScene.camera.GetProjectionMatrix();
             posNDC /= posNDC.W;
             if (posNDC.X < minX)

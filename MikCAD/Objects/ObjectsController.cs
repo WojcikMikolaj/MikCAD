@@ -33,6 +33,11 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC2/BezierCurveC2TessControlShader.tesc",
         "Shaders/BezierCurveC2/BezierCurveC2TessEvaluationShader.tese");
+    public Shader _interpolatingBezierCurveC2Shader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag",
+        "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessControlShader.tesc",
+        "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessEvaluationShader.tese");
 
     private DrawProcessor _drawProcessor;
 

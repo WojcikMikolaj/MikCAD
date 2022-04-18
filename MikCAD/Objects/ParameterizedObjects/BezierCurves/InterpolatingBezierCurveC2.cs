@@ -82,7 +82,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             }
         }
 
-        if (size != _objects.Count)
+        if (size != _objects.Count && _objects.Count > 2)
         {
             _chordLengths = new float[_objects.Count];
             _alpha = new float[_objects.Count];
@@ -93,7 +93,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             _b = new Vector3[_objects.Count];
             _c = new Vector3[_objects.Count];
             _d = new Vector3[_objects.Count];
-            _vertices = new Vector4[4 * _objects.Count];
+            _vertices = new Vector4[4 * (_objects.Count-2)];
             CalculateBezierCoefficients();
         }
 
@@ -135,10 +135,10 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         int it = 0;
         for (int i = 0; i < patchesCount; i++)
         {
-            patches[it++] = (uint) (3 * i);
-            patches[it++] = (uint) (3 * i + 1);
-            patches[it++] = (uint) (3 * i + 2);
-            patches[it++] = (uint) (3 * i + 3);
+            patches[it++] = (uint) (4 * i);
+            patches[it++] = (uint) (4 * i + 1);
+            patches[it++] = (uint) (4 * i + 2);
+            patches[it++] = (uint) (4 * i + 3);
         }
 
         return patches;
@@ -213,7 +213,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         }
         _d[_objects.Count-2] =(2 * _c[_objects.Count-2] - 2 * _c[_objects.Count-3]) / (6 * _chordLengths[_objects.Count-3]); 
         
-        for (int i = 0; i < _objects.Count; i++)
+        for (int i = firstRowId; i < lastRowId; i++)
         {
             _vertices[4 * i] = new Vector4(_a[i], _chordLengths[i]);
             _vertices[4 * i + 1] = new Vector4(_b[i], 1);

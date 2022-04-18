@@ -84,7 +84,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         if (size != _objects.Count)
         {
-            _d = new float[_objects.Count];
+            _chordLengths = new float[_objects.Count];
             _alpha = new float[_objects.Count];
             _beta = new float[_objects.Count];
             _r = new Vector3[_objects.Count];
@@ -143,9 +143,11 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         return patches;
     }
 
-    private float[] _d = Array.Empty<float>();
+    private float[] _chordLengths = Array.Empty<float>();
+    private float[] _mid = Array.Empty<float>();
     private float[] _alpha = Array.Empty<float>();
     private float[] _beta = Array.Empty<float>();
+    //d - wyraz wolny
     private Vector3[] _r = Array.Empty<Vector3>();
     private Vector3[] _a = Array.Empty<Vector3>();
     private Vector3[] _b = Array.Empty<Vector3>();
@@ -159,52 +161,36 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             return;
         for (int i = 0; i < _objects.Count - 1; i++)
         {
-            _d[i] = MathM.Distance(_objects[i], _objects[i + 1]);
-        }
-
-        for (int i = 1; i < _objects.Count - 1; i++)
-        {
-            var deltad = _d[i - 1] + _d[i];
-            _alpha[i] = _d[i - 1] / deltad;
-            _beta[i] = _d[i] / deltad;
-
-            var pmPos = _objects[i - 1].GetModelMatrix().ExtractTranslation();
-            var pPos = _objects[i].GetModelMatrix().ExtractTranslation();
-            var ppPos = _objects[i + 1].GetModelMatrix().ExtractTranslation();
-
-            _r[i] = ((ppPos - pPos) / _d[i] - (pPos - pmPos) / _d[i - 1]) / deltad;
-        }
-
-        //using: https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
-        _beta[1] = _beta[1] / 2;
-        _r[1] = _r[1] / 2;
-        for (int i = 2; i < _objects.Count - 1; i++)
-        {
-            _beta[i] = _beta[i] / (2 - _alpha[i] * _beta[i - 1]);
-            _r[i] = (_r[i] - _alpha[i] * _r[i - 1]) / (2 - _alpha[i] * _beta[i - 1]);
-        }
-
-        _c[_objects.Count - 2] = _r[_objects.Count - 2];
-        for (int i = objectsCount - 3; i > 0; i--)
-        {
-            _c[i] = _r[i] - _beta[i] * _c[i + 1];
-        }
-
-        _c[0] = _c[^1] = Vector3.Zero;
-        _a[0] = _a[^1] = Vector3.Zero;
-        _b[0] = _b[^1] = Vector3.Zero;
-        _db[0] = _db[^2] = _db[^1] = Vector3.Zero;
-        for (int i = 1; i < _objects.Count - 1; i++)
-        {
-            var dd = _d[i - 1] * _d[i - 1];
-            _db[i - 1] = (2 * _c[i] - 2 * _c[i - 1]) / (6 * _d[i - 1]);
-            _a[i] = _a[i - 1] + _b[i - 1] * _d[i - 1] + _c[i - 1] * dd + _db[i - 1] * _d[i - 1] * dd;
-            _b[i] = _b[i - 1] + 2 * _c[i - 1] * _d[i - 1] + 3 * _db[i - 1] * dd;
+            _chordLengths[i] = MathM.Distance(_objects[i], _objects[i + 1]);
         }
 
         for (int i = 0; i < _objects.Count; i++)
         {
-            _vertices[4 * i] = new Vector4(_a[i], _d[i]);
+            _mid[i] = 2;
+        }
+
+        for (int i = 1; i < _objects.Count; i++)
+        {
+            var w = _alpha[i] / _mid[i-1]; //dolna diagonala przez środkową (z przesunięciem)
+            _mid[i] = _mid[i] - w * _beta[i - 1];
+            _r[i] = _r[i] - w * _r[i - 1];
+        }
+
+        _c[^1] = _r[^1] / _mid[^1];
+        for (int i = _objects.Count - 2; i >= 0; i++)
+        {
+            _c[i] = (_r[i] - _beta[i]*_r[i+1])/ _mid[i];
+        }
+
+        //koniec układu równań
+        //początek wyliczania a,b i d
+        
+        
+        
+        
+        for (int i = 0; i < _objects.Count; i++)
+        {
+            _vertices[4 * i] = new Vector4(_a[i], _chordLengths[i]);
             _vertices[4 * i + 1] = new Vector4(_b[i], 1);
             _vertices[4 * i + 2] = new Vector4(_c[i], 1);
             _vertices[4 * i + 3] = new Vector4(_db[i], 1);

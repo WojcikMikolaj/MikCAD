@@ -5,6 +5,7 @@ using System.Windows.Input;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using MikCAD.Utilities;
+using OpenTK.Mathematics;
 
 namespace MikCAD
 {
@@ -105,7 +106,23 @@ namespace MikCAD
                     switch (ActiveAxis)
                     {
                         case Axis.None:
-                            if (_leftPressed)
+                            if (IsObjectFreeMoveEnabled)
+                            {
+                                var obj = Scene.CurrentScene.ObjectsController.SelectedObject;
+                                if (obj is not IBezierCurve)
+                                {
+                                    var yVec = Scene.CurrentScene.camera.Up;
+                                    var xVec = (Scene.CurrentScene.camera.GetViewMatrix() * new Vector4(1, 0, 0, 0)).Xyz;
+                                    
+                                    Title = $"Vec1: {yVec.X}, {yVec.Y}, {yVec.Z}. Vec3: {xVec.X}, {xVec.Y}, {xVec.Z}.";
+                                    //xVec = Vector4.Zero;
+                                    var vec = -yVec *dy + xVec *dx;
+                                    obj.posX += vec.X * 0.005f;
+                                    obj.posY += vec.Y * 0.005f;
+                                    obj.posZ += vec.Z * 0.005f;
+                                }
+                            }
+                            else if (_leftPressed)
                             {
                                 var rotX = scene.camera.rotX;
                                 var rotY = scene.camera.rotY;
@@ -177,6 +194,7 @@ namespace MikCAD
         }
 
         public static bool IsMultiSelectEnabled { get; private set; }
+        public static bool IsObjectFreeMoveEnabled { get; private set; }
         public static bool AddToSelected { get; private set; }
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
@@ -198,6 +216,10 @@ namespace MikCAD
                 case Key.LeftCtrl:
                     IsMultiSelectEnabled = true;
                     break;
+                case Key.System:
+                    if(e.SystemKey == Key.LeftAlt)
+                        IsObjectFreeMoveEnabled = true;
+                    break;
                 case Key.Escape:
                     Scene.CurrentScene.ObjectsController.UnselectAll();
                     break;
@@ -214,6 +236,10 @@ namespace MikCAD
                 case Key.LeftCtrl:
                     IsMultiSelectEnabled = false;
                     break;
+                case Key.System:
+                    if(e.SystemKey == Key.LeftAlt)
+                        IsObjectFreeMoveEnabled = false;
+                    break;
                 case Key.A:
                     AddToSelected = false;
                     break;
@@ -224,7 +250,5 @@ namespace MikCAD
                     break;
             }
         }
-
-        
     }
 }

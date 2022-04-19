@@ -134,7 +134,7 @@ namespace MikCAD
         internal Vector3 _position = new Vector3(0, 0, 0);
         private Vector3 _front = new Vector3(0, 0, -1);
         private Vector3 _up = new Vector3(0, 1, 0);
-
+        public Vector3 Up => _up;
         internal Vector3 ActForward = new Vector3();
         
         private float _pitch;

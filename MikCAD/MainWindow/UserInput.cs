@@ -304,5 +304,12 @@ namespace MikCAD
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
             scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 6, posZ = 2});
         }
+        private void InterpolationTest(object sender, RoutedEventArgs e)
+        {
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1, posY = 1});
+            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
+        }
     }
 }

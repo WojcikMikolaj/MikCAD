@@ -49,11 +49,13 @@ namespace MikCAD
                             curveC2.ProcessObject(point);
                             bezierCurveC2Control.PointsList.Items.Refresh();
                         }
-                        else if (Scene.CurrentScene.ObjectsController.SelectedObject is InterpolatingBezierCurveC2 interpolatingBezierCurveC2)
+                        else if (Scene.CurrentScene.ObjectsController.SelectedObject is InterpolatingBezierCurveC2
+                                 interpolatingBezierCurveC2)
                         {
                             interpolatingBezierCurveC2.ProcessObject(point);
                             interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
                         }
+
                         #endregion
 
                         else if (Scene.CurrentScene.ObjectsController.SelectedObject is CompositeObject compositeObject)
@@ -223,93 +225,6 @@ namespace MikCAD
             }
         }
 
-        private void AddTorus(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new Torus());
-        }
-
-        private void AddPoint(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
-        }
-
-        private bool _clear = false;
-
-        private void SetClear(object sender, RoutedEventArgs e)
-        {
-            _clear = !_clear;
-        }
-
-        private void AddThreePoints(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posY = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posZ = 1});
-        }
-
-        private void AddThreeToruses(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new Torus() {posX = 3});
-            scene.ObjectsController.AddObjectToScene(new Torus() {posY = 3});
-            scene.ObjectsController.AddObjectToScene(new Torus() {posZ = 3});
-        }
-
-        private void RotTest(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new Torus() {posX = -3});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 3});
-        }
-
-        private void AddBezierCurveC0(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
-            bezierCurveC0Control.PointsList.Items.Refresh();
-        }
-
-        private void AddBezierCurveC2(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
-            bezierCurveC2Control.PointsList.Items.Refresh();
-        }
-        private void AddInterpolatingBezierCurveC2(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new InterpolatingBezierCurveC2());
-            interpolatingBezierCurveC2Control.PointsList.Items.Refresh();
-        }
-
-        private void BezierCurveC0Test(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
-        }
-
-        private void BezierCurveC2Test(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 6, posZ = 2});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 1, posZ = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 0, posY = 3, posZ = 0});
-        }
-
-        private void BezierCurveC2BernsteinTest(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1, posZ = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 6, posZ = 2});
-        }
-        private void InterpolationTest(object sender, RoutedEventArgs e)
-        {
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint());
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 1, posY = 1});
-            scene.ObjectsController.AddObjectToScene(new ParameterizedPoint() {posX = 2, posY = 1});
-        }
+        
     }
 }

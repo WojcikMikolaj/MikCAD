@@ -30,8 +30,25 @@ namespace MikCAD
                 checkCollisions = true;
                 m_x = (int) e.GetPosition(OpenTkControl).X;
                 m_y = (int) e.GetPosition(OpenTkControl).Y;
-                var point = Raycaster.FindIntersectingPoint((float) e.GetPosition(OpenTkControl).X,
-                    (float) e.GetPosition(OpenTkControl).Y);
+                ParameterizedObject point = null;
+                if (IsObjectFreeMoveEnabled)
+                {
+                    var pos = Raycaster.FindPointOnCameraPlain((float) e.GetPosition(OpenTkControl).X,
+                        (float) e.GetPosition(OpenTkControl).Y);
+                    scene.ObjectsController.AddObjectToScene(point = new ParameterizedPoint()
+                    {
+                        posX = pos.X,
+                        posY = pos.Y,
+                        posZ = pos.Z,
+                    });
+                    return;
+                }
+                else
+                {
+                    point = Raycaster.FindIntersectingPoint((float) e.GetPosition(OpenTkControl).X,
+                        (float) e.GetPosition(OpenTkControl).Y);
+                }
+                
                 // ParameterizedPoint point = null;
                 if (point != null)
                 {
@@ -112,11 +129,12 @@ namespace MikCAD
                                 if (obj is not IBezierCurve)
                                 {
                                     var yVec = Scene.CurrentScene.camera.Up;
-                                    var xVec = (Scene.CurrentScene.camera.GetViewMatrix() * new Vector4(1, 0, 0, 0)).Xyz;
-                                    
+                                    var xVec = (Scene.CurrentScene.camera.GetViewMatrix() * new Vector4(1, 0, 0, 0))
+                                        .Xyz;
+#if DEBUG
                                     Title = $"Vec1: {yVec.X}, {yVec.Y}, {yVec.Z}. Vec3: {xVec.X}, {xVec.Y}, {xVec.Z}.";
-                                    //xVec = Vector4.Zero;
-                                    var vec = -yVec *dy + xVec *dx;
+#endif
+                                    var vec = -yVec * dy + xVec * dx;
                                     obj.posX += vec.X * 0.005f;
                                     obj.posY += vec.Y * 0.005f;
                                     obj.posZ += vec.Z * 0.005f;
@@ -217,7 +235,7 @@ namespace MikCAD
                     IsMultiSelectEnabled = true;
                     break;
                 case Key.System:
-                    if(e.SystemKey == Key.LeftAlt)
+                    if (e.SystemKey == Key.LeftAlt)
                         IsObjectFreeMoveEnabled = true;
                     break;
                 case Key.Escape:
@@ -237,8 +255,11 @@ namespace MikCAD
                     IsMultiSelectEnabled = false;
                     break;
                 case Key.System:
-                    if(e.SystemKey == Key.LeftAlt)
+                    if (e.SystemKey == Key.LeftAlt)
                         IsObjectFreeMoveEnabled = false;
+                    break;
+                case Key.LeftAlt:
+                    IsObjectFreeMoveEnabled = false;
                     break;
                 case Key.A:
                     AddToSelected = false;

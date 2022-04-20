@@ -82,7 +82,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             }
         }
 
-        if (size != _objects.Count && _objects.Count > 2)
+        if (size != _objects.Count)
         {
             _chordLengths = new float[_objects.Count]; //di ze wzoru
             _alpha = new float[_objects.Count];
@@ -93,7 +93,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             _b = new Vector3[_objects.Count];
             _c = new Vector3[_objects.Count];
             _d = new Vector3[_objects.Count];
-            _vertices = new Vector4[4 * (_objects.Count-1)];
+            _vertices = new Vector4[4 * (_objects.Count-1 >=0?_objects.Count-1:0)];
             CalculateBezierCoefficients();
         }
 

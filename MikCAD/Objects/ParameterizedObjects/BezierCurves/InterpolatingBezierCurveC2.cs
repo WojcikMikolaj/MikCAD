@@ -115,12 +115,13 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         if (count == 0)
             return new uint[0];
         //2 - ends of each line
-        uint[] lines = new uint[2 * (count - 1)];
+        int patchesCount = (int) Math.Ceiling(_vertices.Length / 4.0f);
+        uint[] lines = new uint[4 *2 * patchesCount -2];
         uint it = 0;
-        for (int i = 0; i < count - 1; i++)
+        for (int i = 0; i < 4 * patchesCount -1; i++)
         {
-            lines[it++] = (uint) (4*i);
-            lines[it++] = (uint) (4*i + 4);
+            lines[it++] = (uint) i;
+            lines[it++] = (uint) i+1;
         }
 
         return lines;
@@ -208,15 +209,15 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
                     (_c[i + 1] + 2 * _c[i]) / 3 * _chordLengths[i];
             _d[i] = (_c[i + 1] -  _c[i]) / (3 * _chordLengths[i]);
         }
-
+        _b[^1] = _b[^2] + _c[^2] * _d[^1];
         _a[^1] = _objects[^1].GetModelMatrix().ExtractTranslation();
         
         for (int i = 0; i <= lastRowId; i++)
         {
-            _vertices[4 * i] = new Vector4(_a[i], _chordLengths[i]);
-            _vertices[4 * i + 1] = new Vector4(_b[i], 1);
-            _vertices[4 * i + 2] = new Vector4(_c[i], 1);
-            _vertices[4 * i + 3] = new Vector4(_d[i], 1);
+            _vertices[4 * i] = new Vector4(_a[i], 1);
+            _vertices[4 * i + 1] = new Vector4(_a[i] + _b[i]/3 * _chordLengths[i], 1);
+            _vertices[4 * i + 2] = new Vector4(_a[i+1] - _b[i+1]/3 * _chordLengths[i], 1);
+            _vertices[4 * i + 3] = new Vector4(_a[i+1], 1);
         }
     }
 

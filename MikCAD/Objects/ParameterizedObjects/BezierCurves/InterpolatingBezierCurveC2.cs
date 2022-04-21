@@ -209,7 +209,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
                     (_c[i + 1] + 2 * _c[i]) / 3 * _chordLengths[i];
             _d[i] = (_c[i + 1] -  _c[i]) / (3 * _chordLengths[i]);
         }
-        _b[^1] = _b[^2] + _c[^2] * _d[^1];
+        _b[^1] = _b[^2] + _c[^2] * _chordLengths[^1];
         _a[^1] = _objects[^1].GetModelMatrix().ExtractTranslation();
         
         for (int i = 0; i <= lastRowId; i++)

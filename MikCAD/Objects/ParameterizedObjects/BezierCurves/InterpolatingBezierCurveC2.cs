@@ -134,7 +134,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     private uint[] GenerateLines()
     {
         int count = _objs.Count;
-        if (count == 0)
+        if (count < 2)
             return new uint[0];
         //2 - ends of each line
         int patchesCount = (int) Math.Ceiling(_vertices.Length / 4.0f);

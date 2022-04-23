@@ -90,7 +90,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         OnPropertyChanged(nameof(Objects));
     }
 
-    private void RecalculatePoints()
+    internal void RecalculatePoints()
     {
         int number = 0;
         _objs.Clear();

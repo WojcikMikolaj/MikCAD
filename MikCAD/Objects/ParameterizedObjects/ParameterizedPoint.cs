@@ -106,7 +106,8 @@ public class ParameterizedPoint : ParameterizedObject
     {
         foreach (var parent in parents)   
         {
-            (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);    
+            (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);
+            (parent as InterpolatingBezierCurveC2)?.RecalculatePoints();
         }
     }
 

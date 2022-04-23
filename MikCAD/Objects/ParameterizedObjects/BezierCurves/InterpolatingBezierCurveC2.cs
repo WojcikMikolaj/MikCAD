@@ -93,11 +93,11 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     internal void RecalculatePoints()
     {
         int number = 0;
-        _objs.Clear();
+        _points.Clear();
         if (_objects.Count > 0)
         {
             number = 1;
-            _objs.Add(_objects[0]);
+            _points.Add(_objects[0]);
         }
 
         for (int i = 1; i < _objects.Count; i++)
@@ -105,7 +105,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             if (MathM.Distance(_objects[i - 1], _objects[i]) > Double.Epsilon)
             {
                 number++;
-                _objs.Add(_objects[i]);
+                _points.Add(_objects[i]);
             }
         }
 
@@ -133,7 +133,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
     private uint[] GenerateLines()
     {
-        int count = _objs.Count;
+        int count = _points.Count;
         if (count < 2)
             return new uint[0];
         //2 - ends of each line
@@ -170,11 +170,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     private float[] _chordLengths = Array.Empty<float>();
     private float[] _mid = Array.Empty<float>();
     private float[] _alpha = Array.Empty<float>();
-
     private float[] _beta = Array.Empty<float>();
-
-    //d - wyraz wolny
-    private List<ParameterizedObject> _objs = new List<ParameterizedObject>();
+    
+    private List<ParameterizedObject> _points = new List<ParameterizedObject>();
     private Vector3[] _r = Array.Empty<Vector3>();
     private Vector3[] _a = Array.Empty<Vector3>();
     private Vector3[] _b = Array.Empty<Vector3>();
@@ -184,13 +182,13 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
     public void CalculateBezierCoefficients()
     {
-        if (_objs.Count < 2)
+        if (_points.Count < 2)
             return;
         int firstRowId = 1;
-        int lastRowId = _objs.Count - 2;
-        for (int i = 0; i < _objs.Count - 1; i++)
+        int lastRowId = _points.Count - 2;
+        for (int i = 0; i < _points.Count - 1; i++)
         {
-            _chordLengths[i] = MathM.Distance(_objs[i], _objs[i + 1]);
+            _chordLengths[i] = MathM.Distance(_points[i], _points[i + 1]);
         }
 
         for (int i = firstRowId; i <= lastRowId; i++)
@@ -200,9 +198,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             _beta[i] = _chordLengths[i] / (_chordLengths[i - 1] + _chordLengths[i]);
 
 
-            var pmPos = _objs[i - 1].GetModelMatrix().ExtractTranslation();
-            var pPos = _objs[i].GetModelMatrix().ExtractTranslation();
-            var ppPos = _objs[i + 1].GetModelMatrix().ExtractTranslation();
+            var pmPos = _points[i - 1].GetModelMatrix().ExtractTranslation();
+            var pPos = _points[i].GetModelMatrix().ExtractTranslation();
+            var ppPos = _points[i + 1].GetModelMatrix().ExtractTranslation();
 
             _r[i] = 3 * ((ppPos - pPos) / _chordLengths[i] - (pPos - pmPos) / _chordLengths[i - 1]) /
                     (_chordLengths[i - 1] + _chordLengths[i]);
@@ -226,18 +224,18 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         _c[0] = _c[^1] = Vector3.Zero;
 
-        for (int i = 0; i < _objs.Count - 1; i++)
+        for (int i = 0; i < _points.Count - 1; i++)
         {
-            _a[i] = _objs[i].GetModelMatrix().ExtractTranslation();
+            _a[i] = _points[i].GetModelMatrix().ExtractTranslation();
 
-            _b[i] = (_objs[i + 1].GetModelMatrix().ExtractTranslation() -
-                     _objs[i].GetModelMatrix().ExtractTranslation()) / _chordLengths[i] -
+            _b[i] = (_points[i + 1].GetModelMatrix().ExtractTranslation() -
+                     _points[i].GetModelMatrix().ExtractTranslation()) / _chordLengths[i] -
                     (_c[i + 1] + 2 * _c[i]) / 3 * _chordLengths[i];
             _d[i] = (_c[i + 1] - _c[i]) / (3 * _chordLengths[i]);
         }
 
         _b[^1] = _b[^2] + _c[^2] * _chordLengths[^2];
-        _a[^1] = _objs[^1].GetModelMatrix().ExtractTranslation();
+        _a[^1] = _points[^1].GetModelMatrix().ExtractTranslation();
 
         for (int i = 0; i <= lastRowId; i++)
         {

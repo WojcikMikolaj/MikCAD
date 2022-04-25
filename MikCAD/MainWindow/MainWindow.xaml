@@ -18,6 +18,11 @@
             <local:TorusControl DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"/>
         </DataTemplate>
     </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="Save" Executed="OnSaveCommand"/>
+        <CommandBinding Command="Open" Executed="OnLoadCommand"/>
+        
+    </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -30,14 +35,18 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="3">
             <MenuItem Header="Dodaj">
-                <MenuItem Header="Punkt" Click="AddPoint"></MenuItem>
-                <MenuItem Header="Torus" Click="AddTorus"/>
-                <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0"/>
-                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2"/>
-                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2"/>
+                <MenuItem Header="Punkt" Click="AddPoint" InputGestureText="Ctrl+P"></MenuItem>
+                <MenuItem Header="Torus" Click="AddTorus" InputGestureText="Ctrl+T"/>
+                <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+B+0"/>
+                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+B+2"/>
+                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2" InputGestureText="Ctrl+B+I"/>
+            </MenuItem>
+            <MenuItem Header="Edycja">
+                <MenuItem Header="Zapisz" x:Name="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>
+                <MenuItem Header="Wczytaj" x:Name="Load" Command="Open" InputGestureText="Ctrl+O"></MenuItem>
             </MenuItem>
             <MenuItem Header="Debug">
-                <MenuItem Header="Clear" Click="SetClear" x:Name="Clear"></MenuItem>
+                <MenuItem Header="Clear" Click="SetClear" x:Name="Clear" InputGestureText="Ctrl+N"></MenuItem>
                 <MenuItem Header="Dodaj 3"  x:Name="Add3">
                     <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
                     <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>

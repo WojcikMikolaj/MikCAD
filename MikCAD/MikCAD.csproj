@@ -90,4 +90,7 @@
     <PackageReference Include="OpenTK" Version="4.4.0" />
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CustomCommands" />
+  </ItemGroup>
 </Project>

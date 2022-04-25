@@ -214,7 +214,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         
         for (int i = 0; i <= lastRowId; i++)
         {
-            _vertices[4 * i] = new Vector4(_a[i], 1);
+            _vertices[4 * i] = new Vector4(_a[i], _chordLengths[i]);
             _vertices[4 * i + 1] = new Vector4(_a[i] + _b[i]/3 * _chordLengths[i], 1);
             _vertices[4 * i + 2] = new Vector4(_a[i+1] - _b[i+1]/3 * _chordLengths[i], 1);
             _vertices[4 * i + 3] = new Vector4(_a[i+1], 1);

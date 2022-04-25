@@ -84,20 +84,42 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         if (size != _objects.Count)
         {
-            _chordLengths = new float[_objects.Count]; //di ze wzoru
-            _alpha = new float[_objects.Count];
-            _beta = new float[_objects.Count];
-            _mid = new float[_objects.Count];
-            _r = new Vector3[_objects.Count];
-            _a = new Vector3[_objects.Count];
-            _b = new Vector3[_objects.Count];
-            _c = new Vector3[_objects.Count];
-            _d = new Vector3[_objects.Count];
-            _vertices = new Vector4[4 * (_objects.Count-1 >=0?_objects.Count-1:0)];
-            CalculateBezierCoefficients();
+            RecalculatePoints();
         }
 
         OnPropertyChanged(nameof(Objects));
+    }
+
+    internal void RecalculatePoints()
+    {
+        int number = 0;
+        _points.Clear();
+        if (_objects.Count > 0)
+        {
+            number = 1;
+            _points.Add(_objects[0]);
+        }
+
+        for (int i = 1; i < _objects.Count; i++)
+        {
+            if (MathM.Distance(_objects[i - 1], _objects[i]) > Double.Epsilon)
+            {
+                number++;
+                _points.Add(_objects[i]);
+            }
+        }
+
+        _chordLengths = new float[number]; //di ze wzoru
+        _alpha = new float[number];
+        _beta = new float[number];
+        _mid = new float[number];
+        _r = new Vector3[number];
+        _a = new Vector3[number];
+        _b = new Vector3[number];
+        _c = new Vector3[number];
+        _d = new Vector3[number];
+        _vertices = new Vector4[4 * (number - 1 >= 0 ? number - 1 : 0)];
+        CalculateBezierCoefficients();
     }
 
     public int tessLevel;
@@ -111,17 +133,17 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
     private uint[] GenerateLines()
     {
-        int count = _objects.Count;
-        if (count == 0)
+        int count = _points.Count;
+        if (count < 2)
             return new uint[0];
         //2 - ends of each line
         int patchesCount = (int) Math.Ceiling(_vertices.Length / 4.0f);
-        uint[] lines = new uint[4 *2 * patchesCount -2];
+        uint[] lines = new uint[4 * 2 * patchesCount - 2];
         uint it = 0;
-        for (int i = 0; i < 4 * patchesCount -1; i++)
+        for (int i = 0; i < 4 * patchesCount - 1; i++)
         {
             lines[it++] = (uint) i;
-            lines[it++] = (uint) i+1;
+            lines[it++] = (uint) i + 1;
         }
 
         return lines;
@@ -148,10 +170,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     private float[] _chordLengths = Array.Empty<float>();
     private float[] _mid = Array.Empty<float>();
     private float[] _alpha = Array.Empty<float>();
-
     private float[] _beta = Array.Empty<float>();
-
-    //d - wyraz wolny
+    
+    private List<ParameterizedObject> _points = new List<ParameterizedObject>();
     private Vector3[] _r = Array.Empty<Vector3>();
     private Vector3[] _a = Array.Empty<Vector3>();
     private Vector3[] _b = Array.Empty<Vector3>();
@@ -161,26 +182,28 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
     public void CalculateBezierCoefficients()
     {
-        if (_objects.Count < 2)
+        if (_points.Count < 2)
             return;
         int firstRowId = 1;
-        int lastRowId = _objects.Count - 2;
-        for (int i = 0; i < _objects.Count - 1; i++)
+        int lastRowId = _points.Count - 2;
+        for (int i = 0; i < _points.Count - 1; i++)
         {
-            _chordLengths[i] = MathM.Distance(_objects[i], _objects[i + 1]);
+            _chordLengths[i] = MathM.Distance(_points[i], _points[i + 1]);
         }
 
         for (int i = firstRowId; i <= lastRowId; i++)
         {
             _mid[i] = 2;
-            _alpha[i] = _chordLengths[i-1] / (_chordLengths[i-1] + _chordLengths[i]);
-            _beta[i] = _chordLengths[i] / (_chordLengths[i-1] + _chordLengths[i]);
-            
-            var pmPos = _objects[i - 1].GetModelMatrix().ExtractTranslation();
-            var pPos = _objects[i].GetModelMatrix().ExtractTranslation();
-            var ppPos = _objects[i + 1].GetModelMatrix().ExtractTranslation();
-            
-            _r[i] = 3*((ppPos - pPos)/_chordLengths[i] - (pPos - pmPos)/_chordLengths[i-1] ) / (_chordLengths[i-1] + _chordLengths[i]);
+            _alpha[i] = _chordLengths[i - 1] / (_chordLengths[i - 1] + _chordLengths[i]);
+            _beta[i] = _chordLengths[i] / (_chordLengths[i - 1] + _chordLengths[i]);
+
+
+            var pmPos = _points[i - 1].GetModelMatrix().ExtractTranslation();
+            var pPos = _points[i].GetModelMatrix().ExtractTranslation();
+            var ppPos = _points[i + 1].GetModelMatrix().ExtractTranslation();
+
+            _r[i] = 3 * ((ppPos - pPos) / _chordLengths[i] - (pPos - pmPos) / _chordLengths[i - 1]) /
+                    (_chordLengths[i - 1] + _chordLengths[i]);
         }
 
         for (int i = firstRowId + 1; i <= lastRowId; i++)
@@ -198,20 +221,22 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         //koniec układu równań
         //początek wyliczania a,b i d
-        
+
         _c[0] = _c[^1] = Vector3.Zero;
 
-        for (int i = 0; i < _objects.Count-1; i++)
+        for (int i = 0; i < _points.Count - 1; i++)
         {
-            _a[i] = _objects[i].GetModelMatrix().ExtractTranslation();
-            _b[i] = (_objects[i + 1].GetModelMatrix().ExtractTranslation() -
-                     _objects[i].GetModelMatrix().ExtractTranslation()) / _chordLengths[i] -
+            _a[i] = _points[i].GetModelMatrix().ExtractTranslation();
+
+            _b[i] = (_points[i + 1].GetModelMatrix().ExtractTranslation() -
+                     _points[i].GetModelMatrix().ExtractTranslation()) / _chordLengths[i] -
                     (_c[i + 1] + 2 * _c[i]) / 3 * _chordLengths[i];
-            _d[i] = (_c[i + 1] -  _c[i]) / (3 * _chordLengths[i]);
+            _d[i] = (_c[i + 1] - _c[i]) / (3 * _chordLengths[i]);
         }
+
         _b[^1] = _b[^2] + _c[^2] * _chordLengths[^2];
-        _a[^1] = _objects[^1].GetModelMatrix().ExtractTranslation();
-        
+        _a[^1] = _points[^1].GetModelMatrix().ExtractTranslation();
+
         for (int i = 0; i <= lastRowId; i++)
         {
             _vertices[4 * i] = new Vector4(_a[i], _chordLengths[i]);
@@ -240,7 +265,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             vertices[4 * i + 2] = posVector.Z;
             vertices[4 * i + 3] = posVector.W;
 
-            var posNDC = new Vector4(posVector.Xyz,1) * Scene.CurrentScene.camera.GetViewMatrix() *
+            var posNDC = new Vector4(posVector.Xyz, 1) * Scene.CurrentScene.camera.GetViewMatrix() *
                          Scene.CurrentScene.camera.GetProjectionMatrix();
             posNDC /= posNDC.W;
             if (posNDC.X < minX)

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:MikCAD"
         xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
         xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
+        xmlns:cc="clr-namespace:MikCAD.CustomCommands"
         mc:Ignorable="d"
         Title="MikCAD" MinHeight="400" MinWidth="950"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
@@ -21,8 +22,19 @@
     <Window.CommandBindings>
         <CommandBinding Command="Save" Executed="OnSaveCommand"/>
         <CommandBinding Command="Open" Executed="OnLoadCommand"/>
-        
+        <CommandBinding Command="cc:AddCommands.AddPoint" Executed="AddPoint"/>
+        <CommandBinding Command="cc:AddCommands.AddTorus" Executed="AddTorus"/>
+        <CommandBinding Command="cc:AddCommands.AddBezierCurveC0" Executed="AddBezierCurveC0"/>
+        <CommandBinding Command="cc:AddCommands.AddBezierCurveC2" Executed="AddBezierCurveC2"/>
+        <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2"/>
     </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="P" Modifiers="Control" Command="cc:AddCommands.AddPoint"></KeyBinding>
+        <KeyBinding Key="T" Modifiers="Control" Command="cc:AddCommands.AddTorus"></KeyBinding>
+        <KeyBinding Key="D0"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC0"></KeyBinding>
+        <KeyBinding Key="D2"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC2"></KeyBinding>
+        <KeyBinding Key="I"  Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -37,9 +49,9 @@
             <MenuItem Header="Dodaj">
                 <MenuItem Header="Punkt" Click="AddPoint" InputGestureText="Ctrl+P"></MenuItem>
                 <MenuItem Header="Torus" Click="AddTorus" InputGestureText="Ctrl+T"/>
-                <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+B+0"/>
-                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+B+2"/>
-                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2" InputGestureText="Ctrl+B+I"/>
+                <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+0"/>
+                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+2"/>
+                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2" InputGestureText="Ctrl+I"/>
             </MenuItem>
             <MenuItem Header="Edycja">
                 <MenuItem Header="Zapisz" x:Name="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>

@@ -249,10 +249,6 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         CalculateBezierCoefficients();
-        float minX = 1;
-        float maxX = -1;
-        float minY = 1;
-        float maxY = -1;
 
         var points = _vertices;
 
@@ -264,18 +260,6 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             vertices[4 * i + 1] = posVector.Y;
             vertices[4 * i + 2] = posVector.Z;
             vertices[4 * i + 3] = posVector.W;
-
-            var posNDC = new Vector4(posVector.Xyz, 1) * Scene.CurrentScene.camera.GetViewMatrix() *
-                         Scene.CurrentScene.camera.GetProjectionMatrix();
-            posNDC /= posNDC.W;
-            if (posNDC.X < minX)
-                minX = posNDC.X;
-            if (posNDC.Y < minY)
-                minY = posNDC.Y;
-            if (posNDC.X > maxX)
-                maxX = posNDC.X;
-            if (posNDC.Y > maxY)
-                maxY = posNDC.Y;
         }
 
         var vertexBufferObject = GL.GenBuffer();
@@ -288,8 +272,6 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-
-        tessLevel = (int) Math.Max(32, 256 * (maxX - minX) * (maxY - minY) / 4);
         _lines = GenerateLines();
         _patches = GeneratePatches();
     }

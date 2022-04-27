@@ -52,7 +52,6 @@ public class DrawProcessor
 
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader = _controller._interpolatingBezierCurveC2Shader;
-        Scene.CurrentScene._shader.SetInt("tessLevels", curveC2.tessLevel);
         Scene.CurrentScene.UpdatePVM();
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 

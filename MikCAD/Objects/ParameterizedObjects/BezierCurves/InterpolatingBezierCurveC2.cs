@@ -292,6 +292,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
                 if (i == 0)
                     return;
                 (_objects[i - 1], _objects[i]) = (_objects[i], _objects[i - 1]);
+                RecalculatePoints();
             }
         }
     }
@@ -306,6 +307,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
                 if (i == _objects.Count - 1)
                     return;
                 (_objects[i + 1], _objects[i]) = (_objects[i], _objects[i + 1]);
+                RecalculatePoints();
             }
         }
     }

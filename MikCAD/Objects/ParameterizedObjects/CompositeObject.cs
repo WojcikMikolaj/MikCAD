@@ -202,8 +202,8 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     }
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this,eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

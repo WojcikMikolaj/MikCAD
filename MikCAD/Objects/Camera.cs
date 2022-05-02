@@ -124,13 +124,23 @@ namespace MikCAD
         public float IPD
         {
             get => _IPD;
-            set { _IPD = value; }
+            set
+            {
+                _IPD = value > 0.1f? value:0.1f;
+                UpdateViewMatrices();
+                UpdateProjectionMatrices();
+            }
         }
 
         public float focusDistance
         {
             get => _focusDistance;
-            set { _focusDistance = value; }
+            set 
+            { 
+                _focusDistance = value > 0.1f? value:0.1f;
+                UpdateViewMatrices();
+                UpdateProjectionMatrices();
+            }
         }
 
         public bool IsStereoEnabled { get; set; }
@@ -166,8 +176,8 @@ namespace MikCAD
 
         private float _scale = 5.0f;
 
-        private float _IPD = 0.3f;
-        private float _focusDistance = 1f;
+        private float _IPD = 0.5f;
+        private float _focusDistance = 10f;
         internal Vector3 leftColor;
         internal Vector3 rightColor;
 
@@ -297,7 +307,7 @@ namespace MikCAD
             return _rightViewMatrix;
         }
 
-        public Matrix4 GetLeftRightProjectionMatrix()
+        public Matrix4 GetRightProjectionMatrix()
         {
             return _rightProjectionMatrix;
         }

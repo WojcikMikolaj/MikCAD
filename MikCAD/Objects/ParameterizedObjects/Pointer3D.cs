@@ -134,8 +134,8 @@ public class Pointer3D : ParameterizedObject
         OnPropertyChanged(nameof(posZ));
     }
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

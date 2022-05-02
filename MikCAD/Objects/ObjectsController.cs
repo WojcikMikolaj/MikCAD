@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
+using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -255,26 +256,26 @@ public class ObjectsController : INotifyPropertyChanged
         }
     }
 
-    public void DrawObjects(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawObjects(EyeEnum eye,uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, eye, vertexAttributeLocation, normalAttributeLocation);
         foreach (var obj in ParameterizedObjects)
         {
             Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
-            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene.UpdatePVM(eye);
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            obj.PassToDrawProcessor(_drawProcessor, vertexAttributeLocation, normalAttributeLocation);
+            obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
         }
 
         if (SelectedObject is not IBezierCurve)
             if (SelectedObject is CompositeObject o)
             {
-                _drawProcessor.ProcessObject(o, vertexAttributeLocation, normalAttributeLocation);
+                _drawProcessor.ProcessObject(o, eye, vertexAttributeLocation, normalAttributeLocation);
             }
 
-        _drawProcessor.ProcessObject(_pointer, vertexAttributeLocation, normalAttributeLocation);
-        _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.ProcessObject(_pointer, eye, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -305,13 +306,13 @@ public class ObjectsController : INotifyPropertyChanged
         }
     }
 
-    public void DrawPoints()
+    public void DrawPoints(EyeEnum eye)
     {
         // GL.ClearColor(0f, 0f, 0f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                  ClearBufferMask.StencilBufferBit);
         Scene.CurrentScene._shader = _pickingShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         foreach (var point in _parameterizedPoints)
         {
             var _modelMatrix = point.GetModelMatrix();

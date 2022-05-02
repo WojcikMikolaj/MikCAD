@@ -16,30 +16,34 @@ public class DrawProcessor
         _controller = controller;
     }
 
-    public void ProcessObject(ParameterizedPoint point, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(ParameterizedPoint point,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         if (point.Draw)
+        {
+            Scene.CurrentScene.UpdatePVM(eye);
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
+        }
     }
 
-    public void ProcessObject(Torus torus, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(Torus torus,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
+        Scene.CurrentScene.UpdatePVM(eye);
         GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void ProcessObject(InterpolatingBezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(InterpolatingBezierCurveC2 curveC2,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         int indexBufferObject;
         Scene.CurrentScene._shader = _controller._standardObjectShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
 
         if (curveC2.DrawPolygon)
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene.UpdatePVM(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC2.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -52,7 +56,7 @@ public class DrawProcessor
 
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader = _controller._interpolatingBezierCurveC2Shader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -66,12 +70,12 @@ public class DrawProcessor
             0);
     }
     
-    public void ProcessObject(BezierCurveC2 curveC2, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(BezierCurveC2 curveC2,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         int indexBufferObject;
         Scene.CurrentScene._shader = _controller._standardObjectShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         if (curveC2.Bernstein)
         {
@@ -85,7 +89,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene.UpdatePVM(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC2.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -99,7 +103,7 @@ public class DrawProcessor
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
         Scene.CurrentScene._shader.SetInt("tessLevels", curveC2.tessLevel);
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -118,7 +122,7 @@ public class DrawProcessor
                 if (point.Selected)
                 {
                     Scene.CurrentScene._shader = _controller._selectedObjectShader;
-                    Scene.CurrentScene.UpdatePVM();
+                    Scene.CurrentScene.UpdatePVM(eye);
                     point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
                     Scene.CurrentScene._shader.SetMatrix4("modelMatrix", point.GetModelMatrix());
                     point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
@@ -128,14 +132,14 @@ public class DrawProcessor
         }
     }
 
-    public void ProcessObject(BezierCurveC0 curveC0, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(BezierCurveC0 curveC0, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         int indexBufferObject;
         if (curveC0.DrawPolygon)
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM();
+            Scene.CurrentScene.UpdatePVM(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC0.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -148,7 +152,7 @@ public class DrawProcessor
 
         Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
         Scene.CurrentScene._shader.SetInt("tessLevels", curveC0.tessLevel);
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -161,12 +165,12 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Patches, curveC0.patches.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void ProcessObject(CompositeObject compositeObject, uint vertexAttributeLocation,
+    public void ProcessObject(CompositeObject compositeObject,EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
         var _modelMatrix = compositeObject.GetModelMatrix();
         Scene.CurrentScene._shader = _controller._centerObjectShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
 
         #region bezierCurve
@@ -184,16 +188,16 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void ProcessObject(Pointer3D pointer3D, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void ProcessObject(Pointer3D pointer3D,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._pointerShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", pointer3D.GetModelMatrix());
         pointer3D.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         GL.DrawElements(PrimitiveType.Lines, pointer3D.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void DrawAxis(Axis selectedAxis, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawAxis(Axis selectedAxis,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         var vertices = new float[6];
         var lines = new uint[] {0, 1};
@@ -228,7 +232,7 @@ public class DrawProcessor
         }
 
         Scene.CurrentScene._shader = _controller._colorShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", color);
 
@@ -251,10 +255,10 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Lines, lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
-    public void DrawGrid(Grid grid, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawGrid(Grid grid,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._colorShader;
-        Scene.CurrentScene.UpdatePVM();
+        Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(0.5f, 0.5f, 0.5f, 1));
 

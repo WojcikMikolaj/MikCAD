@@ -14,5 +14,5 @@ void main()
 	gl_Position = vec4(in_Position, 1.0) * modelMatrix * viewMatrix * projectionMatrix;
 	gl_PointSize = 5;
 	//gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(in_Position, 1.0);
-	vertexColor = vec4(1.0,0.0,0.0,1.0);//in_Color;
+	vertexColor = vec4(1.0,1.0,1.0,1.0);//in_Color;
 }

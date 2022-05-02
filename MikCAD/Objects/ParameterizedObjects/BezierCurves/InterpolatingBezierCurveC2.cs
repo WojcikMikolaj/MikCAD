@@ -312,9 +312,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         }
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation,
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye,uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
-        drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

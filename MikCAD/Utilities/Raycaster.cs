@@ -86,6 +86,12 @@ public class Raycaster
         p.W = D;
         var t = -Vector4.Dot(p, raycastSource) / Vector4.Dot(p, raycastDir);
 
+        if (Scene.CurrentScene.camera.IsStereoEnabled)
+        {
+            t = Scene.CurrentScene.camera.focusDistance;
+            raycastDir.Normalize();
+        }
+
         var worldPoint = raycastDir * t + raycastSource;
         return worldPoint;
     }

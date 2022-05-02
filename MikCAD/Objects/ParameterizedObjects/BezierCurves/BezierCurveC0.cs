@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
@@ -204,8 +205,8 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
         }
     }
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        drawProcessor.ProcessObject(this, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

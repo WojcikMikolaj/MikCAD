@@ -71,6 +71,33 @@
                              Path=DataContext.Scale, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
+                <GroupBox Header="Stereoskopia">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Name="StereoEnabled" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.IsStereoEnabled, Mode=TwoWay}">Stereoskopia</CheckBox>
+                        <Label Grid.Row="1">IPD</Label>
+                        <n:FloatUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.IPD, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False" IsEnabled="{Binding ElementName=StereoEnabled, Path=IsChecked}"/>
+                        <Label Grid.Row="2" Grid.Column="0">Focus Distance</Label>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.focusDistance, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False" IsEnabled="{Binding ElementName=StereoEnabled, Path=IsChecked}"/>
+                        <Label Grid.Row="3" Grid.Column="0">Left eye</Label>
+                        <Label Grid.Row="3" Grid.Column="1" Background="Cyan" Name="LeftEyeColor" MouseDown="LeftEyeColor_OnMouseDown" IsEnabled="{Binding ElementName=StereoEnabled, Path=IsChecked}"></Label>
+                        <Label Grid.Row="4" Grid.Column="0">Right eye</Label>
+                        <Label Grid.Row="4" Grid.Column="1" Background="Red" Name="RightEyeColor" MouseDown="RightEyeColor_OnMouseDown" IsEnabled="{Binding ElementName=StereoEnabled, Path=IsChecked}"></Label>
+                    </Grid>
+                </GroupBox>
             </StackPanel>
         </GroupBox>
     </Grid>

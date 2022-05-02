@@ -237,6 +237,8 @@ namespace MikCAD
                 case Key.System:
                     if (e.SystemKey == Key.LeftAlt)
                         IsObjectFreeMoveEnabled = true;
+                    if(e.SystemKey == Key.Escape)
+                        Scene.CurrentScene.ObjectsController.UnselectAll();
                     break;
                 case Key.Escape:
                     Scene.CurrentScene.ObjectsController.UnselectAll();

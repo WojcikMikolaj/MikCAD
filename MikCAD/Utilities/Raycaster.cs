@@ -68,6 +68,10 @@ public class Raycaster
         var unprojected = ndc * Scene.CurrentScene.camera.GetProjectionMatrix().Inverted();
         var unview = unprojected * Scene.CurrentScene.camera.GetViewMatrix().Inverted();
         var raycastDir = unview;
+        if (Math.Abs(raycastDir.W) > Double.Epsilon)
+        {
+            raycastDir /= raycastDir.W;
+        }
         raycastDir.W = 0;
         
         var raycastSource = new Vector4(Scene.CurrentScene.camera.WorldPosition);

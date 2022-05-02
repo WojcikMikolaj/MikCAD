@@ -301,7 +301,7 @@ public class ObjectsController : INotifyPropertyChanged
         foreach (var o in ParameterizedObjects)
         {
             o.Selected = false;
-            _selectedObject = null;
+            SelectedObject = null;
         }
     }
 

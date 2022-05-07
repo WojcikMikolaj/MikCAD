@@ -17,8 +17,8 @@ namespace MikCAD
         {
             var color = SetColor(sender);
             if (color.HasValue)
-                Scene.CurrentScene.camera.leftColor = new Vector3(color.Value.R / 255.0f, color.Value.G / 255.0f,
-                    color.Value.B / 255.0f);
+                Scene.CurrentScene.camera.leftColor = new Vector4(color.Value.R / 255.0f, color.Value.G / 255.0f,
+                    color.Value.B / 255.0f, color.Value.A/255.0f);
         }
 
         private Color? SetColor(object sender)
@@ -40,8 +40,8 @@ namespace MikCAD
         {
             var color = SetColor(sender);
             if (color.HasValue)
-                Scene.CurrentScene.camera.rightColor = new Vector3(color.Value.R / 255.0f, color.Value.G / 255.0f,
-                    color.Value.B / 255.0f);
+                Scene.CurrentScene.camera.rightColor = new Vector4(color.Value.R / 255.0f, color.Value.G / 255.0f,
+                    color.Value.B / 255.0f, color.Value.A/255.0f);
         }
     }
 }

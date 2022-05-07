@@ -193,6 +193,7 @@ public class DrawProcessor
         Scene.CurrentScene._shader = _controller._pointerShader;
         Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", pointer3D.GetModelMatrix());
+        HandleStereoscopic(eye);
         pointer3D.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         GL.DrawElements(PrimitiveType.Lines, pointer3D.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
@@ -235,7 +236,7 @@ public class DrawProcessor
         Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", color);
-
+        HandleStereoscopic(eye);
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -261,7 +262,7 @@ public class DrawProcessor
         Scene.CurrentScene.UpdatePVM(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(0.5f, 0.5f, 0.5f, 1));
-
+        HandleStereoscopic(eye);
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, grid.vertices.Length * sizeof(float), grid.vertices,
@@ -280,5 +281,19 @@ public class DrawProcessor
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Lines, grid.lines.Length, DrawElementsType.UnsignedInt, 0);
+    }
+
+    private void HandleStereoscopic(EyeEnum eye)
+    {
+        Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
+        switch (eye)
+        {
+            case EyeEnum.Left:
+                Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.leftColor);
+                break;
+            case EyeEnum.Right:
+                Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.rightColor);
+                break;
+        }
     }
 }

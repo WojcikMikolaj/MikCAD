@@ -69,17 +69,20 @@ namespace MikCAD
                      ClearBufferMask.StencilBufferBit);
             if (camera.IsStereoEnabled)
             {
-                GL.ColorMask(true, false,false,true);
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
+                //GL.ColorMask(true, false,false,true);
                 ObjectsController.DrawObjects(EyeEnum.Left,0,  0);
-                GL.ColorMask(true, true,true,true);
+                //GL.ColorMask(true, true,true,true);
                 GL.Clear(ClearBufferMask.DepthBufferBit);
-                GL.ColorMask(false, true,true,true);
+                //GL.ColorMask(false, true,true,true);
                 ObjectsController.DrawObjects(EyeEnum.Right,0,  0);
-                GL.ColorMask(true, true,true,true);
+                //GL.ColorMask(true, true,true,true);
             }
             else
             {
-                GL.ColorMask(true, true,true,true);
+                GL.Disable(EnableCap.Blend);
+                //GL.ColorMask(true, true,true,true);
                 ObjectsController.DrawObjects(EyeEnum.Both,0,  0);
             }
         }

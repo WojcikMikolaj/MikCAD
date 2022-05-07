@@ -264,6 +264,16 @@ public class ObjectsController : INotifyPropertyChanged
             Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
             Scene.CurrentScene.UpdatePVM(eye);
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
+            Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
+            switch (eye)
+            {
+                case EyeEnum.Left:
+                    Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.leftColor);
+                    break;
+                case EyeEnum.Right:
+                    Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.rightColor);
+                    break;
+            }
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
         }

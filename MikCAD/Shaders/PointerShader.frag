@@ -1,4 +1,8 @@
 #version 440 core
+
+uniform float overrideEnabled;
+uniform vec4 overrideColor;
+
 out vec4 FragColor;
 
 in vec4 localPos;
@@ -12,4 +16,5 @@ void main()
         FragColor = vec4(0, 1, 0, 1);
     if (localPos.z > 0)
         FragColor = vec4(0, 1, 1, 1);
+    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
 } 

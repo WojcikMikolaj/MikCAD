@@ -178,8 +178,8 @@ namespace MikCAD
 
         private float _IPD = 0.5f;
         private float _focusDistance = 10f;
-        internal Vector3 leftColor;
-        internal Vector3 rightColor;
+        internal Vector4 leftColor = new Vector4(1,0,0,1);
+        internal Vector4 rightColor = new Vector4(0,1,1,1);
 
         private Matrix4 _viewMatrix;
         private Matrix4 _projectionMatrix;

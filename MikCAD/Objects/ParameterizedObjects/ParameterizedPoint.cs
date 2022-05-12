@@ -101,6 +101,7 @@ public class ParameterizedPoint : ParameterizedObject
     public bool Draw { get; set; } = true;
     
     public List<CompositeObject> parents { get; set; }
+    public bool Deleted { get; set; } = false;
 
     public override void OnPositionUpdate()
     {
@@ -117,6 +118,8 @@ public class ParameterizedPoint : ParameterizedObject
         {
             parents[i]?.ProcessObject(this);
         }
+
+        Deleted = true;
     }
     
     public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)

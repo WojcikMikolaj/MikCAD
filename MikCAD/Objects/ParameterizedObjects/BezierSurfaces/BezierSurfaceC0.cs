@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OpenTK.Mathematics;
 
 namespace MikCAD.BezierSurfaces;
 
@@ -115,16 +116,49 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             OnPropertyChanged(nameof(Name));
         }
     }
-    
-    
+
     private void UpdatePatchesCount()
+    {
+        var rowsCount = 4 + 3 * (VPatches - 1);
+        var colsCount = 4 + 3 * (UPatches - 1);
+
+        var startPoint = GetModelMatrix().ExtractTranslation();
+        var dx = 1 / 4f;
+        var dy = 1 / 4f;
+        
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[i].Count; j++)
+            {
+                points[i][j].Deleted = true;
+                Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
+            }
+        }
+
+        points = new List<List<ParameterizedPoint>>();
+        for (int i = 0; i < colsCount; i++)
+        {
+            points.Add(new List<ParameterizedPoint>());
+            for (int j = 0; j < rowsCount; j++)
+            {
+                var point = new ParameterizedPoint();
+                point.parents.Add(this);
+                point.posX = (startPoint + j*new Vector3(dx, dy, 0)).X;
+                point.posY = (startPoint + i*new Vector3(dx, dy, 0)).Y;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
+                points[i].Add(point);
+            }
+        }
+    }
+
+    public override void ProcessObject(ParameterizedObject o)
     {
         
     }
 
-
     public BezierSurfaceC0() : base("SurfaceC0")
     {
+        points = new List<List<ParameterizedPoint>>();
         Name = "SurfaceC0";
         UpdatePatchesCount();
     }

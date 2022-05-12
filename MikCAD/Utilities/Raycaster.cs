@@ -29,6 +29,8 @@ public class Raycaster
         float tmin = float.MaxValue;
         foreach (var point in Scene.CurrentScene.ObjectsController.AllPoints)
         {
+            if(point.Deleted)
+                continue;
             var mat = Matrix4.Identity;
             mat.M44 = -point.BB.radius * point.BB.radius;
 

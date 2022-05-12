@@ -52,6 +52,8 @@
                 <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+0"/>
                 <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+2"/>
                 <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2" InputGestureText="Ctrl+I"/>
+                <MenuItem Header="Płatek bikubiczny C0" Click="AddBezierSurfaceC0" InputGestureText="Ctrl+3"/>
+                <MenuItem Header="Płatek bikubiczny C2" Click="AddBezierSurfaceC2" InputGestureText="Ctrl+4"/>
             </MenuItem>
             <MenuItem Header="Edycja">
                 <MenuItem Header="Zapisz" x:Name="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>
@@ -91,5 +93,6 @@
         <local:BezierCurveC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC0Control" Visibility="Hidden"/>
         <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC2Control" Visibility="Hidden"/>
         <local:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden"/>
+        <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2"/>
     </Grid>
 </Window>

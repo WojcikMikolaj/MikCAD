@@ -26,6 +26,18 @@ public partial class MainWindow
         scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
         bezierCurveC2Control.PointsList.Items.Refresh();
     }
+    
+    private void AddBezierSurfaceC0(object sender, RoutedEventArgs e)
+    {
+        scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
+        bezierCurveC0Control.PointsList.Items.Refresh();
+    }
+
+    private void AddBezierSurfaceC2(object sender, RoutedEventArgs e)
+    {
+        scene.ObjectsController.AddObjectToScene(new BezierCurveC2());
+        bezierCurveC2Control.PointsList.Items.Refresh();
+    }
 
     private void AddInterpolatingBezierCurveC2(object sender, RoutedEventArgs e)
     {

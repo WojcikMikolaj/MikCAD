@@ -11,10 +11,10 @@ in vec4 vertexColor;// the input variable from the vertex shader (same name and 
 void main()
 {
     if (localPos.x > 0)
-        FragColor = vec4(1, 0, 0, 1);
+        FragColor = (1-overrideEnabled) * vec4(1, 0, 0, 1) + overrideEnabled * overrideColor;
     if (localPos.y > 0)
-        FragColor = vec4(0, 1, 0, 1);
+        FragColor = (1-overrideEnabled) * vec4(0, 1, 0, 1) + overrideEnabled * overrideColor;
     if (localPos.z > 0)
-        FragColor = vec4(0, 1, 1, 1);
+        FragColor = (1-overrideEnabled) * vec4(0, 1, 1, 1) + overrideEnabled * overrideColor;
     FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
 } 

@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="MikCAD.BezierSurfaceC0Control"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
+             xmlns:local="clr-namespace:MikCAD"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <GroupBox x:Name="BezierCurveC2">
+            <GroupBox.Header>
+                <TextBox MinWidth="100" MaxWidth="100"
+                         Text="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </GroupBox.Header>
+            <StackPanel>
+                <GroupBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" />
+                        </Grid.RowDefinitions>
+                        <Label>U surfaces</Label>
+                        <!--<Slider Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
+                        <n:UIntegerUpDown Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
+                        <Label Grid.Row="1">V surfaces</Label>
+                        <!--<Slider Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
+                        <n:UIntegerUpDown Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" MinValue="1"  MaxValue="10"></n:UIntegerUpDown>
+                        <Label Grid.Row="2">U divisions</Label>
+                        <!--<Slider Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10" Value="{Binding IntUDiv.Value, Mode=TwoWay}"></Slider>-->
+                        <n:UIntegerUpDown Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
+                        <Label Grid.Row="3">V divisions</Label>
+                        <!--<Slider Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
+                        <n:UIntegerUpDown Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
+                    </Grid>
+                </GroupBox>
+                <Button Height="50">Apply</Button>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

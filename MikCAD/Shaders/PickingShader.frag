@@ -8,5 +8,5 @@ uniform vec3 PickingColor;
 
 void main(){
     FragColor = vec4(PickingColor,1.0);
-    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
+    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 }

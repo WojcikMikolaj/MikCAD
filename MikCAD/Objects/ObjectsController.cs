@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
+using MikCAD.BezierSurfaces;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -57,6 +58,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Hidden;
             MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Hidden;
+            MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -67,6 +69,9 @@ public class ObjectsController : INotifyPropertyChanged
             {
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
+                    break;
+                case BezierSurfaceC0:
+                    MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Visible;
                     break;
                 //must be before CompositeObject
                 case BezierCurveC0 bezierCurveC0:
@@ -262,7 +267,7 @@ public class ObjectsController : INotifyPropertyChanged
         foreach (var obj in ParameterizedObjects)
         {
             Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
-            Scene.CurrentScene.UpdatePVM(eye);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
             Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
             switch (eye)
@@ -322,7 +327,7 @@ public class ObjectsController : INotifyPropertyChanged
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit |
                  ClearBufferMask.StencilBufferBit);
         Scene.CurrentScene._shader = _pickingShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         foreach (var point in _parameterizedPoints)
         {
             var _modelMatrix = point.GetModelMatrix();

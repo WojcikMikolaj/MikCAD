@@ -20,14 +20,14 @@ public class DrawProcessor
     {
         if (point.Draw)
         {
-            Scene.CurrentScene.UpdatePVM(eye);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
         }
     }
 
     public void ProcessObject(Torus torus,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
@@ -36,14 +36,14 @@ public class DrawProcessor
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         int indexBufferObject;
         Scene.CurrentScene._shader = _controller._standardObjectShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
 
         if (curveC2.DrawPolygon)
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM(eye);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC2.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -56,7 +56,7 @@ public class DrawProcessor
 
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader = _controller._interpolatingBezierCurveC2Shader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -75,7 +75,7 @@ public class DrawProcessor
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         int indexBufferObject;
         Scene.CurrentScene._shader = _controller._standardObjectShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         if (curveC2.Bernstein)
         {
@@ -89,7 +89,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM(eye);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC2.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -103,7 +103,7 @@ public class DrawProcessor
         curveC2.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
         Scene.CurrentScene._shader.SetInt("tessLevels", curveC2.tessLevel);
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -122,7 +122,7 @@ public class DrawProcessor
                 if (point.Selected)
                 {
                     Scene.CurrentScene._shader = _controller._selectedObjectShader;
-                    Scene.CurrentScene.UpdatePVM(eye);
+                    Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
                     point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
                     Scene.CurrentScene._shader.SetMatrix4("modelMatrix", point.GetModelMatrix());
                     point.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
@@ -139,7 +139,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            Scene.CurrentScene.UpdatePVM(eye);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             Scene.CurrentScene._shader.SetVector4("color", curveC0.CurveColor);
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
@@ -152,7 +152,7 @@ public class DrawProcessor
 
         Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
         Scene.CurrentScene._shader.SetInt("tessLevels", curveC0.tessLevel);
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
         indexBufferObject = GL.GenBuffer();
@@ -170,7 +170,7 @@ public class DrawProcessor
     {
         var _modelMatrix = compositeObject.GetModelMatrix();
         Scene.CurrentScene._shader = _controller._centerObjectShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
 
         #region bezierCurve
@@ -191,9 +191,8 @@ public class DrawProcessor
     public void ProcessObject(Pointer3D pointer3D,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._pointerShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", pointer3D.GetModelMatrix());
-        HandleStereoscopic(eye);
         pointer3D.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         GL.DrawElements(PrimitiveType.Lines, pointer3D.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
@@ -233,10 +232,9 @@ public class DrawProcessor
         }
 
         Scene.CurrentScene._shader = _controller._colorShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", color);
-        HandleStereoscopic(eye);
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
@@ -259,10 +257,9 @@ public class DrawProcessor
     public void DrawGrid(Grid grid,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._colorShader;
-        Scene.CurrentScene.UpdatePVM(eye);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(0.5f, 0.5f, 0.5f, 1));
-        HandleStereoscopic(eye);
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
         GL.BufferData(BufferTarget.ArrayBuffer, grid.vertices.Length * sizeof(float), grid.vertices,
@@ -281,19 +278,5 @@ public class DrawProcessor
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Lines, grid.lines.Length, DrawElementsType.UnsignedInt, 0);
-    }
-
-    private void HandleStereoscopic(EyeEnum eye)
-    {
-        Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
-        switch (eye)
-        {
-            case EyeEnum.Left:
-                Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.leftColor);
-                break;
-            case EyeEnum.Right:
-                Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.rightColor);
-                break;
-        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using MikCAD.BezierCurves;
+using MikCAD.BezierSurfaces;
 
 namespace MikCAD;
 
@@ -29,8 +30,7 @@ public partial class MainWindow
     
     private void AddBezierSurfaceC0(object sender, RoutedEventArgs e)
     {
-        scene.ObjectsController.AddObjectToScene(new BezierCurveC0());
-        bezierCurveC0Control.PointsList.Items.Refresh();
+        scene.ObjectsController.AddObjectToScene(new BezierSurfaceC0());
     }
 
     private void AddBezierSurfaceC2(object sender, RoutedEventArgs e)

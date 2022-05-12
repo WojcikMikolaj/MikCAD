@@ -10,5 +10,5 @@ uniform vec4 color;
 void main()
 {
 	FragColor = (1-overrideEnabled) * color + overrideEnabled * overrideColor;
-	FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
+	FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 } 

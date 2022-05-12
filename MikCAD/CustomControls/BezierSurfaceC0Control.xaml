@@ -23,26 +23,33 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="30" />
-                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"/>
+                            <RowDefinition Height="30" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"/>
+                            <RowDefinition Height="30" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"/>
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
-                        <Label>U surfaces</Label>
+                        <CheckBox Name="StereoEnabled" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.IsRolled, Mode=TwoWay}">Zawinięty</CheckBox>
+                        <Label Grid.Row="1">U surfaces</Label>
                         <!--<Slider Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
-                        <Label Grid.Row="1">V surfaces</Label>
+                        <n:UIntegerUpDown Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.UPatches, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"></n:UIntegerUpDown>
+                        <Label Grid.Row="2">V surfaces</Label>
                         <!--<Slider Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" MinValue="1"  MaxValue="10"></n:UIntegerUpDown>
-                        <Label Grid.Row="2">U divisions</Label>
+                        <n:UIntegerUpDown Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" MinValue="1"  MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.VPatches, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"></n:UIntegerUpDown>
+                        <Label Grid.Row="3">U divisions</Label>
                         <!--<Slider Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10" Value="{Binding IntUDiv.Value, Mode=TwoWay}"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
-                        <Label Grid.Row="3">V divisions</Label>
+                        <n:UIntegerUpDown Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.UDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></n:UIntegerUpDown>
+                        <Label Grid.Row="4">V divisions</Label>
                         <!--<Slider Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10"></n:UIntegerUpDown>
+                        <n:UIntegerUpDown Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.VDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></n:UIntegerUpDown>
                     </Grid>
                 </GroupBox>
-                <Button Height="50">Apply</Button>
+                <Button Height="50" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged, UpdateSourceTrigger=PropertyChanged}" Click="ButtonBase_OnClick">Apply</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

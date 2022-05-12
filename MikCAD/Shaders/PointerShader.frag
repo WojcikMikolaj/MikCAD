@@ -16,5 +16,5 @@ void main()
         FragColor = (1-overrideEnabled) * vec4(0, 1, 0, 1) + overrideEnabled * overrideColor;
     if (localPos.z > 0)
         FragColor = (1-overrideEnabled) * vec4(0, 1, 1, 1) + overrideEnabled * overrideColor;
-    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
+    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 } 

@@ -7,6 +7,6 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(1, 1, 0, 1);
-    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor;
+    FragColor = vec4(1, 1, 1, 1);
+    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor * FragColor;
 } 

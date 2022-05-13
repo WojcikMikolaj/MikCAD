@@ -15,6 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <EmbeddedResource Include="Shaders\BezierCurveC0\BezierCurveC0TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierCurveC0\BezierCurveC0TessEvaluationShader.tese">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\BezierCurveC2\BezierCurveC2TessControlShader.tesc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -26,6 +32,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Shaders\BezierShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierSurfaceC0\BezierSurfaceC0TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierSurfaceC0\BezierSurfaceC0TessEvaluationShader.tese">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Shaders\CenterObjectShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -72,13 +84,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <None Remove="Shaders\BezierCurveC0TessControlShader.tesc" />
-    <EmbeddedResource Include="Shaders\BezierCurveC0TessControlShader.tesc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <None Remove="Shaders\BezierCurveC0TessEvaluationShader.tese" />
-    <EmbeddedResource Include="Shaders\BezierCurveC0TessEvaluationShader.tese">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />

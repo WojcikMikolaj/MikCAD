@@ -28,8 +28,13 @@ public class ObjectsController : INotifyPropertyChanged
     internal Shader _bezierCurveC0Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
-        "Shaders/BezierCurveC0TessControlShader.tesc",
-        "Shaders/BezierCurveC0TessEvaluationShader.tese");
+        "Shaders/BezierCurveC0/BezierCurveC0TessControlShader.tesc",
+        "Shaders/BezierCurveC0/BezierCurveC0TessEvaluationShader.tese");
+    internal Shader _bezierSurfaceC0Shader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag",
+        "Shaders/BezierSurfaceC0/BezierSurfaceC0TessControlShader.tesc",
+        "Shaders/BezierSurfaceC0/BezierSurfaceC0TessEvaluationShader.tese");
     internal Shader _bezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",

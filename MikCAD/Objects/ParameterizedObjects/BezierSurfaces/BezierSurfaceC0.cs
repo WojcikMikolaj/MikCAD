@@ -12,6 +12,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
 
     private uint _uPatches = 1;
+
     public uint UPatches
     {
         get => _uPatches;
@@ -27,6 +28,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     }
 
     private uint _vPatches = 1;
+
     public uint VPatches
     {
         get => _vPatches;
@@ -43,6 +45,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
 
     private uint _uDivisions = 4;
+
     public uint UDivisions
     {
         get => _uDivisions;
@@ -58,6 +61,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     }
 
     private uint _vDivisions = 4;
+
     public uint VDivisions
     {
         get => _vDivisions;
@@ -73,6 +77,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     }
 
     private bool _isRolled = false;
+
     public bool IsRolled
     {
         get => _isRolled;
@@ -86,8 +91,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     private bool _applied = false;
+
     public bool Applied
     {
         get => _applied;
@@ -102,9 +108,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
+
     public bool CanBeChanged => !Applied;
 
     private float _singlePatchWidth = 1;
+
     public float SinglePatchWidth
     {
         get => _singlePatchWidth;
@@ -117,8 +125,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     private float _singlePatchHeight = 1;
+
     public float SinglePatchHeight
     {
         get => _singlePatchHeight;
@@ -131,8 +140,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     private float _R = 1;
+
     public float R
     {
         get => _R;
@@ -146,8 +156,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     private float _cylinderHeight = 1;
+
     public float CylinderHeight
     {
         get => _cylinderHeight;
@@ -161,8 +172,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     private string _name;
+
     public virtual String Name
     {
         get => _name;
@@ -179,8 +191,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             OnPropertyChanged(nameof(Name));
         }
     }
-    
+
     private bool _drawPolygon = false;
+
     public bool DrawPolygon
     {
         get => _drawPolygon;
@@ -201,12 +214,12 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
             }
         }
-        
+
         if (!IsRolled)
         {
             //var rowsCount = VDivisions + (VDivisions - 1) * (VPatches - 1);
             //var colsCount = UDivisions + (UDivisions - 1) * (UPatches - 1);
-            
+
             var rowsCount = 4 + 3 * (VPatches - 1);
             var colsCount = 4 + 3 * (UPatches - 1);
 
@@ -214,9 +227,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             var dx = SinglePatchWidth / 3;
             var dz = SinglePatchHeight / 3;
 
-           
 
             points.Clear();
+            _objects.Clear();
             for (int i = 0; i < colsCount; i++)
             {
                 points.Add(new List<ParameterizedPoint>());
@@ -228,6 +241,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     point.posZ = (startPoint + j * new Vector3(dx, 0, dz)).Z;
                     point.CanBeDeleted = false;
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
+                    _objects.Add(point);
                     points[i].Add(point);
                 }
             }
@@ -236,12 +250,13 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         {
             var rowsCount = 4 + 3 * (VPatches - 1) - 1;
             var colsCount = 4 + 3 * (UPatches - 1);
-            
-            var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0,0,0);
+
+            var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0, 0, 0);
             var dx = CylinderHeight / 3;
             var dalpha = MathHelper.DegreesToRadians(360f / rowsCount);
 
             points.Clear();
+            _objects.Clear();
             for (int i = 0; i < colsCount; i++)
             {
                 points.Add(new List<ParameterizedPoint>());
@@ -249,11 +264,12 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 {
                     var point = new ParameterizedPoint();
                     point.parents.Add(this);
-                    point.posX = (startPoint +  i * new Vector3(dx,0,0)).X;
-                    point.posY = (startPoint + new Vector3((float)Math.Sin(j*dalpha)) * R).Y;
-                    point.posZ = (startPoint + new Vector3((float)Math.Cos(j*dalpha)) * R).Z;
+                    point.posX = (startPoint + i * new Vector3(dx, 0, 0)).X;
+                    point.posY = (startPoint + new Vector3((float) Math.Sin(j * dalpha)) * R).Y;
+                    point.posZ = (startPoint + new Vector3((float) Math.Cos(j * dalpha)) * R).Z;
                     point.CanBeDeleted = false;
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
+                    _objects.Add(point);
                     points[i].Add(point);
                 }
             }
@@ -262,7 +278,6 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
     public override void ProcessObject(ParameterizedObject o)
     {
-        
     }
 
     public BezierSurfaceC0() : base("SurfaceC0")
@@ -281,12 +296,13 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         int size = 0;
         if (!IsRolled)
         {
-            size = (int)(2 * UPatches * 4 * 3 * VPatches * 4 * 3);
+            size = (int) (2 * UPatches * 4 * 3 * VPatches * 4 * 3);
         }
         else
         {
-            size = (int)(2 * UPatches * 4 * 3 * VPatches * 3 * 3);
+            size = (int) (2 * UPatches * 4 * 3 * VPatches * 3 * 3);
         }
+
         uint[] lines = new uint[size];
         uint it = 0;
         for (int i = 0; i < points.Count; i++)
@@ -307,15 +323,49 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
                 if (i < points.Count - 1)
                 {
-                     lines[it++] = (uint) (i * points[0].Count + j);
-                     lines[it++] = (uint) (i * points[0].Count + j + points[0].Count);
+                    lines[it++] = (uint) (i * points[0].Count + j);
+                    lines[it++] = (uint) (i * points[0].Count + j + points[0].Count);
                 }
             }
         }
 
         return lines;
     }
-    
+
+    public uint[] patches => _patches;
+    public uint[] _patches;
+
+    private uint[] GeneratePatches()
+    {
+        int patchesCount = (int) (UPatches * VPatches);
+        uint[] patches = new uint[patchesCount * 16];
+        int it = 0;
+        for (int i = 0; i < VPatches; i++)
+        {
+            for (int j = 0; j < UPatches; j++)
+            {
+                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j);
+                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 1);
+                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 2);
+                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 3);
+                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j);
+                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
+                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
+                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
+                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j);
+                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
+                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
+                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
+                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j);
+                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
+                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
+                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
+            }
+        }
+
+        return patches;
+    }
+
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         //nie zawijany
@@ -323,16 +373,16 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         int colsCount = 0;
         if (!IsRolled)
         {
-            rowsCount = 4 + 3 * ((int)VPatches - 1);
-            colsCount = 4 + 3 * ((int)UPatches - 1);
+            rowsCount = 4 + 3 * ((int) VPatches - 1);
+            colsCount = 4 + 3 * ((int) UPatches - 1);
         }
         else
         {
-            rowsCount = 3 * (int)VPatches;
-            colsCount = 4 + 3 * ((int)UPatches - 1);
+            rowsCount = 3 * (int) VPatches;
+            colsCount = 4 + 3 * ((int) UPatches - 1);
         }
 
-        var vertices = new float[ rowsCount * colsCount * 4 ];
+        var vertices = new float[rowsCount * colsCount * 4];
         int it = 0;
         for (int i = 0; i < points.Count; i++)
         {
@@ -349,7 +399,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices,
+            BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
         GL.BindVertexArray(vertexArrayObject);
@@ -357,11 +408,12 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
         _lines = GenerateLines();
+        _patches = GeneratePatches();
     }
 
     public override void OnDelete()
     {
-        for (int i=0; i<points.Count; i++)
+        for (int i = 0; i < points.Count; i++)
         {
             for (int j = 0; j < points[i].Count;)
             {
@@ -370,10 +422,12 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 points[i].RemoveAt(j);
             }
         }
+
         base.OnDelete();
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }

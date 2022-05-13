@@ -184,19 +184,20 @@ public class DrawProcessor
             GL.DrawElements(PrimitiveType.Lines, surfaceC0.lines.Length, DrawElementsType.UnsignedInt, 0);
         }
 
-        // Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
-        // Scene.CurrentScene._shader.SetInt("tessLevels", surfaceC0.tessLevel);
-        // Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        // GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
-        //
-        // indexBufferObject = GL.GenBuffer();
-        // GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        // GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC0._patches.Length * sizeof(uint), surfaceC0._patches,
-        //     BufferUsageHint.StaticDraw);
-        // GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
-        // GL.EnableVertexAttribArray(1);
-        //
-        // GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
+        Scene.CurrentScene._shader = _controller._bezierSurfaceC0Shader;
+        Scene.CurrentScene._shader.SetInt("UTessLevels", (int)surfaceC0.UDivisions);
+        Scene.CurrentScene._shader.SetInt("VTessLevels", (int)surfaceC0.VDivisions);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
+        
+        indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC0._patches.Length * sizeof(uint), surfaceC0._patches, BufferUsageHint.StaticDraw);
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
+        GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
+        GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Fill);
     }
 
     public void ProcessObject(CompositeObject compositeObject,EyeEnum eye, uint vertexAttributeLocation,

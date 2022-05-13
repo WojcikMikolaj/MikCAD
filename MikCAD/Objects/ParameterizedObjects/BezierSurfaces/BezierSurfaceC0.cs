@@ -40,29 +40,31 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     }
 
 
-    private uint _uDivisions = 1;
+    private uint _uDivisions = 4;
     public uint UDivisions
     {
         get => _uDivisions;
         set
         {
-            if (value >= 1)
+            if (value >= 4)
             {
                 _uDivisions = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(UDivisions));
             }
         }
     }
 
-    private uint _vDivisions = 1;
+    private uint _vDivisions = 4;
     public uint VDivisions
     {
         get => _vDivisions;
         set
         {
-            if (value >= 1)
+            if (value >= 4)
             {
                 _vDivisions = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(VDivisions));
             }
         }
@@ -96,9 +98,64 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-
     public bool CanBeChanged => !Applied;
 
+    private float _singlePatchWidth = 1;
+    public float SinglePatchWidth
+    {
+        get => _singlePatchWidth;
+        set
+        {
+            if (value > 0)
+            {
+                _singlePatchWidth = value;
+                OnPropertyChanged(nameof(SinglePatchWidth));
+            }
+        }
+    }
+    
+    private float _singlePatchHeight = 1;
+    public float SinglePatchHeight
+    {
+        get => _singlePatchHeight;
+        set
+        {
+            if (value > 0)
+            {
+                _singlePatchWidth = value;
+                OnPropertyChanged(nameof(SinglePatchHeight));
+            }
+        }
+    }
+    
+    private float _R = 1;
+    public float R
+    {
+        get => _R;
+        set
+        {
+            if (value > 0)
+            {
+                _R = value;
+                OnPropertyChanged(nameof(R));
+            }
+        }
+    }
+    
+    private float _cylinderHeight = 1;
+    public float CylinderHeight
+    {
+        get => _cylinderHeight;
+        set
+        {
+            if (value > 0)
+            {
+                _cylinderHeight = value;
+                OnPropertyChanged(nameof(CylinderHeight));
+            }
+        }
+    }
+    
     private string _name;
     public virtual String Name
     {
@@ -119,35 +176,45 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
     private void UpdatePatchesCount()
     {
-        var rowsCount = 4 + 3 * (VPatches - 1);
-        var colsCount = 4 + 3 * (UPatches - 1);
-
-        var startPoint = GetModelMatrix().ExtractTranslation();
-        var dx = 1 / 4f;
-        var dy = 1 / 4f;
-        
-        for (int i = 0; i < points.Count; i++)
+        if (!IsRolled)
         {
-            for (int j = 0; j < points[i].Count; j++)
+            //var rowsCount = VDivisions + (VDivisions - 1) * (VPatches - 1);
+            //var colsCount = UDivisions + (UDivisions - 1) * (UPatches - 1);
+            
+            var rowsCount = 4 + 3 * (VPatches - 1);
+            var colsCount = 4 + 3 * (UPatches - 1);
+
+            var startPoint = GetModelMatrix().ExtractTranslation();
+            var dx = SinglePatchWidth / 4;
+            var dz = SinglePatchHeight / 4;
+
+            for (int i = 0; i < points.Count; i++)
             {
-                points[i][j].Deleted = true;
-                Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
+                for (int j = 0; j < points[i].Count; j++)
+                {
+                    points[i][j].Deleted = true;
+                    Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
+                }
+            }
+
+            points.Clear();
+            for (int i = 0; i < colsCount; i++)
+            {
+                points.Add(new List<ParameterizedPoint>());
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    var point = new ParameterizedPoint();
+                    point.parents.Add(this);
+                    point.posX = (startPoint + j * new Vector3(dx, 0, dz)).X;
+                    point.posZ = (startPoint + i * new Vector3(dx, 0, dz)).Z;
+                    Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
+                    points[i].Add(point);
+                }
             }
         }
-
-        points = new List<List<ParameterizedPoint>>();
-        for (int i = 0; i < colsCount; i++)
+        else
         {
-            points.Add(new List<ParameterizedPoint>());
-            for (int j = 0; j < rowsCount; j++)
-            {
-                var point = new ParameterizedPoint();
-                point.parents.Add(this);
-                point.posX = (startPoint + j*new Vector3(dx, dy, 0)).X;
-                point.posY = (startPoint + i*new Vector3(dx, dy, 0)).Y;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
-                points[i].Add(point);
-            }
+            
         }
     }
 

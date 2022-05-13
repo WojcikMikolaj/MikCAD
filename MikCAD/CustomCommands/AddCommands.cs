@@ -9,4 +9,5 @@ public static class AddCommands
     public static RoutedCommand AddBezierCurveC0 = new RoutedCommand("AddBezierCurveC0", typeof(MainWindow));
     public static RoutedCommand AddBezierCurveC2 = new RoutedCommand("AddBezierCurveC2", typeof(MainWindow));
     public static RoutedCommand AddInterpolatingBezierCurveC2 = new RoutedCommand("AddInterpolatingBezierCurveC2", typeof(MainWindow));
+    public static RoutedCommand AddBezierSurfaceC0 = new RoutedCommand("AddBezierSurfaceC0", typeof(MainWindow));
 }

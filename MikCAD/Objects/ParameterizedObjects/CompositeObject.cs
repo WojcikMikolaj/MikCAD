@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.BezierCurves;
+using MikCAD.BezierSurfaces;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -45,7 +46,7 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     {
         if (o == null)
             return;
-        if(o is BezierCurveC0 or BezierCurveC2 or FakePoint)
+        if(o is IBezierCurve or FakePoint or ISurface)
             return;
         if (!_objects.Contains(o))
         {

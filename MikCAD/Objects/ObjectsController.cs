@@ -70,10 +70,10 @@ public class ObjectsController : INotifyPropertyChanged
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
                     break;
+                //must be before CompositeObject
                 case BezierSurfaceC0:
                     MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Visible;
                     break;
-                //must be before CompositeObject
                 case BezierCurveC0 bezierCurveC0:
                     MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Visible;
                     break;
@@ -247,6 +247,8 @@ public class ObjectsController : INotifyPropertyChanged
         }
         else
         {
+            if(SelectedObject is ISurface)
+                return;
             if (SelectedObject is CompositeObject compositeObject)
             {
                 compositeObject.ProcessObject(o);
@@ -283,7 +285,7 @@ public class ObjectsController : INotifyPropertyChanged
             obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
         }
 
-        if (SelectedObject is not IBezierCurve)
+        if (SelectedObject is not IBezierCurve && SelectedObject is not ISurface)
             if (SelectedObject is CompositeObject o)
             {
                 _drawProcessor.ProcessObject(o, eye, vertexAttributeLocation, normalAttributeLocation);

@@ -27,6 +27,7 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
                             <RowDefinition Height="30" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
@@ -35,37 +36,39 @@
                             <RowDefinition Height="30" />
                             <RowDefinition Height="30" />
                         </Grid.RowDefinitions>
-                        <CheckBox x:Name="RolledCheckBox" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <CheckBox Grid.Row="0" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.DrawPolygon, Mode=TwoWay}">Rysuj wielokąt</CheckBox>
+                        <CheckBox Grid.Row="1" x:Name="RolledCheckBox" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.IsRolled, Mode=TwoWay}">Zawinięty</CheckBox>
-                        <Label Grid.Row="1" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">Szerokość płatka</Label>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <Label Grid.Row="2" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">Szerokość płatka</Label>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.SinglePatchWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}}"></n:FloatUpDown>
-                        <Label Grid.Row="2" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}}">Wysokość płatka</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <Label Grid.Row="3" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}}">Wysokość płatka</Label>
+                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.SinglePatchHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource inversedBoolToVisibilityConverter}}"></n:FloatUpDown>
                         
-                        <Label Grid.Row="1" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}">Promień</Label>
-                        <n:FloatUpDown Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <Label Grid.Row="2" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}">Promień</Label>
+                        <n:FloatUpDown Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.R, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}"></n:FloatUpDown>
-                        <Label Grid.Row="2" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}">Wysokość walca (płatka)</Label>
-                        <n:FloatUpDown Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <Label Grid.Row="3" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}">Wysokość walca (płatka)</Label>
+                        <n:FloatUpDown Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" MinValue="0.1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.CylinderHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding Path=IsChecked, ElementName=RolledCheckBox, Converter={StaticResource boolToVisibilityConverter}}"></n:FloatUpDown>
                         
-                        <Label Grid.Row="3">U surfaces</Label>
+                        <Label Grid.Row="4">U surfaces</Label>
                         <!--<Slider Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" MinValue="1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <n:UIntegerUpDown Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MinValue="1" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.UPatches, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"></n:UIntegerUpDown>
-                        <Label Grid.Row="4">V surfaces</Label>
+                        <Label Grid.Row="5">V surfaces</Label>
                         <!--<Slider Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" MinValue="1"  MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <n:UIntegerUpDown Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MinValue="1"  MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.VPatches, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged}"></n:UIntegerUpDown>
-                        <Label Grid.Row="5">U divisions</Label>
+                        <Label Grid.Row="6">U divisions</Label>
                         <!--<Slider Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10" Value="{Binding IntUDiv.Value, Mode=TwoWay}"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="5" Grid.Column="2" VerticalAlignment="Center" MinValue="4" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <n:UIntegerUpDown Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" MinValue="4" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.UDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></n:UIntegerUpDown>
-                        <Label Grid.Row="6">V divisions</Label>
+                        <Label Grid.Row="7">V divisions</Label>
                         <!--<Slider Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Minimum="1" Maximum="10"></Slider>-->
-                        <n:UIntegerUpDown Grid.Row="6" Grid.Column="2" VerticalAlignment="Center" MinValue="4" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                        <n:UIntegerUpDown Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" MinValue="4" MaxValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                                           Path=DataContext.VDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></n:UIntegerUpDown>
                     </Grid>
                 </GroupBox>

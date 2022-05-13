@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MikCAD.Utilities;
 using OpenTK.Mathematics;
 
 namespace MikCAD.BezierSurfaces;
@@ -79,6 +80,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             if (!_applied)
             {
                 _isRolled = value;
+                UpdatePatchesCount();
+                OnPropertyChanged(nameof(IsRolled));
             }
         }
     }
@@ -137,6 +140,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             if (value > 0)
             {
                 _R = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(R));
             }
         }
@@ -151,6 +155,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             if (value > 0)
             {
                 _cylinderHeight = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(CylinderHeight));
             }
         }
@@ -173,9 +178,29 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             OnPropertyChanged(nameof(Name));
         }
     }
+    
+    private bool _drawPolygon = false;
+    public bool DrawPolygon
+    {
+        get => _drawPolygon;
+        set
+        {
+            _drawPolygon = value;
+            OnPropertyChanged(nameof(DrawPolygon));
+        }
+    }
 
     private void UpdatePatchesCount()
     {
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[i].Count; j++)
+            {
+                points[i][j].Deleted = true;
+                Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
+            }
+        }
+        
         if (!IsRolled)
         {
             //var rowsCount = VDivisions + (VDivisions - 1) * (VPatches - 1);
@@ -185,17 +210,10 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             var colsCount = 4 + 3 * (UPatches - 1);
 
             var startPoint = GetModelMatrix().ExtractTranslation();
-            var dx = SinglePatchWidth / 4;
-            var dz = SinglePatchHeight / 4;
+            var dx = SinglePatchWidth / 3;
+            var dz = SinglePatchHeight / 3;
 
-            for (int i = 0; i < points.Count; i++)
-            {
-                for (int j = 0; j < points[i].Count; j++)
-                {
-                    points[i][j].Deleted = true;
-                    Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
-                }
-            }
+           
 
             points.Clear();
             for (int i = 0; i < colsCount; i++)
@@ -214,7 +232,28 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         }
         else
         {
+            var rowsCount = 4 + 3 * (VPatches - 1) - 1;
+            var colsCount = 4 + 3 * (UPatches - 1);
             
+            var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0,R,0);
+            var dx = CylinderHeight / 3;
+            var dalpha = MathHelper.DegreesToRadians(360f / rowsCount);
+
+            points.Clear();
+            for (int i = 0; i < colsCount; i++)
+            {
+                points.Add(new List<ParameterizedPoint>());
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    var point = new ParameterizedPoint();
+                    point.parents.Add(this);
+                    point.posX = (startPoint +  i * new Vector3(dx,0,0)).X;
+                    point.posY = (startPoint + new Vector3((float)Math.Sin(j*dalpha)) * R).Y;
+                    point.posZ = (startPoint + new Vector3((float)Math.Cos(j*dalpha)) * R).Z;
+                    Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
+                    points[i].Add(point);
+                }
+            }
         }
     }
 

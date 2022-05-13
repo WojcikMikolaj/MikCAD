@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD.BezierSurfaces;
 
@@ -223,8 +224,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 {
                     var point = new ParameterizedPoint();
                     point.parents.Add(this);
-                    point.posX = (startPoint + j * new Vector3(dx, 0, dz)).X;
-                    point.posZ = (startPoint + i * new Vector3(dx, 0, dz)).Z;
+                    point.posX = (startPoint + i * new Vector3(dx, 0, dz)).X;
+                    point.posZ = (startPoint + j * new Vector3(dx, 0, dz)).Z;
+                    point.CanBeDeleted = false;
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     points[i].Add(point);
                 }
@@ -235,7 +237,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             var rowsCount = 4 + 3 * (VPatches - 1) - 1;
             var colsCount = 4 + 3 * (UPatches - 1);
             
-            var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0,R,0);
+            var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0,0,0);
             var dx = CylinderHeight / 3;
             var dalpha = MathHelper.DegreesToRadians(360f / rowsCount);
 
@@ -250,6 +252,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     point.posX = (startPoint +  i * new Vector3(dx,0,0)).X;
                     point.posY = (startPoint + new Vector3((float)Math.Sin(j*dalpha)) * R).Y;
                     point.posZ = (startPoint + new Vector3((float)Math.Cos(j*dalpha)) * R).Z;
+                    point.CanBeDeleted = false;
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     points[i].Add(point);
                 }
@@ -267,5 +270,111 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         points = new List<List<ParameterizedPoint>>();
         Name = "SurfaceC0";
         UpdatePatchesCount();
+    }
+
+    public override uint[] lines => _lines;
+    public uint[] _lines;
+
+    private uint[] GenerateLines()
+    {
+        //nie zawijany
+        int size = 0;
+        if (!IsRolled)
+        {
+            size = (int)(2 * UPatches * 4 * 3 * VPatches * 4 * 3);
+        }
+        else
+        {
+            size = (int)(2 * UPatches * 4 * 3 * VPatches * 3 * 3);
+        }
+        uint[] lines = new uint[size];
+        uint it = 0;
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[0].Count; j++)
+            {
+                if (j < points[0].Count - 1)
+                {
+                    lines[it++] = (uint) (i * points[0].Count + j);
+                    lines[it++] = (uint) (i * points[0].Count + j + 1);
+                }
+
+                if (j == points[0].Count - 1 && IsRolled)
+                {
+                    lines[it++] = (uint) (i * points[0].Count + j);
+                    lines[it++] = (uint) (i * points[0].Count);
+                }
+
+                if (i < points.Count - 1)
+                {
+                     lines[it++] = (uint) (i * points[0].Count + j);
+                     lines[it++] = (uint) (i * points[0].Count + j + points[0].Count);
+                }
+            }
+        }
+
+        return lines;
+    }
+    
+    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        //nie zawijany
+        int rowsCount = 0;
+        int colsCount = 0;
+        if (!IsRolled)
+        {
+            rowsCount = 4 + 3 * ((int)VPatches - 1);
+            colsCount = 4 + 3 * ((int)UPatches - 1);
+        }
+        else
+        {
+            rowsCount = 3 * (int)VPatches;
+            colsCount = 4 + 3 * ((int)UPatches - 1);
+        }
+
+        var vertices = new float[ rowsCount * colsCount * 4 ];
+        int it = 0;
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[i].Count; j++)
+            {
+                var posVector = points[i][j].GetModelMatrix().ExtractTranslation();
+                vertices[4 * it] = posVector.X;
+                vertices[4 * it + 1] = posVector.Y;
+                vertices[4 * it + 2] = posVector.Z;
+                vertices[4 * it + 3] = 1;
+                it++;
+            }
+        }
+
+        var vertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+
+        var vertexArrayObject = GL.GenVertexArray();
+        GL.BindVertexArray(vertexArrayObject);
+
+        GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+        _lines = GenerateLines();
+    }
+
+    public override void OnDelete()
+    {
+        for (int i=0; i<points.Count; i++)
+        {
+            for (int j = 0; j < points[i].Count;)
+            {
+                points[i][j].CanBeDeleted = true;
+                Scene.CurrentScene.ObjectsController.ParameterizedObjects.Remove(points[i][j]);
+                points[i].RemoveAt(j);
+            }
+        }
+        base.OnDelete();
+    }
+
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

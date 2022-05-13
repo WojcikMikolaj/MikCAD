@@ -1,4 +1,5 @@
 ﻿using MikCAD.BezierCurves;
+using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
@@ -163,6 +164,39 @@ public class DrawProcessor
         GL.EnableVertexAttribArray(1);
 
         GL.DrawElements(PrimitiveType.Patches, curveC0.patches.Length, DrawElementsType.UnsignedInt, 0);
+    }
+    
+    public void ProcessObject(BezierSurfaceC0 surfaceC0, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        int indexBufferObject;
+        if (surfaceC0.DrawPolygon)
+        {
+            Scene.CurrentScene._shader = _controller._colorShader;
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+            Scene.CurrentScene._shader.SetVector4("color", Vector4.One);
+            indexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC0._lines.Length * sizeof(uint),
+                surfaceC0._lines, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+            GL.EnableVertexAttribArray(1);
+            GL.DrawElements(PrimitiveType.Lines, surfaceC0.lines.Length, DrawElementsType.UnsignedInt, 0);
+        }
+
+        // Scene.CurrentScene._shader = _controller._bezierCurveC0Shader;
+        // Scene.CurrentScene._shader.SetInt("tessLevels", surfaceC0.tessLevel);
+        // Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        // GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
+        //
+        // indexBufferObject = GL.GenBuffer();
+        // GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        // GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC0._patches.Length * sizeof(uint), surfaceC0._patches,
+        //     BufferUsageHint.StaticDraw);
+        // GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        // GL.EnableVertexAttribArray(1);
+        //
+        // GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
     }
 
     public void ProcessObject(CompositeObject compositeObject,EyeEnum eye, uint vertexAttributeLocation,

@@ -212,6 +212,8 @@ public class ObjectsController : INotifyPropertyChanged
 
         foreach (var o in objectsToDelete)
         {
+            if(o is ParameterizedPoint {CanBeDeleted: false})
+                continue;
             ParameterizedObjects.Remove(o);
         }
 

@@ -9,7 +9,7 @@ namespace MikCAD.BezierSurfaces;
 public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 {
     private List<List<ParameterizedPoint>> points;
-
+    private Patch[,] _patchesIdx;
 
     private uint _uPatches = 1;
 
@@ -215,6 +215,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
 
+        _patchesIdx = new Patch[UPatches, VPatches];
+        for (int i = 0; i < UPatches; i++)
+        for (int j = 0; j < VPatches; j++)
+            _patchesIdx[i, j] = new Patch();
+        int counter = 0;
         if (!IsRolled)
         {
             //var rowsCount = VDivisions + (VDivisions - 1) * (VPatches - 1);
@@ -243,6 +248,19 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     _objects.Add(point);
                     points[i].Add(point);
+                    int uPatchId = i / 3;
+                    int vPatchId = j / 3;
+                    if (uPatchId < UPatches && vPatchId < VPatches)
+                        _patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
+                    if (i % 3 == 0 && i != 0 && vPatchId < VPatches)
+                        _patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
+                    if (j % 3 == 0 && j != 0 && uPatchId < UPatches)
+                        _patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
+                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
+                        _patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+
+
+                    counter++;
                 }
             }
         }
@@ -340,26 +358,14 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         int patchesCount = (int) (UPatches * VPatches);
         uint[] patches = new uint[patchesCount * 16];
         int it = 0;
-        for (int i = 0; i < VPatches; i++)
+        for (int i = 0; i < UPatches; i++)
         {
-            for (int j = 0; j < UPatches; j++)
+            for (int j = 0; j < VPatches; j++)
             {
-                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j);
-                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 1);
-                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 2);
-                patches[it++] = (uint) (3 * i * (4 + 3 * (UPatches - 1)) + 3 * j + 3);
-                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j);
-                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
-                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
-                patches[it++] = (uint) ((3 * i  + 1)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
-                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j);
-                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
-                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
-                patches[it++] = (uint) ((3 * i  + 2)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
-                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j);
-                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 1);
-                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 2);
-                patches[it++] = (uint) ((3 * i  + 3)* (4 + 3 * (UPatches - 1)) + 3 * j + 3);
+                for (int k = 0; k < 16; k++)
+                {
+                    patches[it++] = _patchesIdx[i, j].GetIdAtI(k);
+                }
             }
         }
 
@@ -431,4 +437,14 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
+}
+
+internal class Patch
+{
+    uint[] idx = new uint[16];
+
+    internal uint GetIdAtI(int i) => idx[i];
+    internal uint GetIdAtI(int i, int j) => idx[i * 4 + j];
+    internal void SetIdAtI(int i, uint id) => idx[i] = id;
+    internal void SetIdAtI(int i, int j, uint id) => idx[i * 4 + j] = id;
 }

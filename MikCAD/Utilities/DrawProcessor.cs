@@ -174,7 +174,7 @@ public class DrawProcessor
             Scene.CurrentScene._shader = _controller._colorShader;
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
             Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-            Scene.CurrentScene._shader.SetVector4("color", Vector4.One);
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0,1,1,1));
             indexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC0._lines.Length * sizeof(uint),

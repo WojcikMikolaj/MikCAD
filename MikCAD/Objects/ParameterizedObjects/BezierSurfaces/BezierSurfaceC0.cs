@@ -308,6 +308,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 }
             }
 
+            //jakby zawinięte w drugą stronę
             for (int i = 0; i < UPatches; i++)
             {
                 _patchesIdx[i, VPatches - 1].SetIdAtI(0, 3, _patchesIdx[i, 0].GetIdAtI(0, 0));

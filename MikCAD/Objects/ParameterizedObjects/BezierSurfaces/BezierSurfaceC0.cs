@@ -259,7 +259,6 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
                         _patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
 
-
                     counter++;
                 }
             }
@@ -289,7 +288,32 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     _objects.Add(point);
                     points[i].Add(point);
+
+                    int uPatchId = i / 3;
+                    int vPatchId = j / 3;
+
+
+                    if (uPatchId < UPatches && vPatchId < VPatches)
+                        _patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
+
+                    if (i % 3 == 0 && i != 0 && vPatchId < VPatches)
+                        _patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
+
+                    if (j % 3 == 0 && j != 0 && uPatchId < UPatches)
+                        _patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
+
+                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
+                        _patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+                    counter++;
                 }
+            }
+
+            for (int i = 0; i < UPatches; i++)
+            {
+                _patchesIdx[i, VPatches - 1].SetIdAtI(0, 3, _patchesIdx[i, 0].GetIdAtI(0, 0));
+                _patchesIdx[i, VPatches - 1].SetIdAtI(1, 3, _patchesIdx[i, 0].GetIdAtI(1, 0));
+                _patchesIdx[i, VPatches - 1].SetIdAtI(2, 3, _patchesIdx[i, 0].GetIdAtI(2, 0));
+                _patchesIdx[i, VPatches - 1].SetIdAtI(3, 3, _patchesIdx[i, 0].GetIdAtI(3, 0));
             }
         }
     }

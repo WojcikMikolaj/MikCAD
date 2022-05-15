@@ -121,6 +121,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             if (value > 0)
             {
                 _singlePatchWidth = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(SinglePatchWidth));
             }
         }
@@ -135,7 +136,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         {
             if (value > 0)
             {
-                _singlePatchWidth = value;
+                _singlePatchHeight = value;
+                UpdatePatchesCount();
                 OnPropertyChanged(nameof(SinglePatchHeight));
             }
         }

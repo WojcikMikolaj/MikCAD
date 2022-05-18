@@ -15,7 +15,7 @@ namespace MikCAD
         private bool _leftPressed = false;
         private System.Windows.Point? _last;
         private bool _boxSelection = false;
-        private (int, int) _firstCorner;
+        private (int x, int y) _firstCorner;
         private bool _shiftPressed;
         public Axis ActiveAxis { get; private set; } = 0;
 
@@ -51,7 +51,7 @@ namespace MikCAD
                     point = Raycaster.FindIntersectingPoint((float) e.GetPosition(OpenTkControl).X,
                         (float) e.GetPosition(OpenTkControl).Y);
                 }
-                
+
                 // ParameterizedPoint point = null;
                 if (point != null)
                 {
@@ -99,17 +99,29 @@ namespace MikCAD
                 }
             }
 
-            
+
             if (!_rightPressed && !_shiftPressed)
             {
                 _leftPressed = true;
             }
-            
-            if (e.LeftButton == MouseButtonState.Pressed)
+
+            if (e.LeftButton == MouseButtonState.Pressed && _shiftPressed)
             {
                 _boxSelection = true;
-                _firstCorner = ((int) e.GetPosition(OpenTkControl).X,
+                _firstCorner = ((int) e.GetPosition(OpenTkControl).X, (int) e.GetPosition(OpenTkControl).Y);
+
+                Scene.CurrentScene.ObjectsController.SelectionBox.Draw = true;
+                Scene.CurrentScene.ObjectsController.SelectionBox.X1 =
+                    ((float) (_firstCorner.x / OpenTkControl.ActualWidth) - 0.5f) * 2;
+                Scene.CurrentScene.ObjectsController.SelectionBox.Y1 =
+                    -((float) (_firstCorner.y / OpenTkControl.ActualHeight) - 0.5f) * 2;
+
+                (int x, int y) lastCorner = ((int) e.GetPosition(OpenTkControl).X,
                     (int) e.GetPosition(OpenTkControl).Y);
+                Scene.CurrentScene.ObjectsController.SelectionBox.X2 =
+                    ((float) (lastCorner.x / OpenTkControl.ActualWidth) - 0.5f) * 2;
+                Scene.CurrentScene.ObjectsController.SelectionBox.Y2 =
+                    -((float) (lastCorner.y / OpenTkControl.ActualHeight) - 0.5f) * 2;
             }
         }
 
@@ -120,7 +132,7 @@ namespace MikCAD
                 var lastCorner = ((int) e.GetPosition(OpenTkControl).X,
                     (int) e.GetPosition(OpenTkControl).Y);
                 Title = $"{_firstCorner},    ,{lastCorner}";
-                Scene.CurrentScene.ObjectsController.DrawBox = true;
+                Scene.CurrentScene.ObjectsController.SelectionBox.Draw = false;
             }
 
             _boxSelection = false;
@@ -130,7 +142,7 @@ namespace MikCAD
 
         private void Image_OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (_leftPressed | _rightPressed)
+            if (!_shiftPressed && (_leftPressed || _rightPressed))
             {
                 var pos = e.GetPosition(this);
                 if (_last.HasValue)
@@ -198,6 +210,20 @@ namespace MikCAD
 
                 _last = pos;
             }
+
+            if (e.LeftButton == MouseButtonState.Pressed && _shiftPressed)
+            {
+                _boxSelection = true;
+                (int x, int y) lastCorner = ((int) e.GetPosition(OpenTkControl).X,
+                    (int) e.GetPosition(OpenTkControl).Y);
+                Title =
+                    $"{(float) (_firstCorner.y / OpenTkControl.ActualHeight)} {(float) (_firstCorner.y / OpenTkControl.ActualHeight)},    ,{(float) (lastCorner.x / OpenTkControl.ActualWidth)} {(float) (lastCorner.y / OpenTkControl.ActualHeight)}";
+                Scene.CurrentScene.ObjectsController.SelectionBox.Draw = true;
+                Scene.CurrentScene.ObjectsController.SelectionBox.X2 =
+                    ((float) (lastCorner.x / OpenTkControl.ActualWidth) - 0.5f) * 2;
+                Scene.CurrentScene.ObjectsController.SelectionBox.Y2 =
+                    -((float) (lastCorner.y / OpenTkControl.ActualHeight) - 0.5f) * 2;
+            }
         }
 
         private void Window_OnMouseLeave(object sender, MouseEventArgs e)
@@ -257,7 +283,7 @@ namespace MikCAD
                 case Key.System:
                     if (e.SystemKey == Key.LeftAlt)
                         IsObjectFreeMoveEnabled = true;
-                    if(e.SystemKey == Key.Escape)
+                    if (e.SystemKey == Key.Escape)
                         Scene.CurrentScene.ObjectsController.UnselectAll();
                     break;
                 case Key.Escape:

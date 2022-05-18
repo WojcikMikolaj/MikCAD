@@ -8,6 +8,7 @@ using System.Windows;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -46,8 +47,10 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessControlShader.tesc",
         "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessEvaluationShader.tese");
 
+    public Shader _selectionBoxShader = new Shader("Shaders/SelectionBox/SelectionBoxShader.vert", "Shaders/SelectionBox/SelectionBoxShader.frag");
+    
     private DrawProcessor _drawProcessor;
-
+    public readonly SelectionBox SelectionBox = new SelectionBox();
     public ObjectsController()
     {
         _drawProcessor = new DrawProcessor(this);
@@ -299,6 +302,8 @@ public class ObjectsController : INotifyPropertyChanged
 
         _drawProcessor.ProcessObject(_pointer, eye, vertexAttributeLocation, normalAttributeLocation);
         _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, eye, vertexAttributeLocation, normalAttributeLocation);
+        if (SelectionBox.Draw)
+            _drawProcessor.DrawSelectionBox(SelectionBox);
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

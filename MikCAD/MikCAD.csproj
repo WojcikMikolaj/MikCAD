@@ -69,6 +69,12 @@
     <EmbeddedResource Include="Shaders\SelectedObject.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\SelectionBox\SelectionBoxShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\SelectionBox\SelectionBoxShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\Shader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

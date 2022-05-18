@@ -1,4 +1,5 @@
-﻿using MikCAD.BezierCurves;
+﻿using System;
+using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
 using MikCAD.Utilities;
@@ -313,5 +314,36 @@ public class DrawProcessor
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Lines, grid.lines.Length, DrawElementsType.UnsignedInt, 0);
+    }
+
+    public void DrawSelectionBox(SelectionBox selectionBox)
+    {
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        Scene.CurrentScene._shader = _controller._selectionBoxShader;
+        Scene.CurrentScene._shader.Use();
+        var vertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        var quad = new float[]
+        {
+            MathF.Min(selectionBox.X1, selectionBox.X2), MathF.Min(selectionBox.Y1, selectionBox.Y2), 0.1f,
+            MathF.Max(selectionBox.X1, selectionBox.X2), MathF.Min(selectionBox.Y1, selectionBox.Y2), 0.1f,
+            MathF.Max(selectionBox.X1, selectionBox.X2), MathF.Max(selectionBox.Y1, selectionBox.Y2), 0.1f,
+            MathF.Min(selectionBox.X1, selectionBox.X2), MathF.Max(selectionBox.Y1, selectionBox.Y2), 0.1f,
+        };
+        GL.BufferData(BufferTarget.ArrayBuffer, quad.Length * sizeof(float), quad, BufferUsageHint.StaticDraw);
+        var vertexArrayObject = GL.GenVertexArray();
+        GL.BindVertexArray(vertexArrayObject);
+
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+
+        var indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, 4 * sizeof(uint), new[]{0,1,2,3}, BufferUsageHint.StaticDraw);
+
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.DrawElements(PrimitiveType.Quads, 4, DrawElementsType.UnsignedInt, 0);
     }
 }

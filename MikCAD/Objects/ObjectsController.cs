@@ -127,7 +127,6 @@ public class ObjectsController : INotifyPropertyChanged
         }
     }
 
-
     public bool AddObjectToScene(ParameterizedObject parameterizedObject)
     {
         ParameterizedObjects.Add(parameterizedObject);

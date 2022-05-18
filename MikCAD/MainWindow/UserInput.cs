@@ -14,6 +14,9 @@ namespace MikCAD
         private bool _rightPressed = false;
         private bool _leftPressed = false;
         private System.Windows.Point? _last;
+        private bool _boxSelection = false;
+        private (int, int) _firstCorner;
+        private bool _shiftPressed;
         public Axis ActiveAxis { get; private set; } = 0;
 
         struct mouse_position
@@ -96,14 +99,31 @@ namespace MikCAD
                 }
             }
 
-            if (!_rightPressed)
+            
+            if (!_rightPressed && !_shiftPressed)
             {
                 _leftPressed = true;
+            }
+            
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                _boxSelection = true;
+                _firstCorner = ((int) e.GetPosition(OpenTkControl).X,
+                    (int) e.GetPosition(OpenTkControl).Y);
             }
         }
 
         private void Image_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (_boxSelection && _shiftPressed)
+            {
+                var lastCorner = ((int) e.GetPosition(OpenTkControl).X,
+                    (int) e.GetPosition(OpenTkControl).Y);
+                Title = $"{_firstCorner},    ,{lastCorner}";
+                Scene.CurrentScene.ObjectsController.DrawBox = true;
+            }
+
+            _boxSelection = false;
             _leftPressed = false;
             _last = null;
         }
@@ -246,6 +266,9 @@ namespace MikCAD
                 case Key.Delete:
                     Scene.CurrentScene.ObjectsController.DeleteSelectedObjects();
                     break;
+                case Key.LeftShift:
+                    _shiftPressed = true;
+                    break;
             }
         }
 
@@ -270,6 +293,9 @@ namespace MikCAD
                 case Key.W:
                 case Key.E:
                     ActiveAxis = Axis.None;
+                    break;
+                case Key.LeftShift:
+                    _shiftPressed = false;
                     break;
             }
         }

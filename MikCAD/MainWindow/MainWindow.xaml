@@ -96,5 +96,6 @@
         <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC2Control" Visibility="Hidden"/>
         <local:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden"/>
         <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierSurfaceC0Control" Visibility="Hidden"/>
+        <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierSurfaceC2Control" Visibility="Hidden"/>
     </Grid>
 </Window>

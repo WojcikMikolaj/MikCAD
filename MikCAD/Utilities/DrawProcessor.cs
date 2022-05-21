@@ -200,6 +200,40 @@ public class DrawProcessor
         GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
         GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Fill);
     }
+    
+    public void ProcessObject(BezierSurfaceC2 surfaceC2, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        int indexBufferObject;
+        if (surfaceC2.DrawPolygon)
+        {
+            Scene.CurrentScene._shader = _controller._colorShader;
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0,1,1,1));
+            indexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC2._lines.Length * sizeof(uint),
+                surfaceC2._lines, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+            GL.EnableVertexAttribArray(1);
+            GL.DrawElements(PrimitiveType.Lines, surfaceC2.lines.Length, DrawElementsType.UnsignedInt, 0);
+        }
+
+        Scene.CurrentScene._shader = _controller._bezierSurfaceC2Shader;
+        Scene.CurrentScene._shader.SetInt("UTessLevels", (int)surfaceC2.UDivisions);
+        Scene.CurrentScene._shader.SetInt("VTessLevels", (int)surfaceC2.VDivisions);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
+        
+        indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, surfaceC2._patches.Length * sizeof(uint), surfaceC2._patches, BufferUsageHint.StaticDraw);
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Line);
+        GL.DrawElements(PrimitiveType.Patches, surfaceC2.patches.Length, DrawElementsType.UnsignedInt, 0);
+        GL.PolygonMode(MaterialFace.FrontAndBack,PolygonMode.Fill);
+    }
 
     public void ProcessObject(CompositeObject compositeObject,EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)

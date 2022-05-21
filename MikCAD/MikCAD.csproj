@@ -39,6 +39,12 @@
     <EmbeddedResource Include="Shaders\BezierSurfaceC0\BezierSurfaceC0TessEvaluationShader.tese">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierSurfaceC2\BezierSurfaceC2TessControlShader.tesc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\BezierSurfaceC2\BezierSurfaceC2TessEvaluationShader.tese">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\CenterObjectShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

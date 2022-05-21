@@ -36,6 +36,11 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierSurfaceC0/BezierSurfaceC0TessControlShader.tesc",
         "Shaders/BezierSurfaceC0/BezierSurfaceC0TessEvaluationShader.tese");
+    internal Shader _bezierSurfaceC2Shader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag",
+        "Shaders/BezierSurfaceC2/BezierSurfaceC2TessControlShader.tesc",
+        "Shaders/BezierSurfaceC2/BezierSurfaceC2TessEvaluationShader.tese");
     internal Shader _bezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -67,6 +72,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.bezierCurveC2Control.Visibility = Visibility.Hidden;
             MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Hidden;
+            MainWindow.current.bezierSurfaceC2Control.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -81,6 +87,9 @@ public class ObjectsController : INotifyPropertyChanged
                 //must be before CompositeObject
                 case BezierSurfaceC0:
                     MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Visible;
+                    break;
+                case BezierSurfaceC2:
+                    MainWindow.current.bezierSurfaceC2Control.Visibility = Visibility.Visible;
                     break;
                 case BezierCurveC0 bezierCurveC0:
                     MainWindow.current.bezierCurveC0Control.Visibility = Visibility.Visible;

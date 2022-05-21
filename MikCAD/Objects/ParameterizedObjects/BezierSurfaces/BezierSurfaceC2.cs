@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD.BezierSurfaces;
 
-public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
+public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
 {
     private List<List<ParameterizedPoint>> points;
     private Patch[,] _patchesIdx;
@@ -228,8 +228,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             //var rowsCount = VDivisions + (VDivisions - 1) * (VPatches - 1);
             //var colsCount = UDivisions + (UDivisions - 1) * (UPatches - 1);
 
-            var rowsCount = 4 + 3 * (VPatches - 1);
-            var colsCount = 4 + 3 * (UPatches - 1);
+            var rowsCount = 4 + 1 * (VPatches - 1);
+            var colsCount = 4 + 1 * (UPatches - 1);
 
             var startPoint = GetModelMatrix().ExtractTranslation();
             var dx = SinglePatchWidth / 3;
@@ -251,16 +251,16 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     _objects.Add(point);
                     points[i].Add(point);
-                    int uPatchId = i / 3;
-                    int vPatchId = j / 3;
-                    if (uPatchId < UPatches && vPatchId < VPatches)
-                        _patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
-                    if (i % 3 == 0 && i != 0 && vPatchId < VPatches)
-                        _patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
-                    if (j % 3 == 0 && j != 0 && uPatchId < UPatches)
-                        _patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
-                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
-                        _patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+                    for (int k = -3, wsp1 =0; k <= 0; k++, wsp1++)
+                    {
+                        for (int l = -3, wsp2=0; l <= 0; l++, wsp2++)
+                        {
+                            if (i + k >= 0 && i + k < UPatches && j + l >= 0 && j + l < VPatches)
+                            {
+                                _patchesIdx[i+k, j+l].SetIdAtI(3-wsp1,3-wsp2,(uint)counter);
+                            }
+                        }
+                    }
 
                     counter++;
                 }
@@ -268,8 +268,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         }
         else
         {
-            var rowsCount = 4 + 3 * (VPatches - 1) - 1;
-            var colsCount = 4 + 3 * (UPatches - 1);
+            var rowsCount = 4 + 1 * (VPatches - 1) - 1;
+            var colsCount = 4 + 1 * (UPatches - 1);
 
             var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0, 0, 0);
             var dx = CylinderHeight / 3;
@@ -295,18 +295,17 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     int uPatchId = i / 3;
                     int vPatchId = j / 3;
 
-
-                    if (uPatchId < UPatches && vPatchId < VPatches)
-                        _patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
-
-                    if (i % 3 == 0 && i != 0 && vPatchId < VPatches)
-                        _patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
-
-                    if (j % 3 == 0 && j != 0 && uPatchId < UPatches)
-                        _patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
-
-                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
-                        _patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+                    // for (int k = -3, wsp1 =0; k <= 0; k++, wsp1++)
+                    // {
+                    //     for (int l = -3, wsp2=0; l <= 0; l++, wsp2++)
+                    //     {
+                    //         if (i + k >= 0 && i + k < UPatches)
+                    //         {
+                    //             _patchesIdx[i+k, (j+l)%VPatches].SetIdAtI(3-wsp1,3-wsp2,(uint)counter);
+                    //         }
+                    //     }
+                    // }
+                    
                     counter++;
                 }
             }
@@ -328,10 +327,10 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     {
     }
 
-    public BezierSurfaceC0() : base("SurfaceC0")
+    public BezierSurfaceC2() : base("SurfaceC2")
     {
         points = new List<List<ParameterizedPoint>>();
-        Name = "SurfaceC0";
+        Name = "SurfaceC2";
         UpdatePatchesCount();
     }
 
@@ -415,13 +414,13 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         int colsCount = 0;
         if (!IsRolled)
         {
-            rowsCount = 4 + 3 * ((int) VPatches - 1);
-            colsCount = 4 + 3 * ((int) UPatches - 1);
+            rowsCount = 4 + 1 * ((int) VPatches - 1);
+            colsCount = 4 + 1 * ((int) UPatches - 1);
         }
         else
         {
             rowsCount = 3 * (int) VPatches;
-            colsCount = 4 + 3 * ((int) UPatches - 1);
+            colsCount = 4 + 1 * ((int) UPatches - 1);
         }
 
         var vertices = new float[rowsCount * colsCount * 4];

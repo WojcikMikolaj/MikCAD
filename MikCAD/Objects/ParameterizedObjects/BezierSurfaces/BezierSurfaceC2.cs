@@ -275,7 +275,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         }
         else
         {
-            var rowsCount = 4 + 1 * (VPatches - 1) - 1;
+            var rowsCount = VPatches;
             var colsCount = 4 + 1 * (UPatches - 1);
 
             var startPoint = GetModelMatrix().ExtractTranslation() + new Vector3(0, 0, 0);
@@ -315,15 +315,6 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     
                     counter++;
                 }
-            }
-
-            //jakby zawinięte w drugą stronę
-            for (int i = 0; i < UPatches; i++)
-            {
-                _patchesIdx[i, VPatches - 1].SetIdAtI(0, 3, _patchesIdx[i, 0].GetIdAtI(0, 0));
-                _patchesIdx[i, VPatches - 1].SetIdAtI(1, 3, _patchesIdx[i, 0].GetIdAtI(1, 0));
-                _patchesIdx[i, VPatches - 1].SetIdAtI(2, 3, _patchesIdx[i, 0].GetIdAtI(2, 0));
-                _patchesIdx[i, VPatches - 1].SetIdAtI(3, 3, _patchesIdx[i, 0].GetIdAtI(3, 0));
             }
         }
 

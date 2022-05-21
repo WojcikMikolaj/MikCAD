@@ -24,13 +24,16 @@ public class ObjectsController : INotifyPropertyChanged
     internal Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     internal Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
     internal Shader _colorShader = new Shader("Shaders/ColorShader.vert", "Shaders/ColorShader.frag");
+
     internal Shader _centerObjectShader =
         new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
+
     internal Shader _bezierCurveC0Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC0/BezierCurveC0TessControlShader.tesc",
         "Shaders/BezierCurveC0/BezierCurveC0TessEvaluationShader.tese");
+
     internal Shader _bezierSurfaceC0Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -46,20 +49,24 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierCurveC2/BezierCurveC2TessControlShader.tesc",
         "Shaders/BezierCurveC2/BezierCurveC2TessEvaluationShader.tese");
+
     public Shader _interpolatingBezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
         "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessControlShader.tesc",
         "Shaders/InterpolatingBezierCurveC2/InterpolatingBezierCurveC2TessEvaluationShader.tese");
 
-    public Shader _selectionBoxShader = new Shader("Shaders/SelectionBox/SelectionBoxShader.vert", "Shaders/SelectionBox/SelectionBoxShader.frag");
-    
+    public Shader _selectionBoxShader = new Shader("Shaders/SelectionBox/SelectionBoxShader.vert",
+        "Shaders/SelectionBox/SelectionBoxShader.frag");
+
     private DrawProcessor _drawProcessor;
     public readonly SelectionBox SelectionBox = new SelectionBox();
+
     public ObjectsController()
     {
         _drawProcessor = new DrawProcessor(this);
     }
+
     public ParameterizedObject SelectedObject
     {
         get => _selectedObject;
@@ -228,7 +235,7 @@ public class ObjectsController : INotifyPropertyChanged
 
         foreach (var o in objectsToDelete)
         {
-            if(o is ParameterizedPoint {CanBeDeleted: false})
+            if (o is ParameterizedPoint {CanBeDeleted: false})
                 continue;
             ParameterizedObjects.Remove(o);
         }
@@ -240,9 +247,9 @@ public class ObjectsController : INotifyPropertyChanged
 
     public void SelectObject(ParameterizedObject o)
     {
-        if(o is null)
+        if (o is null)
             return;
-        
+
         #region bezierCurve
 
         if (MainWindow.AddToSelected && SelectedObject is IBezierCurve)
@@ -265,7 +272,7 @@ public class ObjectsController : INotifyPropertyChanged
         }
         else
         {
-            if(SelectedObject is ISurface)
+            if (SelectedObject is ISurface)
                 return;
             if (SelectedObject is CompositeObject compositeObject)
             {
@@ -281,7 +288,7 @@ public class ObjectsController : INotifyPropertyChanged
         }
     }
 
-    public void DrawObjects(EyeEnum eye,uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawObjects(EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, eye, vertexAttributeLocation, normalAttributeLocation);
         foreach (var obj in ParameterizedObjects)
@@ -289,7 +296,7 @@ public class ObjectsController : INotifyPropertyChanged
             Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
             Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", obj.GetModelMatrix());
-            Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
+            Scene.CurrentScene._shader.SetFloat("overrideEnabled", eye == EyeEnum.Both ? 0 : 1);
             switch (eye)
             {
                 case EyeEnum.Left:
@@ -299,6 +306,7 @@ public class ObjectsController : INotifyPropertyChanged
                     Scene.CurrentScene._shader.SetVector4("overrideColor", Scene.CurrentScene.camera.rightColor);
                     break;
             }
+
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
         }
@@ -361,5 +369,26 @@ public class ObjectsController : INotifyPropertyChanged
 
         GL.Flush();
         GL.Finish();
+    }
+
+    public void SelectPointsInSelectionBox()
+    {
+        Scene.CurrentScene.camera.UpdateProjectionMatrices();
+        Scene.CurrentScene.camera.UpdateViewMatrices();
+        List<ParameterizedObject> selectedPoints = new();
+        foreach (var point in ParameterizedObjects)
+        {
+            if (point is ParameterizedPoint p && SelectionBox.InBox(p))
+                selectedPoints.Add(point);
+        }
+
+        CompositeObject comp;
+        if (selectedPoints.Count > 0)
+        {
+            comp = new CompositeObject(selectedPoints[0]);
+            for (int i = 1; i < selectedPoints.Count; i++)
+                comp.ProcessObject(selectedPoints[i]);
+            SelectedObject = comp;
+        }
     }
 }

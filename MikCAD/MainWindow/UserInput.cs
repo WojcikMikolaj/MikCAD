@@ -129,8 +129,13 @@ namespace MikCAD
         {
             if (_boxSelection && _shiftPressed)
             {
-                var lastCorner = ((int) e.GetPosition(OpenTkControl).X,
+                (int x, int y) lastCorner = ((int) e.GetPosition(OpenTkControl).X,
                     (int) e.GetPosition(OpenTkControl).Y);
+                Scene.CurrentScene.ObjectsController.SelectionBox.X2 =
+                    ((float) (lastCorner.x / OpenTkControl.ActualWidth) - 0.5f) * 2;
+                Scene.CurrentScene.ObjectsController.SelectionBox.Y2 =
+                    -((float) (lastCorner.y / OpenTkControl.ActualHeight) - 0.5f) * 2;
+                Scene.CurrentScene.ObjectsController.SelectPointsInSelectionBox();
                 Title = $"{_firstCorner},    ,{lastCorner}";
                 Scene.CurrentScene.ObjectsController.SelectionBox.Draw = false;
             }

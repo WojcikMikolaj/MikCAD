@@ -347,7 +347,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         int size = 0;
         if (!IsRolled)
         {
-            size = (int) (2 * UPatches * 4 * 3 * VPatches * 4 * 3);
+            size = (int) (2 * (3 + UPatches) * (3 + VPatches)*  (3 + UPatches) * (3 + VPatches));
         }
         else
         {

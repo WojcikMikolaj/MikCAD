@@ -36,6 +36,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         {
             if (!_applied && value >= 1)
             {
+                if(_isRolled && value<4)
+                    return;
                 _vPatches = value;
                 UpdatePatchesCount();
                 OnPropertyChanged(nameof(VPatches));
@@ -84,6 +86,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             if (!_applied)
             {
                 _isRolled = value;
+                if (_isRolled)
+                {
+                    VPatches = 4;
+                    OnPropertyChanged(nameof(VPatches));
+                }
                 UpdatePatchesCount();
                 OnPropertyChanged(nameof(IsRolled));
             }
@@ -291,20 +298,20 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     _objects.Add(point);
                     points[i].Add(point);
-
-                    int uPatchId = i / 3;
-                    int vPatchId = j / 3;
-
-                    // for (int k = -3, wsp1 =0; k <= 0; k++, wsp1++)
-                    // {
-                    //     for (int l = -3, wsp2=0; l <= 0; l++, wsp2++)
-                    //     {
-                    //         if (i + k >= 0 && i + k < UPatches)
-                    //         {
-                    //             _patchesIdx[i+k, (j+l)%VPatches].SetIdAtI(3-wsp1,3-wsp2,(uint)counter);
-                    //         }
-                    //     }
-                    // }
+                    
+                    for (int k = -3, wsp1 =0; k <= 0; k++, wsp1++)
+                    {
+                        for (int l = -3, wsp2=0; l <= 0; l++, wsp2++)
+                        {
+                            var second = j + l;
+                            if (second < 0)
+                                second += (int)VPatches;
+                            if (i + k >= 0 && i + k < UPatches && second<VPatches)
+                            {
+                                _patchesIdx[i+k, second].SetIdAtI(3-wsp1,3-wsp2,(uint)counter);
+                            }
+                        }
+                    }
                     
                     counter++;
                 }

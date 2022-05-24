@@ -82,6 +82,7 @@ public partial class MainWindow
                             scene.ObjectsController.AddObjectToScene((BezierCurveC0)bezierC0);
                             break;
                         case BezierC2 bezierC2:
+                            scene.ObjectsController.AddObjectToScene((BezierCurveC2)bezierC2);
                             break;
                         case BezierPatchC0 bezierPatchC0:
                             break;

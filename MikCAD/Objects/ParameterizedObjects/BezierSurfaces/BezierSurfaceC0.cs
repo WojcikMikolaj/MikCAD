@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
+using SharpSceneSerializer.DTOs.GeometryObjects;
+using SharpSceneSerializer.DTOs.Types;
 
 namespace MikCAD.BezierSurfaces;
 
@@ -407,7 +409,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
         return patches;
     }
-
+    
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         //nie zawijany
@@ -473,5 +475,36 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+    
+    public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0(BezierSurfaceC0 surfaceC0)
+    {
+        var c0Patches = new List<BezierPatchC0>();
+        var controlPoints = new List<PointRef>();
+        uint it=0;
+        foreach (var patch in surfaceC0._patchesIdx)
+        {
+            controlPoints.Clear();
+            for (int i = 0; i < 16; i++)
+            {
+                controlPoints.Add(new PointRef(){Id = surfaceC0.points[i/surfaceC0.points[0].Count][i%surfaceC0.points[0].Count].Id});
+            }
+
+            var patchP = new BezierPatchC0()
+            {
+                Id = 1000 * (surfaceC0.Id + 1) + it,
+                controlPoints = controlPoints.ToArray()
+            };
+            c0Patches.Add(patchP);
+            it++;
+        }
+        SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 ret = new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0()
+        {
+            Id = surfaceC0.Id,
+            Name = surfaceC0.Name,
+            Patches = c0Patches.ToArray()
+        };
+        
+        return ret;
     }
 }

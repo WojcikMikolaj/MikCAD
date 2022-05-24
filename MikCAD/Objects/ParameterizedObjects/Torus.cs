@@ -3,6 +3,7 @@ using System.Data;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using SharpSceneSerializer.DTOs.Types;
 using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD
@@ -228,6 +229,23 @@ namespace MikCAD
         public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
         {
             drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        }
+        
+        public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.Torus(Torus torus)
+        {
+            SharpSceneSerializer.DTOs.GeometryObjects.Torus ret = new SharpSceneSerializer.DTOs.GeometryObjects.Torus()
+            {
+                Id = torus.Id,
+                Name = torus.Name,
+                Position = new Float3(torus.posX, torus.posY, torus.posZ),
+                Rotation = new Float3(torus.rotX, torus.rotY, torus.rotZ),
+                Scale = new Float3(torus.scaleX, torus.scaleY, torus.scaleZ),
+                LargeRadius = torus.R,
+                SmallRadius = torus.r,
+                Samples = new Uint2((uint)torus.CirclesCount, (uint)torus.SectorsCount)
+            };
+        
+            return ret;
         }
     }
 }

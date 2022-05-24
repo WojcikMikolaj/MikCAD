@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using SharpSceneSerializer.DTOs.GeometryObjects;
 
 namespace MikCAD.BezierCurves;
 
@@ -64,28 +66,29 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
     {
         base.ProcessObject(point);
     }
-    
+
     public Vector4 CurveColor { get; set; }
 
     public override void ProcessObject(ParameterizedObject o)
     {
-        if(o is IBezierCurve)
+        if (o is IBezierCurve)
             return;
         int size = _objects.Count;
         if (o is ParameterizedPoint p)
             ProcessPoint(p);
         if (o is CompositeObject cmp)
         {
-            foreach (var obj in cmp._objects)   
+            foreach (var obj in cmp._objects)
             {
                 ProcessObject(obj);
             }
         }
+
         OnPropertyChanged(nameof(Objects));
     }
 
     public int tessLevel;
-    
+
     public override uint[] lines => _lines;
     public uint[] _lines;
 
@@ -113,15 +116,16 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
         if (_objects.Count == 0)
             return new uint[0];
         int patchesCount = (int) Math.Ceiling(_objects.Count / 4.0f);
-        uint[] patches = new uint[patchesCount*4];
+        uint[] patches = new uint[patchesCount * 4];
         int it = 0;
         for (int i = 0; i < patchesCount; i++)
         {
-            patches[it++] = (uint) (3*i);
-            patches[it++] = (uint) (3*i+1);
-            patches[it++] = (uint) (3*i+2);
-            patches[it++] = (uint) (3*i+3);
+            patches[it++] = (uint) (3 * i);
+            patches[it++] = (uint) (3 * i + 1);
+            patches[it++] = (uint) (3 * i + 2);
+            patches[it++] = (uint) (3 * i + 3);
         }
+
         return patches;
         //return new uint[]{0, 1, 2, 3};
     }
@@ -132,9 +136,9 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
         float maxX = -1;
         float minY = 1;
         float maxY = -1;
-        
-        var vertices = new float[(_objects.Count ) * 4 ];
-        for (int i = 0; i < (_objects.Count ); i++)
+
+        var vertices = new float[(_objects.Count) * 4];
+        for (int i = 0; i < (_objects.Count); i++)
         {
             var posVector = _objects[i].GetModelMatrix().ExtractTranslation();
             vertices[4 * i] = posVector.X;
@@ -142,8 +146,9 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
             vertices[4 * i + 2] = posVector.Z;
             vertices[4 * i + 3] = 1;
 
-            var posNDC = new Vector4(posVector, 1) * Scene.CurrentScene.camera.GetViewMatrix() * Scene.CurrentScene.camera.GetProjectionMatrix();
-            posNDC/=posNDC.W;
+            var posNDC = new Vector4(posVector, 1) * Scene.CurrentScene.camera.GetViewMatrix() *
+                         Scene.CurrentScene.camera.GetProjectionMatrix();
+            posNDC /= posNDC.W;
             if (posNDC.X < minX)
                 minX = posNDC.X;
             if (posNDC.Y < minY)
@@ -156,7 +161,7 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count ) * 4 * sizeof(float), vertices,
+        GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count) * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
@@ -204,9 +209,31 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
             }
         }
     }
-    
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+
+    public static explicit operator BezierC0(BezierCurveC0 curveC0)
+    {
+        var referencePoints = new List<PointRef>();
+        foreach (var o in curveC0._objects)
+        {
+            referencePoints.Add(new PointRef()
+            {
+                Id = o.Id
+            });
+        }
+        
+        BezierC0 ret = new BezierC0()
+        {
+            Id = curveC0.Id,
+            Name = curveC0.Name,
+            ControlPoints = referencePoints.ToArray()
+        };
+
+        return ret;
     }
 }

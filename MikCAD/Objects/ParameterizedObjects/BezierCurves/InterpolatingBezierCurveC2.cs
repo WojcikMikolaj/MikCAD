@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using SharpSceneSerializer.DTOs.GeometryObjects;
 
 namespace MikCAD.BezierCurves;
 
@@ -316,5 +317,26 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+    
+    public static explicit operator InterpolatedC2(InterpolatingBezierCurveC2 interpolatingCurve)
+    {
+        var referencePoints = new List<PointRef>();
+        foreach (var o in interpolatingCurve._objects)
+        {
+            referencePoints.Add(new PointRef()
+            {
+                Id = o.Id
+            });
+        }
+        
+        InterpolatedC2 ret = new InterpolatedC2()
+        {
+            Id = interpolatingCurve.Id,
+            Name = interpolatingCurve.Name,
+            ControlPoints = referencePoints.ToArray()
+        };
+
+        return ret;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using SharpSceneSerializer.DTOs.GeometryObjects;
 
 namespace MikCAD.BezierCurves;
 
@@ -451,5 +452,26 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+    
+    public static explicit operator BezierC2(BezierCurveC2 curveC2)
+    {
+        var referencePoints = new List<PointRef>();
+        foreach (var o in curveC2._objects)
+        {
+            referencePoints.Add(new PointRef()
+            {
+                Id = o.Id
+            });
+        }
+        
+        BezierC2 ret = new BezierC2()
+        {
+            Id = curveC2.Id,
+            Name = curveC2.Name,
+            DeBoorPoints = referencePoints.ToArray()
+        };
+
+        return ret;
     }
 }

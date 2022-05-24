@@ -191,8 +191,13 @@ namespace MikCAD
             _name = objname;
             if(this is not Pointer3D)
                 _position = Scene.CurrentScene.ObjectsController._pointer._position;
+            _id = nextId++;
         }
 
+        private static uint nextId = 0;
+        private readonly uint _id;
+        public uint Id => _id;
+        
         public virtual void OnPositionUpdate()
         {
             ;

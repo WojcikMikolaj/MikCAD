@@ -7,6 +7,8 @@ using MikCAD.BezierCurves;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using SharpSceneSerializer.DTOs.GeometryObjects;
+using SharpSceneSerializer.DTOs.Types;
 using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD;
@@ -127,5 +129,17 @@ public class ParameterizedPoint : ParameterizedObject
     public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+    
+    public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.Point(ParameterizedPoint point)
+    {
+        SharpSceneSerializer.DTOs.GeometryObjects.Point ret = new SharpSceneSerializer.DTOs.GeometryObjects.Point()
+        {
+            Id = point.Id,
+            Name = point.Name,
+            Position = new Float3(point.posX, point.posY, point.posZ)
+        };
+        
+        return ret;
     }
 }

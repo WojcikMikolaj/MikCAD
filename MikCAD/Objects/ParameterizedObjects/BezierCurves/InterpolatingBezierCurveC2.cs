@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -337,6 +338,20 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
             ControlPoints = referencePoints.ToArray()
         };
 
+        return ret;
+    }
+    
+    public static explicit operator InterpolatingBezierCurveC2(InterpolatedC2 interpolatedC2)
+    {
+        InterpolatingBezierCurveC2 ret = new InterpolatingBezierCurveC2()
+        {
+            Id = interpolatedC2.Id,
+            Name = interpolatedC2.Name,
+        };
+        foreach (var point in interpolatedC2.ControlPoints)
+        {
+            ret.ProcessObject(Scene.CurrentScene.ObjectsController.ParameterizedObjects.Where(x => x.Id == point.Id).ToArray()[0]);
+        }
         return ret;
     }
 }

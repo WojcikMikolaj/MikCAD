@@ -93,6 +93,7 @@ public partial class MainWindow
                         case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 bezierSurfaceC2:
                             break;
                         case InterpolatedC2 interpolatedC2:
+                            scene.ObjectsController.AddObjectToScene((InterpolatingBezierCurveC2)interpolatedC2);
                             break;
                         case SharpSceneSerializer.DTOs.GeometryObjects.Torus torus:
                             break;

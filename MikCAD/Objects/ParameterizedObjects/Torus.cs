@@ -247,5 +247,29 @@ namespace MikCAD
         
             return ret;
         }
+        
+        public static explicit operator Torus(SharpSceneSerializer.DTOs.GeometryObjects.Torus torus)
+        {
+            Torus ret = new Torus()
+            {
+                Id = torus.Id,
+                Name = torus.Name,
+                posX = torus.Position.X,
+                posY = torus.Position.Y,
+                posZ = torus.Position.Z,
+                rotX = torus.Rotation.X,
+                rotY = torus.Rotation.Y,
+                rotZ = torus.Rotation.Z,
+                scaleX = torus.Scale.X,
+                scaleY = torus.Scale.Y,
+                scaleZ = torus.Scale.Z,
+                R = torus.LargeRadius,
+                r = torus.SmallRadius,
+                CirclesCount = (int)torus.Samples.X,
+                SectorsCount = (int)torus.Samples.Y,
+            };
+        
+            return ret;
+        }
     }
 }

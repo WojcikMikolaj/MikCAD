@@ -96,6 +96,7 @@ public partial class MainWindow
                             scene.ObjectsController.AddObjectToScene((InterpolatingBezierCurveC2)interpolatedC2);
                             break;
                         case SharpSceneSerializer.DTOs.GeometryObjects.Torus torus:
+                            scene.ObjectsController.AddObjectToScene((Torus)torus);
                             break;
                     }
                 }

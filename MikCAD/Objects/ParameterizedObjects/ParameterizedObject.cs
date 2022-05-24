@@ -195,9 +195,13 @@ namespace MikCAD
         }
 
         private static uint nextId = 0;
-        private readonly uint _id;
-        public uint Id => _id;
-        
+        private uint _id;
+        public uint Id
+        {
+            get => _id;
+            set => _id = value;
+        }
+
         public virtual void OnPositionUpdate()
         {
             ;

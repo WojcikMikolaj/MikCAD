@@ -142,4 +142,17 @@ public class ParameterizedPoint : ParameterizedObject
         
         return ret;
     }
+    
+    public static explicit operator ParameterizedPoint(SharpSceneSerializer.DTOs.GeometryObjects.Point point)
+    {
+        ParameterizedPoint ret = new ParameterizedPoint() {
+            Name = point.Name,
+            posX = point.Position.X,
+            posY = point.Position.Y,
+            posZ = point.Position.Z,
+        };
+        ret.Id = point.Id;
+        
+        return ret;
+    }
 }

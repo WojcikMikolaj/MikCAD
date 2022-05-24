@@ -391,4 +391,12 @@ public class ObjectsController : INotifyPropertyChanged
             SelectedObject = comp;
         }
     }
+
+    public void ClearScene()
+    {
+        ParameterizedObjects.Clear();
+        ParameterizedObjects.Add(new Pointer3D());
+        ParameterizedPoints.Clear();
+        SelectedObject = null;
+    }
 }

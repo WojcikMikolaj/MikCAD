@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -64,7 +65,7 @@ public partial class MainWindow
         FileDialog diag = new OpenFileDialog();
         if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var loadResult= SharpSceneSerializer.SceneSerializer.Deserialize( diag.FileName,@"D:\MG1\Aplikacja\MikCAD\MikCAD\libs\schema.json");
+            var loadResult= SharpSceneSerializer.SceneSerializer.Deserialize( diag.FileName,Directory.GetCurrentDirectory()+@"\schema.json");
             if (loadResult.succeded)
             {
                 scene.ObjectsController.ClearScene();

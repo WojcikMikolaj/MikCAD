@@ -101,9 +101,9 @@
     <None Remove="Shaders\BezierCurveC0TessControlShader.tesc" />
     <None Remove="Shaders\BezierCurveC0TessEvaluationShader.tese" />
     <None Remove="libs\schema.json" />
-    <Content Include="libs\schema.json">
+    <Resource Include="libs\schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />

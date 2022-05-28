@@ -13,7 +13,7 @@
       <HintPath>libs\NumericUpDownLib\net4\NumericUpDownLib.dll</HintPath>
     </Reference>
     <Reference Include="SharpSceneSerializer">
-      <HintPath>libs\SharpSceneSerializer.dll</HintPath>
+      <HintPath>bin\Debug\SharpSceneSerializer.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

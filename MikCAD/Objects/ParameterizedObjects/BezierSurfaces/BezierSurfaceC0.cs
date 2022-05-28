@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using MikCAD.BezierCurves;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
@@ -337,6 +339,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         UpdatePatchesCount();
     }
 
+    public BezierSurfaceC0(bool b) : base("SurfaceC0")
+    {
+        Name = "SurfaceC0";
+    }
+
     private bool _UpdateBuffers = true;
 
     public override uint[] lines => _lines;
@@ -493,7 +500,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             var patchP = new BezierPatchC0()
             {
                 Id = 1000 * (surfaceC0.Id + 1) + it,
-                controlPoints = controlPoints.ToArray()
+                controlPoints = controlPoints.ToArray(),
+                Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
             };
             c0Patches.Add(patchP);
             it++;
@@ -502,9 +510,117 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         {
             Id = surfaceC0.Id,
             Name = surfaceC0.Name,
-            Patches = c0Patches.ToArray()
+            Patches = c0Patches.ToArray(),
+            Size = new Uint2(surfaceC0.UPatches, surfaceC0.VPatches),
+            ParameterWrapped = new Bool2(false, surfaceC0.IsRolled)
         };
         
         return ret;
+    }
+    
+    public static explicit operator BezierSurfaceC0(SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 surfaceC0)
+    {
+        BezierSurfaceC0 ret = new BezierSurfaceC0(false);
+        ret._uPatches = surfaceC0.Size.X;
+        ret._vPatches = surfaceC0.Size.Y;
+        ret._isRolled = surfaceC0.ParameterWrapped.U || surfaceC0.ParameterWrapped.V;
+        ret._patchesIdx = new Patch[ret._uPatches, ret._vPatches];
+        ret.points = new List<List<ParameterizedPoint>>();
+        ret._applied = true;
+        
+        if (!ret.IsRolled)
+        {
+            var rowsCount = 4 + 3 * (ret.VPatches - 1);
+            var colsCount = 4 + 3 * (ret.UPatches - 1);
+            for (int i = 0; i < colsCount; i++)
+            {
+                ret.points.Add(new List<ParameterizedPoint>());
+                for (int j = 0; j < rowsCount; j++)
+                {
+                   ret.points[i].Add(Scene.CurrentScene.ObjectsController.ParameterizedPoints.First(
+                        x=>x.Id == surfaceC0.Patches[i/4 + j/4 * ret.VPatches].controlPoints[i%4*4 + j%4].Id));
+                   ret.points[i][j].parents.Add(ret);
+                   ret.points[i][j].CanBeDeleted = false;
+                }
+            }
+        }
+        else
+        {
+            var rowsCount = 4 + 3 * (ret.VPatches - 1) - 1;
+            var colsCount = 4 + 3 * (ret.UPatches - 1);
+        }
+
+        SetPatchesStruct(ret);
+
+        ret._UpdateBuffers = true;
+        ret.GenerateLines();
+        return ret;
+    }
+
+    private static void SetPatchesStruct(BezierSurfaceC0 ret)
+    {
+        ret._patchesIdx = new Patch[ret.UPatches, ret.VPatches];
+        for (int i = 0; i < ret.UPatches; i++)
+        for (int j = 0; j < ret.VPatches; j++)
+            ret._patchesIdx[i, j] = new Patch();
+        int counter = 0;
+        if (!ret.IsRolled)
+        {
+            var rowsCount = 4 + 3 * (ret.VPatches - 1);
+            var colsCount = 4 + 3 * (ret.UPatches - 1);
+            
+            for (int i = 0; i < colsCount; i++)
+            {
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    int uPatchId = i / 3;
+                    int vPatchId = j / 3;
+                    if (uPatchId < ret.UPatches && vPatchId < ret.VPatches)
+                        ret._patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
+                    if (i % 3 == 0 && i != 0 && vPatchId < ret.VPatches)
+                        ret._patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
+                    if (j % 3 == 0 && j != 0 && uPatchId < ret.UPatches)
+                        ret._patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
+                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
+                        ret._patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+
+                    counter++;
+                }
+            }
+        }
+        else
+        {
+            var rowsCount = 4 + 3 * (ret.VPatches - 1) - 1;
+            var colsCount = 4 + 3 * (ret.UPatches - 1);
+            
+            for (int i = 0; i < colsCount; i++)
+            {
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    int uPatchId = i / 3;
+                    int vPatchId = j / 3;
+                    
+                    if (uPatchId < ret.UPatches && vPatchId < ret.VPatches)
+                        ret._patchesIdx[uPatchId, vPatchId].SetIdAtI(i % 3, j % 3, (uint) counter);
+
+                    if (i % 3 == 0 && i != 0 && vPatchId < ret.VPatches)
+                        ret._patchesIdx[uPatchId - 1, vPatchId].SetIdAtI(3, j % 3, (uint) counter);
+
+                    if (j % 3 == 0 && j != 0 && uPatchId < ret.UPatches)
+                        ret._patchesIdx[uPatchId, vPatchId - 1].SetIdAtI(i % 3, 3, (uint) counter);
+
+                    if (i % 3 == 0 && j % 3 == 0 && i != 0 && j != 0)
+                        ret._patchesIdx[uPatchId - 1, vPatchId - 1].SetIdAtI(3, 3, (uint) counter);
+                    counter++;
+                }
+            }
+            for (int i = 0; i < ret.UPatches; i++)
+            {
+                ret._patchesIdx[i, ret.VPatches - 1].SetIdAtI(0, 3, ret._patchesIdx[i, 0].GetIdAtI(0, 0));
+                ret._patchesIdx[i, ret.VPatches - 1].SetIdAtI(1, 3, ret._patchesIdx[i, 0].GetIdAtI(1, 0));
+                ret._patchesIdx[i, ret.VPatches - 1].SetIdAtI(2, 3, ret._patchesIdx[i, 0].GetIdAtI(2, 0));
+                ret._patchesIdx[i, ret.VPatches - 1].SetIdAtI(3, 3, ret._patchesIdx[i, 0].GetIdAtI(3, 0));
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CMG1_005CAplikacja_005CMikCAD_005CMikCAD_005Cbin_005CDebug_005CSharpSceneSerializer_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CMG1_005CAplikacja_005CMikCAD_005CMikCAD_005Clibs_005CNumericUpDownLib_005CDirkster_002ENumericUpDownLib_002E3_002E0_002E0_002Enupkg/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CMG1_005CAplikacja_005CMikCAD_005CMikCAD_005Clibs_005CNumericUpDownLib_005Cnet4_005CNumericUpDownLib_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CMG1_005CAplikacja_005CMikCAD_005CMikCAD_005Clibs_005CSharpSceneSerializer_002Edll/@EntryIndexedValue">True</s:Boolean>

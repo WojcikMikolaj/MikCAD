@@ -4,6 +4,7 @@ using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
 using SharpSceneSerializer.DTOs.GeometryObjects;
+using SharpSceneSerializer.DTOs.Types;
 
 namespace MikCAD.BezierSurfaces;
 
@@ -489,7 +490,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             var patchP = new BezierPatchC2()
             {
                 Id = 1000 * (surfaceC2.Id + 1) + it,
-                controlPoints = controlPoints.ToArray()
+                controlPoints = controlPoints.ToArray(),
+                Samples = new Uint2(surfaceC2.UDivisions, surfaceC2.VDivisions)
             };
             c2Patches.Add(patchP);
             it++;
@@ -498,7 +500,9 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         {
             Id = surfaceC2.Id,
             Name = surfaceC2.Name,
-            Patches = c2Patches.ToArray()
+            Patches = c2Patches.ToArray(),
+            Size = new Uint2(surfaceC2.UPatches, surfaceC2.VPatches),
+            ParameterWrapped = new Bool2(false, surfaceC2.IsRolled)
         };
         
         return ret;

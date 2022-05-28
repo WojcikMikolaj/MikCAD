@@ -20,7 +20,10 @@ public partial class MainWindow
 {
     private void OnSaveCommand(object sender, RoutedEventArgs e)
     {
-        FileDialog diag = new SaveFileDialog();
+        FileDialog diag = new SaveFileDialog()
+        {
+            Filter = "JSON files (*.json)|*.json"
+        };
         if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             var objects = scene.ObjectsController.ParameterizedObjects;
@@ -62,7 +65,10 @@ public partial class MainWindow
     
     private void OnLoadCommand(object sender, RoutedEventArgs e)
     {
-        FileDialog diag = new OpenFileDialog();
+        FileDialog diag = new OpenFileDialog()
+        {
+            Filter = "JSON files (*.json)|*.json"
+        };
         if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
             var loadResult= SharpSceneSerializer.SceneSerializer.Deserialize( diag.FileName,Directory.GetCurrentDirectory()+@"\schema.json");
@@ -90,6 +96,7 @@ public partial class MainWindow
                         case BezierPatchC2 bezierPatchC2:
                             break;
                         case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 bezierSurfaceC0:
+                            scene.ObjectsController.AddObjectToScene((BezierSurfaceC0) bezierSurfaceC0);
                             break;
                         case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 bezierSurfaceC2:
                             break;

@@ -489,23 +489,30 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         var c0Patches = new List<BezierPatchC0>();
         var controlPoints = new List<PointRef>();
         uint it=0;
-        foreach (var patch in surfaceC0._patchesIdx)
+        for (int i = 0; i < surfaceC0.UPatches; i++)
         {
-            controlPoints.Clear();
-            for (int i = 0; i < 16; i++)
+            for (int j = 0; j < surfaceC0.VPatches; j++)
             {
-                controlPoints.Add(new PointRef(){Id = surfaceC0.points[i/surfaceC0.points[0].Count][i%surfaceC0.points[0].Count].Id});
-            }
+                controlPoints.Clear();
+                for (int k = 0; k < 4; k++)
+                {
+                    for (int l = 0; l < 4; l++)
+                    {
+                        controlPoints.Add(new PointRef() {Id = surfaceC0.points[i*3+l][j*3+k].Id});
+                    }
+                }
 
-            var patchP = new BezierPatchC0()
-            {
-                Id = 1000 * (surfaceC0.Id + 1) + it,
-                controlPoints = controlPoints.ToArray(),
-                Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
-            };
-            c0Patches.Add(patchP);
-            it++;
+                var patchP = new BezierPatchC0()
+                {
+                    Id = 1000 * (surfaceC0.Id + 1) + it,
+                    controlPoints = controlPoints.ToArray(),
+                    Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
+                };
+                c0Patches.Add(patchP);
+                it++;
+            }
         }
+            
         SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 ret = new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0()
         {
             Id = surfaceC0.Id,
@@ -534,13 +541,23 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             var colsCount = 4 + 3 * (ret.UPatches - 1);
             for (int i = 0; i < colsCount; i++)
             {
-                ret.points.Add(new List<ParameterizedPoint>());
-                for (int j = 0; j < rowsCount; j++)
+                ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
+                for(int j=0; j<rowsCount; j++)
+                    ret.points[i].Add(new ParameterizedPoint());
+            }
+
+            for (int i = 0; i < ret.UPatches; i++)
+            {
+                for (int j = 0; j < ret.VPatches; j++)
                 {
-                   ret.points[i].Add(Scene.CurrentScene.ObjectsController.ParameterizedPoints.First(
-                        x=>x.Id == surfaceC0.Patches[i/4 + j/4 * ret.VPatches].controlPoints[i%4*4 + j%4].Id));
-                   ret.points[i][j].parents.Add(ret);
-                   ret.points[i][j].CanBeDeleted = false;
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            ret.points[i*3+l][j*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
+                                    x.Id == surfaceC0.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
+                        }
+                    }
                 }
             }
         }

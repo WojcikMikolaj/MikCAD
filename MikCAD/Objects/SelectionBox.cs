@@ -17,8 +17,9 @@ public class SelectionBox
         var viewMatrix = Scene.CurrentScene.camera.GetViewMatrix();
         var modelMatrix = point.GetModelMatrix();
 
-        var pvm =  projectionMatrix *  viewMatrix  * modelMatrix;
-        var pos =  new OpenTK.Mathematics.Vector4(point._position.X,point._position.Y, point._position.Z ,1f) *  pvm;
+        var pvm =  modelMatrix * viewMatrix * projectionMatrix ;
+        var pos = new OpenTK.Mathematics.Vector4(0,0, 0 ,1f) * pvm;
+        pos /= pos.W;
 
         return (pos.X > MathF.Min(X1, X2)) && (pos.X < MathF.Max(X1, X2)) && (pos.Y > MathF.Min(Y1, Y2)) &&
                (pos.Y < MathF.Max(Y1, Y2));

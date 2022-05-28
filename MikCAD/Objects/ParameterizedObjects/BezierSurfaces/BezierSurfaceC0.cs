@@ -489,30 +489,82 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         var c0Patches = new List<BezierPatchC0>();
         var controlPoints = new List<PointRef>();
         uint it=0;
-        for (int i = 0; i < surfaceC0.UPatches; i++)
+        if (!surfaceC0.IsRolled)
         {
-            for (int j = 0; j < surfaceC0.VPatches; j++)
+            for (int i = 0; i < surfaceC0.UPatches; i++)
             {
+                for (int j = 0; j < surfaceC0.VPatches; j++)
+                {
+                    controlPoints.Clear();
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            controlPoints.Add(new PointRef() {Id = surfaceC0.points[i * 3 + l][j * 3 + k].Id});
+                        }
+                    }
+
+                    var patchP = new BezierPatchC0()
+                    {
+                        Id = 1000 * (surfaceC0.Id + 1) + it,
+                        controlPoints = controlPoints.ToArray(),
+                        Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
+                    };
+                    c0Patches.Add(patchP);
+                    it++;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < surfaceC0.UPatches; i++)
+            {
+                for (int j = 0; j < surfaceC0.VPatches - 1; j++)
+                {
+                    controlPoints.Clear();
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            controlPoints.Add(new PointRef() {Id = surfaceC0.points[i * 3 + l][j * 3 + k].Id});
+                        }
+                    }
+
+                    var patchP = new BezierPatchC0()
+                    {
+                        Id = 1000 * (surfaceC0.Id + 1) + it,
+                        controlPoints = controlPoints.ToArray(),
+                        Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
+                    };
+                    c0Patches.Add(patchP);
+                    it++;
+                }
                 controlPoints.Clear();
-                for (int k = 0; k < 4; k++)
+                for (int k = 0; k < 3; k++)
                 {
                     for (int l = 0; l < 4; l++)
                     {
-                        controlPoints.Add(new PointRef() {Id = surfaceC0.points[i*3+l][j*3+k].Id});
+                        controlPoints.Add(new PointRef() {Id = surfaceC0.points[i * 3 + l][(int)(surfaceC0.VPatches-1) * 3 + k].Id});
                     }
                 }
 
-                var patchP = new BezierPatchC0()
+                for (int l = 0; l < 4; l++)
+                {
+                    controlPoints.Add(new PointRef() {Id = surfaceC0.points[i * 3 + l][0].Id});
+                }
+
+                var patchZ = new BezierPatchC0()
                 {
                     Id = 1000 * (surfaceC0.Id + 1) + it,
                     controlPoints = controlPoints.ToArray(),
                     Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
                 };
-                c0Patches.Add(patchP);
+                c0Patches.Add(patchZ);
                 it++;
+                
             }
         }
-            
+
         SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 ret = new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0()
         {
             Id = surfaceC0.Id,
@@ -565,6 +617,36 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
         {
             var rowsCount = 4 + 3 * (ret.VPatches - 1) - 1;
             var colsCount = 4 + 3 * (ret.UPatches - 1);
+            
+            for (int i = 0; i < colsCount; i++)
+            {
+                ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
+                for(int j=0; j<rowsCount; j++)
+                    ret.points[i].Add(new ParameterizedPoint());
+            }
+
+            for (int i = 0; i < ret.UPatches; i++)
+            {
+                for (int j = 0; j < ret.VPatches-1; j++)
+                {
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            ret.points[i*3+l][j*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
+                                x.Id == surfaceC0.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
+                        }
+                    }
+                }
+                for (int k = 0; k < 3; k++)
+                {
+                    for (int l = 0; l < 4; l++)
+                    {
+                        ret.points[i*3+l][(int)(ret.VPatches-1)*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
+                            x.Id == surfaceC0.Patches[i * ret.VPatches + (int)(ret.VPatches-1)].controlPoints[k*4+l].Id);
+                    }
+                }
+            }
         }
 
         SetPatchesStruct(ret);

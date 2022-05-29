@@ -481,40 +481,6 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 
-    // public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2(BezierSurfaceC2 surfaceC2)
-    // {
-    //     var c2Patches = new List<BezierPatchC2>();
-    //     var controlPoints = new List<PointRef>();
-    //     uint it=0;
-    //     foreach (var patch in surfaceC2._patchesIdx)
-    //     {
-    //         controlPoints.Clear();
-    //         for (int i = 0; i < 16; i++)
-    //         {
-    //             controlPoints.Add(new PointRef(){Id = surfaceC2.points[i/surfaceC2.points[0].Count][i%surfaceC2.points[0].Count].Id});
-    //         }
-    //
-    //         var patchP = new BezierPatchC2()
-    //         {
-    //             Id = 1000 * (surfaceC2.Id + 1) + it,
-    //             controlPoints = controlPoints.ToArray(),
-    //             Samples = new Uint2(surfaceC2.UDivisions, surfaceC2.VDivisions)
-    //         };
-    //         c2Patches.Add(patchP);
-    //         it++;
-    //     }
-    //     SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 ret = new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2()
-    //     {
-    //         Id = surfaceC2.Id,
-    //         Name = surfaceC2.Name,
-    //         Patches = c2Patches.ToArray(),
-    //         Size = new Uint2(surfaceC2.UPatches, surfaceC2.VPatches),
-    //         ParameterWrapped = new Bool2(false, surfaceC2.IsRolled)
-    //     };
-    //     
-    //     return ret;
-    // }
-
     public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2(BezierSurfaceC2 surfaceC2)
     {
         var c2Patches = new List<BezierPatchC2>();

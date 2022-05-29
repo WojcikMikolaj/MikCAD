@@ -14,9 +14,13 @@ public partial class BezierSurfaceC0Control : UserControl
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         var obj = Scene.CurrentScene.ObjectsController.SelectedObject;
-        if (obj is BezierSurfaceC0 surf)
+        if (obj is BezierSurfaceC0 surf0)
         {
-            surf.Applied = true;
+            surf0.Applied = true;
+        }
+        if (obj is BezierSurfaceC2 surf2)
+        {
+            surf2.Applied = true;
         }
     }
 }

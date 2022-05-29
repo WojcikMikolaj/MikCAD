@@ -506,7 +506,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
                     var patchP = new BezierPatchC0()
                     {
-                        Id = 1000 * (surfaceC0.Id + 1) + it,
+                        Id = 200000 * (surfaceC0.Id + 1) + it,
                         controlPoints = controlPoints.ToArray(),
                         Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
                     };
@@ -532,7 +532,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
                     var patchP = new BezierPatchC0()
                     {
-                        Id = 1000 * (surfaceC0.Id + 1) + it,
+                        Id = 200000 * (surfaceC0.Id + 1) + it,
                         controlPoints = controlPoints.ToArray(),
                         Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
                     };
@@ -555,7 +555,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
                 var patchZ = new BezierPatchC0()
                 {
-                    Id = 1000 * (surfaceC0.Id + 1) + it,
+                    Id = 200000 * (surfaceC0.Id + 1) + it,
                     controlPoints = controlPoints.ToArray(),
                     Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
                 };

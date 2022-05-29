@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
@@ -333,6 +334,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         points = new List<List<ParameterizedPoint>>();
         Name = "SurfaceC2";
         UpdatePatchesCount();
+    }
+    
+    public BezierSurfaceC2(bool b) : base("SurfaceC2")
+    {
+        Name = "SurfaceC2";
     }
 
     private bool _UpdateBuffers = true;
@@ -671,82 +677,134 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         return ret;
     }
 
-    // public static explicit operator BezierSurfaceC0(SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 surfaceC0)
-    // {
-    //     BezierSurfaceC0 ret = new BezierSurfaceC0(false);
-    //     ret._uPatches = surfaceC0.Size.X;
-    //     ret._vPatches = surfaceC0.Size.Y;
-    //     ret._isRolled = surfaceC0.ParameterWrapped.U || surfaceC0.ParameterWrapped.V;
-    //     ret._patchesIdx = new Patch[ret._uPatches, ret._vPatches];
-    //     ret.points = new List<List<ParameterizedPoint>>();
-    //     ret._applied = true;
-    //     
-    //     if (!ret.IsRolled)
-    //     {
-    //         var rowsCount = 4 + 3 * (ret.VPatches - 1);
-    //         var colsCount = 4 + 3 * (ret.UPatches - 1);
-    //         for (int i = 0; i < colsCount; i++)
-    //         {
-    //             ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
-    //             for(int j=0; j<rowsCount; j++)
-    //                 ret.points[i].Add(new ParameterizedPoint());
-    //         }
-    //
-    //         for (int i = 0; i < ret.UPatches; i++)
-    //         {
-    //             for (int j = 0; j < ret.VPatches; j++)
-    //             {
-    //                 for (int k = 0; k < 4; k++)
-    //                 {
-    //                     for (int l = 0; l < 4; l++)
-    //                     {
-    //                         ret.points[i*3+l][j*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
-    //                                 x.Id == surfaceC0.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     else
-    //     {
-    //         var rowsCount = 4 + 3 * (ret.VPatches - 1) - 1;
-    //         var colsCount = 4 + 3 * (ret.UPatches - 1);
-    //         
-    //         for (int i = 0; i < colsCount; i++)
-    //         {
-    //             ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
-    //             for(int j=0; j<rowsCount; j++)
-    //                 ret.points[i].Add(new ParameterizedPoint());
-    //         }
-    //
-    //         for (int i = 0; i < ret.UPatches; i++)
-    //         {
-    //             for (int j = 0; j < ret.VPatches-1; j++)
-    //             {
-    //                 for (int k = 0; k < 4; k++)
-    //                 {
-    //                     for (int l = 0; l < 4; l++)
-    //                     {
-    //                         ret.points[i*3+l][j*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
-    //                             x.Id == surfaceC0.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
-    //                     }
-    //                 }
-    //             }
-    //             for (int k = 0; k < 3; k++)
-    //             {
-    //                 for (int l = 0; l < 4; l++)
-    //                 {
-    //                     ret.points[i*3+l][(int)(ret.VPatches-1)*3+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
-    //                         x.Id == surfaceC0.Patches[i * ret.VPatches + (int)(ret.VPatches-1)].controlPoints[k*4+l].Id);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    //     SetPatchesStruct(ret);
-    //
-    //     ret._UpdateBuffers = true;
-    //     ret.GenerateLines();
-    //     return ret;
-    // }
+    public static explicit operator BezierSurfaceC2(SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 surfaceC2)
+    {
+        BezierSurfaceC2 ret = new BezierSurfaceC2(false);
+        ret._uPatches = surfaceC2.Size.X;
+        ret._vPatches = surfaceC2.Size.Y;
+        ret._isRolled = surfaceC2.ParameterWrapped.U || surfaceC2.ParameterWrapped.V;
+        ret._patchesIdx = new Patch[ret._uPatches, ret._vPatches];
+        ret.points = new List<List<ParameterizedPoint>>();
+        ret._applied = true;
+        
+        if (!ret.IsRolled)
+        {
+            var rowsCount = 4 + 1 * (ret.VPatches - 1);
+            var colsCount = 4 + 1 * (ret.UPatches - 1);
+            for (int i = 0; i < colsCount; i++)
+            {
+                ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
+                for(int j=0; j<rowsCount; j++)
+                    ret.points[i].Add(new ParameterizedPoint());
+            }
+    
+            for (int i = 0; i < ret.UPatches; i++)
+            {
+                for (int j = 0; j < ret.VPatches; j++)
+                {
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            ret.points[i+l][j+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
+                                    x.Id == surfaceC2.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            var rowsCount = ret.VPatches;
+            var colsCount = 4 + 1 * (ret.UPatches - 1);
+            
+            for (int i = 0; i < colsCount; i++)
+            {
+                ret.points.Add(new List<ParameterizedPoint>((int)rowsCount));
+                for(int j=0; j<rowsCount; j++)
+                    ret.points[i].Add(new ParameterizedPoint());
+            }
+    
+            for (int i = 0; i < ret.UPatches; i++)
+            {
+                for (int j = 0; j < ret.VPatches-3; j++)
+                {
+                    for (int k = 0; k < 4; k++)
+                    {
+                        for (int l = 0; l < 4; l++)
+                        {
+                            ret.points[i+l][j+k] = (ParameterizedPoint)Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
+                                x.Id == surfaceC2.Patches[i * ret.VPatches + j].controlPoints[k*4+l].Id);
+                        }
+                    }
+                }
+            }
+        }
+    
+        SetPatchesStruct(ret);
+    
+        ret._UpdateBuffers = true;
+        ret.GenerateLines();
+        return ret;
+    }
+
+    private static void SetPatchesStruct(BezierSurfaceC2 ret)
+    {
+        ret._patchesIdx = new Patch[ret.UPatches, ret.VPatches];
+        for (int i = 0; i < ret.UPatches; i++)
+        for (int j = 0; j < ret.VPatches; j++)
+            ret._patchesIdx[i, j] = new Patch();
+        int counter = 0;
+        if (!ret.IsRolled)
+        {
+            var rowsCount = 4 + 1 * (ret.VPatches - 1);
+            var colsCount = 4 + 1 * (ret.UPatches - 1);
+
+            for (int i = 0; i < colsCount; i++)
+            {
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
+                    {
+                        for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
+                        {
+                            if (i + k >= 0 && i + k < ret.UPatches && j + l >= 0 && j + l < ret.VPatches)
+                            {
+                                ret._patchesIdx[i + k, j + l].SetIdAtI(3 - wsp1, 3 - wsp2, (uint) counter);
+                            }
+                        }
+                    }
+
+                    counter++;
+                }
+            }
+        }
+        else
+        {
+            var rowsCount = ret.VPatches;
+            var colsCount = 4 + 1 * (ret.UPatches - 1);
+
+            for (int i = 0; i < colsCount; i++)
+            {
+                for (int j = 0; j < rowsCount; j++)
+                {
+                    for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
+                    {
+                        for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
+                        {
+                            var second = j + l;
+                            if (second < 0)
+                                second += (int) ret.VPatches;
+                            if (i + k >= 0 && i + k < ret.UPatches && second < ret.VPatches)
+                            {
+                                ret._patchesIdx[i + k, second].SetIdAtI(3 - wsp1, 3 - wsp2, (uint) counter);
+                            }
+                        }
+                    }
+
+                    counter++;
+                }
+            }
+        }
+    }
 }

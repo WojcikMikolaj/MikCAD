@@ -99,6 +99,7 @@ public partial class MainWindow
                             scene.ObjectsController.AddObjectToScene((BezierSurfaceC0) bezierSurfaceC0);
                             break;
                         case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 bezierSurfaceC2:
+                            scene.ObjectsController.AddObjectToScene((BezierSurfaceC2) bezierSurfaceC2);
                             break;
                         case InterpolatedC2 interpolatedC2:
                             scene.ObjectsController.AddObjectToScene((InterpolatingBezierCurveC2)interpolatedC2);

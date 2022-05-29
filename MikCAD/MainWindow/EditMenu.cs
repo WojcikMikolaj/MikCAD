@@ -58,7 +58,7 @@ public partial class MainWindow
                         break;
                 }
             }
-            SharpSceneSerializer.DTOs.Scene sceneToSave = new SharpSceneSerializer.DTOs.Scene(points, geometry);
+            SharpSceneSerializer.DTOs.Scene sceneToSave = new SharpSceneSerializer.DTOs.Scene(geometry, points);
             SharpSceneSerializer.SceneSerializer.Serialize(sceneToSave, diag.FileName);
         }
     }

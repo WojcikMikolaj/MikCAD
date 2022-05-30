@@ -13,6 +13,7 @@ public class Pointer3D : ParameterizedObject
 {
     public Pointer3D() : base("3D Pointer")
     {
+        this.Id = uint.MaxValue;
     }
 
     public override string Name

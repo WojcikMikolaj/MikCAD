@@ -28,6 +28,7 @@
         <CommandBinding Command="cc:AddCommands.AddBezierCurveC2" Executed="AddBezierCurveC2"/>
         <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2"/>
         <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC0" Executed="AddBezierSurfaceC0"/>
+        <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC2" Executed="AddBezierSurfaceC2"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="P" Modifiers="Control" Command="cc:AddCommands.AddPoint"></KeyBinding>
@@ -35,6 +36,7 @@
         <KeyBinding Key="D0"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC0"></KeyBinding>
         <KeyBinding Key="D2"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC2"></KeyBinding>
         <KeyBinding Key="D3"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC0"></KeyBinding>
+        <KeyBinding Key="D4"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC2"></KeyBinding>
         <KeyBinding Key="I"  Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
     </Window.InputBindings>
     <Grid>

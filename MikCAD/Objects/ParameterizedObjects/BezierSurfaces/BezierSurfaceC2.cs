@@ -299,10 +299,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     Scene.CurrentScene.ObjectsController.AddObjectToScene(point);
                     _objects.Add(point);
                     points[i].Add(point);
+                    for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
+                    {
                     for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
                     {
-                        for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
-                        {
+                        
                             var m_first = i + k;
                             if (m_first < 0)
                                 m_first += (int) UPatches;
@@ -804,10 +805,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             {
                 for (int j = 0; j < rowsCount; j++)
                 {
+                    for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
+                    {
                     for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
                     {
-                        for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
-                        {
+                        
                             var m_first = i + k;
                             if (m_first < 0)
                                 m_first += (int) ret.UPatches;

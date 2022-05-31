@@ -588,7 +588,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 Name = surfaceC0.Name,
                 Patches = resultPatches.ToArray(),
                 Size = new Uint2(surfaceC0.UPatches, surfaceC0.VPatches),
-                ParameterWrapped = new Bool2(false, surfaceC0.IsRolled)
+                ParameterWrapped = new Bool2(surfaceC0.IsRolled, false)
             };
 
         return ret;

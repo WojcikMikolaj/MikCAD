@@ -301,9 +301,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     points[i].Add(point);
                     for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
                     {
-                    for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
-                    {
-                        
+                        for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
+                        {
                             var m_first = i + k;
                             if (m_first < 0)
                                 m_first += (int) UPatches;
@@ -546,9 +545,9 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                 }
             }
 
-            for(int i=0; i<3; i++)
+            for (int i = 0; i < 3; i++)
                 c2Patches.Add(new List<BezierPatchC2>());
-            
+
             for (int j = 0; j < surfaceC2.VPatches; j++)
             {
                 //3 od końca
@@ -556,21 +555,21 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                 for (int k = 0; k < 4; k++)
                 {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^3][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^2][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^1][j + k].Id});
+                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
                 }
 
                 for (int k = 0; k < 4; k++)
                 {
-                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
                 }
 
                 var patch3 = new BezierPatchC2()
@@ -587,21 +586,21 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                 for (int k = 0; k < 4; k++)
                 {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^2][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^1][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
+                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[1][j + k].Id});
                 }
 
                 for (int k = 0; k < 4; k++)
                 {
-                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[1][j + k].Id});
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
                 }
 
                 var patch2 = new BezierPatchC2()
@@ -618,21 +617,21 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                 for (int k = 0; k < 4; k++)
                 {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^1][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[1][j + k].Id});
+                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[2][j + k].Id});
                 }
 
                 for (int k = 0; k < 4; k++)
                 {
-                    controlPoints.Add(new PointRef() {Id = surfaceC2.points[2][j + k].Id});
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
                 }
 
                 var patch1 = new BezierPatchC2()
@@ -807,9 +806,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                 {
                     for (int k = -3, wsp1 = 0; k <= 0; k++, wsp1++)
                     {
-                    for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
-                    {
-                        
+                        for (int l = -3, wsp2 = 0; l <= 0; l++, wsp2++)
+                        {
                             var m_first = i + k;
                             if (m_first < 0)
                                 m_first += (int) ret.UPatches;

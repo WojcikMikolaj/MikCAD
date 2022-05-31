@@ -163,7 +163,7 @@ namespace MikCAD
                             if (IsObjectFreeMoveEnabled)
                             {
                                 var obj = Scene.CurrentScene.ObjectsController.SelectedObject;
-                                if (obj is not IBezierCurve)
+                                if (obj is not null && obj is not IBezierCurve)
                                 {
                                     var yVec = Scene.CurrentScene.camera.Up;
                                     var xVec = (Scene.CurrentScene.camera.GetViewMatrix() * new Vector4(1, 0, 0, 0))

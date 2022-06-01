@@ -363,7 +363,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
         uint[] lines = new uint[size];
         uint it = 0;
-        for (int i = 0; i < points.Count; i++)
+        for (int i = 0; i < points.Count - 1; i++)
         {
             for (int j = 0; j < points[0].Count; j++)
             {
@@ -372,13 +372,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                     lines[it++] = (uint) (i * points[0].Count + j);
                     lines[it++] = (uint) (i * points[0].Count + j + 1);
                 }
-
-                if (j == points[0].Count - 1 && IsRolled)
-                {
-                    lines[it++] = (uint) (i * points[0].Count + j);
-                    lines[it++] = (uint) (i * points[0].Count);
-                }
-
+                
                 if (i < points.Count - 1)
                 {
                     lines[it++] = (uint) (i * points[0].Count + j);
@@ -387,6 +381,15 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
 
+        if (IsRolled)
+        {
+            for (int j = 0; j < points[0].Count; j++)
+            {
+                lines[it++] = (uint) (j);
+                lines[it++] = (uint) ((points.Count-1) * points[0].Count + j);
+            }
+        }
+        
         return lines;
     }
 

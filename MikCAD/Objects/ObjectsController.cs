@@ -277,6 +277,18 @@ public class ObjectsController : INotifyPropertyChanged
         }
         else
         {
+            if (SelectedObject is BezierSurfaceC0 surfaceC0)
+            {
+                var cmp = new CompositeObject(null)
+                {
+                    IsPointComposite = false
+                };
+                cmp.ProcessObject(surfaceC0);
+                cmp.ProcessObject(o);
+                SelectedObject = cmp;
+                o.Selected = true;
+                return;
+            }
             if (SelectedObject is ISurface)
                 return;
             if (SelectedObject is CompositeObject compositeObject)

@@ -32,6 +32,8 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     public bool CanCollapse => _objects.Count == 2 && _objects[0] is ParameterizedPoint && _objects[1] is ParameterizedPoint;
     public bool CanPatchHole => _objects.Count == 3 && _objects[0] is BezierSurfaceC0 && _objects[1] is BezierSurfaceC0 && _objects[2] is BezierSurfaceC0 ;
 
+    public virtual bool IsPointComposite { get; init; } = true;
+
     public override bool Selected
     {
         get => _selected;
@@ -49,7 +51,11 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     {
         if (o == null)
             return;
-        if(o is IBezierCurve or FakePoint or ISurface)
+        if(o is IBezierCurve or FakePoint)
+            return;
+        if(IsPointComposite && o is BezierSurfaceC0)
+            return;
+        if(!IsPointComposite && o is not BezierSurfaceC0)
             return;
         if (!_objects.Contains(o))
         {
@@ -67,6 +73,8 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         }
 
         CalculateCenter();
+        OnPropertyChanged(nameof(CanPatchHole));
+        OnPropertyChanged(nameof(CanCollapse));
     }
 
     public void DeleteObject(ParameterizedObject o)

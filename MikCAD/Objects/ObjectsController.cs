@@ -424,6 +424,7 @@ public class ObjectsController : INotifyPropertyChanged
                     posX = (p1.posX + p2.posX) / 2,
                     posY = (p1.posY + p2.posY) / 2,
                     posZ = (p1.posZ + p2.posZ) / 2,
+                    IsCollapsedPoint = true,
                 };
                 var set = new HashSet<CompositeObject>();
                 foreach (var parent in p1.parents)
@@ -474,6 +475,24 @@ public class ObjectsController : INotifyPropertyChanged
                 
                 ParameterizedObjects.Add(middlePoint);
                 _parameterizedPoints.Add(middlePoint);
+            }
+        }
+    }
+
+    public void PatchHole()
+    {
+        if (_selectedObject is CompositeObject compositeObject)
+        {
+            if (compositeObject._objects.Count == 3
+                && compositeObject._objects[0] is BezierSurfaceC0 surf1
+                && compositeObject._objects[1] is BezierSurfaceC0 surf2
+                && compositeObject._objects[2] is BezierSurfaceC0 surf3)
+            {
+                var points1 = surf1.GetPoints();
+                var points2 = surf2.GetPoints();
+                var points3 = surf3.GetPoints();
+
+                
             }
         }
     }

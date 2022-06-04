@@ -30,6 +30,7 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     private bool _selected = false;
 
     public bool CanCollapse => _objects.Count == 2 && _objects[0] is ParameterizedPoint && _objects[1] is ParameterizedPoint;
+    public bool CanPatchHole => _objects.Count == 3 && _objects[0] is BezierSurfaceC0 && _objects[1] is BezierSurfaceC0 && _objects[2] is BezierSurfaceC0 ;
 
     public override bool Selected
     {

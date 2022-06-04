@@ -790,4 +790,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
+
+    public List<List<ParameterizedPoint>> GetPoints()
+    {
+        return points;
+    }
 }

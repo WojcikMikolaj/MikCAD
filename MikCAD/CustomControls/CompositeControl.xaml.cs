@@ -14,5 +14,10 @@ namespace MikCAD
         {
             Scene.CurrentScene.ObjectsController.CollapsePoints();
         }
+
+        private void PatchHole(object sender, RoutedEventArgs e)
+        {
+            Scene.CurrentScene.ObjectsController.PatchHole();
+        }
     }
 }

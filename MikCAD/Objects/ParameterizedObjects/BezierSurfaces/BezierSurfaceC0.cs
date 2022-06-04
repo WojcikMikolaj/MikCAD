@@ -795,4 +795,18 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
     {
         return points;
     }
+
+    public (int i, int j) FindPointIndices(ParameterizedPoint point)
+    {
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[0].Count; j++)
+            {
+                if (points[i][j].Id == point.Id)
+                    return (i, j);
+            }
+        }
+
+        return (-1, -1);
+    }
 }

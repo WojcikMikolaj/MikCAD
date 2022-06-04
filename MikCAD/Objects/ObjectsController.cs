@@ -39,11 +39,13 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierShader.frag",
         "Shaders/BezierSurfaceC0/BezierSurfaceC0TessControlShader.tesc",
         "Shaders/BezierSurfaceC0/BezierSurfaceC0TessEvaluationShader.tese");
+
     internal Shader _bezierSurfaceC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
         "Shaders/BezierSurfaceC2/BezierSurfaceC2TessControlShader.tesc",
         "Shaders/BezierSurfaceC2/BezierSurfaceC2TessEvaluationShader.tese");
+
     internal Shader _bezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -431,10 +433,12 @@ public class ObjectsController : INotifyPropertyChanged
                 {
                     set.Add(parent);
                 }
+
                 foreach (var parent in p2.parents)
                 {
                     set.Add(parent);
                 }
+
                 foreach (var parent in set)
                 {
                     middlePoint.parents.Add(parent);
@@ -449,18 +453,19 @@ public class ObjectsController : INotifyPropertyChanged
                         surf.SubstitutePoints(p1, middlePoint);
                         surf.SubstitutePoints(p2, middlePoint);
                     }
+
                     while (true)
                     {
                         var index = parent._objects.FindIndex(x => x.Id == p1.Id);
-                        if(index==-1)
+                        if (index == -1)
                             break;
                         parent._objects[index] = middlePoint;
                     }
-                    
+
                     while (true)
                     {
                         var index = parent._objects.FindIndex(x => x.Id == p2.Id);
-                        if(index==-1)
+                        if (index == -1)
                             break;
                         parent._objects[index] = middlePoint;
                     }
@@ -472,7 +477,7 @@ public class ObjectsController : INotifyPropertyChanged
                 ParameterizedObjects.Remove(p2);
                 p1.Deleted = true;
                 p2.Deleted = true;
-                
+
                 ParameterizedObjects.Add(middlePoint);
                 _parameterizedPoints.Add(middlePoint);
             }
@@ -492,8 +497,218 @@ public class ObjectsController : INotifyPropertyChanged
                 var points2 = surf2.GetPoints();
                 var points3 = surf3.GetPoints();
 
+                List<ParameterizedPoint> innerRing = new();
+                List<ParameterizedPoint> outerRing = new();
+
+                // ReSharper disable once NotAccessedVariable
+                ParameterizedPoint first = null;
+                // ReSharper disable once TooWideLocalVariableScope
+                ParameterizedPoint second = null;
+                // ReSharper disable once TooWideLocalVariableScope
+                ParameterizedPoint third = null;
+
+                for (int i = 0; i < points1.Count; i++)
+                {
+                    for (int j = 0; j < points1[0].Count; j++)
+                    {
+                        if (points1[i][j].IsCollapsedPoint && points1[i][j].parents.Contains(surf3))
+                        {
+                            first = points1[i][j];
+                            innerRing.Add(first);
+
+                            if (i + 3 < points1.Count && points1[i + 3][j].IsCollapsedPoint
+                                                      && points1[i + 3][j].parents.Contains(surf2))
+                            {
+                                innerRing.Add(points1[i + 1][j]);
+                                innerRing.Add(points1[i + 2][j]);
+
+                                second = points1[i + 3][j];
+                                innerRing.Add(second);
+
+                                (int k, int l) = surf2.FindPointIndices(second);
+
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, points3, first, out third))
+                                    goto PatchAssemblyStage;
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                            }
+                            
+                            if (i - 3 >= 0 && points1[i - 3][j].IsCollapsedPoint
+                                                      && points1[i - 3][j].parents.Contains(surf2))
+                            {
+                                innerRing.Add(points1[i - 1][j]);
+                                innerRing.Add(points1[i - 2][j]);
+
+                                second = points1[i - 3][j];
+                                innerRing.Add(second);
+
+                                (int k, int l) = surf2.FindPointIndices(second);
+
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, points3, first, out third))
+                                    goto PatchAssemblyStage;
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                            }
+                            
+                            if (j + 3 < points1[0].Count && points1[i][j + 3].IsCollapsedPoint
+                                                      && points1[i][j + 3].parents.Contains(surf2))
+                            {
+                                innerRing.Add(points1[i][j + 1]);
+                                innerRing.Add(points1[i][j + 2]);
+
+                                second = points1[i][j+3];
+                                innerRing.Add(second);
+
+                                (int k, int l) = surf2.FindPointIndices(second);
+
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, points3, first, out third))
+                                    goto PatchAssemblyStage;
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                            }
+                            
+                            if (j - 3 >= 0 && points1[i][j-3].IsCollapsedPoint
+                                                      && points1[i][j-3].parents.Contains(surf2))
+                            {
+                                innerRing.Add(points1[i][j-1]);
+                                innerRing.Add(points1[i][j-2]);
+
+                                second = points1[i][j-3];
+                                innerRing.Add(second);
+
+                                (int k, int l) = surf2.FindPointIndices(second);
+
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, points3, first, out third))
+                                    goto PatchAssemblyStage;
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                                innerRing.RemoveAt(innerRing.Count-1);
+                            }
+                        }
+                    }
+                }
                 
+                PatchAssemblyStage: ;
             }
         }
+    }
+
+    private bool HandleSurf2(List<List<ParameterizedPoint>> points2, int k, int l, BezierSurfaceC0 surf3, List<ParameterizedPoint> innerRing, List<List<ParameterizedPoint>> points3,
+        ParameterizedPoint first, out ParameterizedPoint third)
+    {
+        if (k + 3 < points2.Count && points2[k + 3][l].IsCollapsedPoint
+                                  && points2[k + 3][l].parents.Contains(surf3))
+        {
+            innerRing.Add(points2[k + 1][l]);
+            innerRing.Add(points2[k + 2][l]);
+
+            third = points2[k + 3][l];
+            innerRing.Add(third);
+
+            (int m, int n) = surf3.FindPointIndices(third);
+
+            if (HandleSurf3(points3, m, n, first, innerRing))
+                return true;
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+        }
+
+        if (k - 3 >= 0 && points2[k - 3][l].IsCollapsedPoint
+                       && points2[k - 3][l].parents.Contains(surf3))
+        {
+            innerRing.Add(points2[k - 1][l]);
+            innerRing.Add(points2[k - 2][l]);
+
+            third = points2[k - 3][l];
+            innerRing.Add(third);
+
+            (int m, int n) = surf3.FindPointIndices(third);
+
+            if (HandleSurf3(points3, m, n, first, innerRing))
+                return true;
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+        }
+
+        if (l + 3 < points2[0].Count && points2[k][l + 3].IsCollapsedPoint
+                                     && points2[k][l + 3].parents.Contains(surf3))
+        {
+            innerRing.Add(points2[k][l + 1]);
+            innerRing.Add(points2[k][l + 2]);
+
+            third = points2[k][l + 3];
+            innerRing.Add(third);
+
+            (int m, int n) = surf3.FindPointIndices(third);
+
+            if (HandleSurf3(points3, m, n, first, innerRing))
+                return true;
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+        }
+
+        if (l - 3 >= 0 && points2[k][l - 3].IsCollapsedPoint
+                       && points2[k][l - 3].parents.Contains(surf3))
+        {
+            innerRing.Add(points2[k][l - 1]);
+            innerRing.Add(points2[k][l - 2]);
+
+            third = points2[k][l - 3];
+            innerRing.Add(third);
+
+            (int m, int n) = surf3.FindPointIndices(third);
+
+            if (HandleSurf3(points3, m, n, first, innerRing))
+                return true;
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+            innerRing.RemoveAt(innerRing.Count-1);
+        }
+        third = null;
+        return false;
+    }
+
+    private bool HandleSurf3(List<List<ParameterizedPoint>> points3, int m, int n, ParameterizedPoint first,
+        List<ParameterizedPoint> innerRing)
+    {
+        if (m + 3 < points3.Count && points3[m + 3][n].IsCollapsedPoint
+                                  && points3[m + 3][n].Id == first.Id)
+        {
+            innerRing.Add(points3[m + 1][n]);
+            innerRing.Add(points3[m + 2][n]);
+            return true;
+        }
+
+        if (m - 3 >= 0 && points3[m - 3][n].IsCollapsedPoint
+                       && points3[m - 3][n].Id == first.Id)
+        {
+            innerRing.Add(points3[m - 1][n]);
+            innerRing.Add(points3[m - 2][n]);
+            return true;
+        }
+
+        if (n + 3 < points3[0].Count && points3[m][n + 3].IsCollapsedPoint
+                                     && points3[m][n + 3].Id == first.Id)
+        {
+            innerRing.Add(points3[m][n + 1]);
+            innerRing.Add(points3[m][n + 2]);
+            return true;
+        }
+
+        if (n - 3 >= 0 && points3[m][n - 3].IsCollapsedPoint
+                       && points3[m][n - 3].Id == first.Id)
+        {
+            innerRing.Add(points3[m][n - 3]);
+            innerRing.Add(points3[m][n - 3]);
+            return true;
+        }
+
+        return false;
     }
 }

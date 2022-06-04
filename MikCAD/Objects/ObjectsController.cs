@@ -385,10 +385,17 @@ public class ObjectsController : INotifyPropertyChanged
         CompositeObject comp;
         if (selectedPoints.Count > 0)
         {
-            comp = new CompositeObject(selectedPoints[0]);
-            for (int i = 1; i < selectedPoints.Count; i++)
-                comp.ProcessObject(selectedPoints[i]);
-            SelectedObject = comp;
+            if (selectedPoints.Count > 1)
+            {
+                comp = new CompositeObject(selectedPoints[0]);
+                for (int i = 1; i < selectedPoints.Count; i++)
+                    comp.ProcessObject(selectedPoints[i]);
+                SelectedObject = comp;
+            }
+            else
+            {
+                SelectedObject = selectedPoints[0];
+            }
         }
     }
 

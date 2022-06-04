@@ -399,4 +399,66 @@ public class ObjectsController : INotifyPropertyChanged
         ParameterizedPoints.Clear();
         SelectedObject = null;
     }
+
+    public void CollapsePoints()
+    {
+        if (_selectedObject is CompositeObject compositeObject)
+        {
+            if (compositeObject._objects.Count == 2
+                && compositeObject._objects[0] is ParameterizedPoint p1
+                && compositeObject._objects[1] is ParameterizedPoint p2)
+            {
+                SelectedObject = null;
+                var middlePoint = new ParameterizedPoint()
+                {
+                    posX = (p1.posX + p2.posX) / 2,
+                    posY = (p1.posY + p2.posY) / 2,
+                    posZ = (p1.posZ + p2.posZ) / 2,
+                };
+                var set = new HashSet<CompositeObject>();
+                foreach (var parent in p1.parents)
+                {
+                    set.Add(parent);
+                }
+                foreach (var parent in p2.parents)
+                {
+                    set.Add(parent);
+                }
+                foreach (var parent in set)
+                {
+                    middlePoint.parents.Add(parent);
+                    if (parent is ISurface)
+                        middlePoint.CanBeDeleted = false;
+                }
+
+                foreach (var parent in set)
+                {
+                    while (true)
+                    {
+                        var index = parent._objects.FindIndex(x => x.Id == p1.Id);
+                        if(index==-1)
+                            break;
+                        parent._objects[index] = middlePoint;
+                    }
+                    
+                    while (true)
+                    {
+                        var index = parent._objects.FindIndex(x => x.Id == p2.Id);
+                        if(index==-1)
+                            break;
+                        parent._objects[index] = middlePoint;
+                    }
+                }
+                
+                p1.CanBeDeleted = true;
+                p2.CanBeDeleted = true;
+                ParameterizedObjects.Remove(p1);
+                ParameterizedObjects.Remove(p2);
+                p1.Deleted = true;
+                p2.Deleted = true;
+                
+                ParameterizedObjects.Add(middlePoint);
+            }
+        }
+    }
 }

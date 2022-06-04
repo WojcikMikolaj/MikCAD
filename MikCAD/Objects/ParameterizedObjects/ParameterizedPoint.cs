@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Windows;
 using MikCAD.BezierCurves;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
@@ -27,6 +28,8 @@ public class ParameterizedPoint : ParameterizedObject
     public override bool RotationEnabled => false;
     public override bool ScaleEnabled => false;
 
+    public bool CanCollapse => false;
+    
     public ParameterizedPoint(string name="Punkt") : base(name)
     {
         parents = new List<CompositeObject>();

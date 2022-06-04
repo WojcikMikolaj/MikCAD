@@ -29,6 +29,8 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     internal ParameterizedObject first => _objects.Count == 1 ? _objects[0] : null;
     private bool _selected = false;
 
+    public bool CanCollapse => _objects.Count == 2 && _objects[0] is ParameterizedPoint && _objects[1] is ParameterizedPoint;
+
     public override bool Selected
     {
         get => _selected;

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace MikCAD
 {
@@ -7,6 +8,11 @@ namespace MikCAD
         public PointControl()
         {
             InitializeComponent();
+        }
+
+        private void CollapsePoints(object sender, RoutedEventArgs e)
+        {
+            Scene.CurrentScene.ObjectsController.CollapsePoints();
         }
     }
 }

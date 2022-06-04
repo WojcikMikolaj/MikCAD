@@ -5,8 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
              xmlns:local="clr-namespace:MikCAD"
+             xmlns:converters="clr-namespace:MikCAD.Converters"
              mc:Ignorable="d"
              d:DesignWidth="250">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <GroupBox x:Name="Point">
             <GroupBox.Header>
@@ -16,6 +20,8 @@
             <StackPanel>
                 <local:ModelMatrixControl DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext, Mode=TwoWay}"/>
+                <Button Visibility="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.CanCollapse, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" Click="CollapsePoints">Collapse Points</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

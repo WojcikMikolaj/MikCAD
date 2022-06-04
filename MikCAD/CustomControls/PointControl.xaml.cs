@@ -9,10 +9,6 @@ namespace MikCAD
         {
             InitializeComponent();
         }
-
-        private void CollapsePoints(object sender, RoutedEventArgs e)
-        {
-            Scene.CurrentScene.ObjectsController.CollapsePoints();
-        }
+        
     }
 }

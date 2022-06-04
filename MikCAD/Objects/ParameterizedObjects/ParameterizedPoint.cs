@@ -27,9 +27,6 @@ public class ParameterizedPoint : ParameterizedObject
     public BoundingSphere BB => _bb;
     public override bool RotationEnabled => false;
     public override bool ScaleEnabled => false;
-
-    public bool CanCollapse => false;
-    
     public ParameterizedPoint(string name="Punkt") : base(name)
     {
         parents = new List<CompositeObject>();

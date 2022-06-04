@@ -80,6 +80,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierSurfaceC2Control.Visibility = Visibility.Hidden;
+            MainWindow.current.compositeControl.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
             {
@@ -108,8 +109,10 @@ public class ObjectsController : INotifyPropertyChanged
                     MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Visible;
                     break;
                 case ParameterizedPoint point:
-                case CompositeObject compositeObject:
                     MainWindow.current.pointControl.Visibility = Visibility.Visible;
+                    break;
+                case CompositeObject compositeObject:
+                    MainWindow.current.compositeControl.Visibility = Visibility.Visible;
                     break;
                 case Pointer3D pointer3D:
                     MainWindow.current.pointerControl.Visibility = Visibility.Visible;

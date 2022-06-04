@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="MikCAD.PointControl"
+﻿<UserControl x:Class="MikCAD.CompositeControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,6 +20,8 @@
             <StackPanel>
                 <local:ModelMatrixControl DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext, Mode=TwoWay}"/>
+                <Button Visibility="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.CanCollapse, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" Click="CollapsePoints">Collapse Points</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

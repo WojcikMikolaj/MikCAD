@@ -778,4 +778,16 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
     }
+
+    public void SubstitutePoints(ParameterizedPoint oldPoint, ParameterizedPoint newPoint)
+    {
+        for (int i = 0; i < points.Count; i++)
+        {
+            for (int j = 0; j < points[0].Count; j++)
+            {
+                if (points[i][j].Id == oldPoint.Id)
+                    points[i][j] = newPoint;
+            }
+        }
+    }
 }

@@ -433,6 +433,11 @@ public class ObjectsController : INotifyPropertyChanged
 
                 foreach (var parent in set)
                 {
+                    if (parent is ISurface surf)
+                    {
+                        surf.SubstitutePoints(p1, middlePoint);
+                        surf.SubstitutePoints(p2, middlePoint);
+                    }
                     while (true)
                     {
                         var index = parent._objects.FindIndex(x => x.Id == p1.Id);
@@ -449,7 +454,7 @@ public class ObjectsController : INotifyPropertyChanged
                         parent._objects[index] = middlePoint;
                     }
                 }
-                
+
                 p1.CanBeDeleted = true;
                 p2.CanBeDeleted = true;
                 ParameterizedObjects.Remove(p1);
@@ -458,6 +463,7 @@ public class ObjectsController : INotifyPropertyChanged
                 p2.Deleted = true;
                 
                 ParameterizedObjects.Add(middlePoint);
+                _parameterizedPoints.Add(middlePoint);
             }
         }
     }

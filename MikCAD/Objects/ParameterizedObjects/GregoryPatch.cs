@@ -24,9 +24,9 @@ public class GregoryPatch : ParameterizedObject, I2DObject
         var outer3 = outerRing.GetRange(8, 4);
         outerBezierControlPoint = new[]
         {
-            inner1,
-            inner2,
-            inner3
+            outer1,
+            outer2,
+            outer3
         };
 
         ReconstructPatch();

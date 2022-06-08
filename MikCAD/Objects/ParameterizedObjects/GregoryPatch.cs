@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD;
 
@@ -65,24 +66,16 @@ public class GregoryPatch : ParameterizedObject, I2DObject
             var IP = new[]
             {
                 innerBezierControlPoint[i][0]._position,
-                EvaluateCurveAtT(0.25f, innerBezierControlPoint[i][0]._position,
-                    innerBezierControlPoint[i][1]._position,
-                    innerBezierControlPoint[i][2]._position, innerBezierControlPoint[i][3]._position),
-                EvaluateCurveAtT(0.75f, innerBezierControlPoint[i][0]._position,
-                    innerBezierControlPoint[i][1]._position,
-                    innerBezierControlPoint[i][2]._position, innerBezierControlPoint[i][3]._position),
+                innerBezierControlPoint[i][1]._position,
+                innerBezierControlPoint[i][2]._position,
                 innerBezierControlPoint[i][3]._position
             };
 
             var OP = new[]
             {
                 outerBezierControlPoint[i][0]._position,
-                EvaluateCurveAtT(0.25f, outerBezierControlPoint[i][0]._position,
-                    outerBezierControlPoint[i][1]._position,
-                    outerBezierControlPoint[i][2]._position, outerBezierControlPoint[i][3]._position),
-                EvaluateCurveAtT(0.75f, outerBezierControlPoint[i][0]._position,
-                    outerBezierControlPoint[i][1]._position,
-                    outerBezierControlPoint[i][2]._position, outerBezierControlPoint[i][3]._position),
+                outerBezierControlPoint[i][1]._position,
+                outerBezierControlPoint[i][2]._position,
                 outerBezierControlPoint[i][3]._position
             };
 
@@ -206,6 +199,7 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     Vector3 MiddlePoint(Vector3 A, Vector3 B) => (A + B) / 2;
     Vector3 EvaluateCurveAtT(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
     {
+        t = 1 - t;
         int i = 0;
         int j = 0;
         Vector3[] arr = new Vector3[] {p0, p1, p2, p3};
@@ -246,16 +240,46 @@ public class GregoryPatch : ParameterizedObject, I2DObject
 
     #endregion
 
-    public override uint[] lines { get; }
+    private uint[] _lines;
+    public override uint[] lines => _lines;
+
+    private float[] _vertices;
+    public float[] vertices => _vertices;
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        throw new System.NotImplementedException();
+        // var vertices = new float[ * Point.Size];
+        // for (int i = 0; i < _vertices.Length; i++)
+        // {
+        //     vertices[Point.Size * i] = _vertices[i].X;
+        //     vertices[Point.Size * i + 1] = _vertices[i].Y;
+        //     vertices[Point.Size * i + 2] = _vertices[i].Z;
+        // }
+        //
+        // var vertexBufferObject = GL.GenBuffer();
+        // GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        // GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
+        //     BufferUsageHint.StaticDraw);
+        //
+        // var vertexArrayObject = GL.GenVertexArray();
+        // GL.BindVertexArray(vertexArrayObject);
+        //
+        // GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+        // GL.EnableVertexAttribArray(0);
+        //
+        // var indexBufferObject = GL.GenBuffer();
+        // GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        // _lines = GenerateLines();
+        // GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
+        //     BufferUsageHint.StaticDraw);
+        //
+        // GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        // GL.EnableVertexAttribArray(1);
     }
 
     public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
-        throw new System.NotImplementedException();
+        
     }
 }

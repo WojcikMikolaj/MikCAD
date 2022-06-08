@@ -289,6 +289,7 @@ public class ObjectsController : INotifyPropertyChanged
                 o.Selected = true;
                 return;
             }
+
             if (SelectedObject is ISurface)
                 return;
             if (SelectedObject is CompositeObject compositeObject)
@@ -523,98 +524,94 @@ public class ObjectsController : INotifyPropertyChanged
                 {
                     for (int j = 0; j < points1[0].Count; j++)
                     {
-                        if (points1[i][j].IsCollapsedPoint && points1[i][j].parents.Contains(surf3))
+                        if (points1[i][j].parents.Contains(surf3))
                         {
                             first = points1[i][j];
                             innerRing.Add(first);
 
-                            if (i + 3 < points1.Count && points1[i + 3][j].IsCollapsedPoint
-                                                      && points1[i + 3][j].parents.Contains(surf2))
+                            if (i + 3 < points1.Count && points1[i + 3][j].parents.Contains(surf2))
                             {
                                 innerRing.Add(points1[i + 1][j]);
                                 innerRing.Add(points1[i + 2][j]);
 
                                 second = points1[i + 3][j];
                                 innerRing.Add(second);
-                                
+
                                 //Handle outer ring
-                                HandleOuterRing(outerRing,points1,i,j,ascending:true, secondRow: true);
+                                HandleOuterRing(outerRing, points1, i, j, ascending: true, secondRow: true);
 
                                 (int k, int l) = surf2.FindPointIndices(second);
 
                                 if (HandleSurf2(points2, k, l, surf3, innerRing, outerRing, points3, first, out third))
                                     goto PatchAssemblyStage;
-                                
+
                                 ClearRingsAfterTry(innerRing, outerRing);
                             }
-                            
-                            if (i - 3 >= 0 && points1[i - 3][j].IsCollapsedPoint
-                                                      && points1[i - 3][j].parents.Contains(surf2))
+
+                            if (i - 3 >= 0 && points1[i - 3][j].parents.Contains(surf2))
                             {
                                 innerRing.Add(points1[i - 1][j]);
                                 innerRing.Add(points1[i - 2][j]);
 
                                 second = points1[i - 3][j];
                                 innerRing.Add(second);
-                                
+
                                 //Handle outer ring
-                                HandleOuterRing(outerRing,points1,i,j,ascending:false, secondRow: true);
+                                HandleOuterRing(outerRing, points1, i, j, ascending: false, secondRow: true);
 
                                 (int k, int l) = surf2.FindPointIndices(second);
 
-                                if (HandleSurf2(points2, k, l, surf3, innerRing,outerRing, points3, first, out third))
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, outerRing, points3, first, out third))
                                     goto PatchAssemblyStage;
-                                
+
                                 ClearRingsAfterTry(innerRing, outerRing);
                             }
-                            
-                            if (j + 3 < points1[0].Count && points1[i][j + 3].IsCollapsedPoint
-                                                      && points1[i][j + 3].parents.Contains(surf2))
+
+                            if (j + 3 < points1[0].Count && points1[i][j + 3].parents.Contains(surf2))
                             {
                                 innerRing.Add(points1[i][j + 1]);
                                 innerRing.Add(points1[i][j + 2]);
 
-                                second = points1[i][j+3];
+                                second = points1[i][j + 3];
                                 innerRing.Add(second);
 
                                 //Handle outer ring
-                                HandleOuterRing(outerRing,points1,i,j,ascending:true, secondRow: false);
-                                
+                                HandleOuterRing(outerRing, points1, i, j, ascending: true, secondRow: false);
+
                                 (int k, int l) = surf2.FindPointIndices(second);
 
-                                if (HandleSurf2(points2, k, l, surf3, innerRing, outerRing,points3, first, out third))
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, outerRing, points3, first, out third))
                                     goto PatchAssemblyStage;
-                                
+
                                 ClearRingsAfterTry(innerRing, outerRing);
                             }
-                            
-                            if (j - 3 >= 0 && points1[i][j-3].IsCollapsedPoint
-                                                      && points1[i][j-3].parents.Contains(surf2))
-                            {
-                                innerRing.Add(points1[i][j-1]);
-                                innerRing.Add(points1[i][j-2]);
 
-                                second = points1[i][j-3];
+                            if (j - 3 >= 0 && points1[i][j - 3].parents.Contains(surf2))
+                            {
+                                innerRing.Add(points1[i][j - 1]);
+                                innerRing.Add(points1[i][j - 2]);
+
+                                second = points1[i][j - 3];
                                 innerRing.Add(second);
-                                
+
                                 //Handle outer ring
-                                HandleOuterRing(outerRing,points1,i,j,ascending:false, secondRow: false);
+                                HandleOuterRing(outerRing, points1, i, j, ascending: false, secondRow: false);
 
                                 (int k, int l) = surf2.FindPointIndices(second);
 
-                                if (HandleSurf2(points2, k, l, surf3, innerRing,outerRing, points3, first, out third))
+                                if (HandleSurf2(points2, k, l, surf3, innerRing, outerRing, points3, first, out third))
                                     goto PatchAssemblyStage;
-                                
+
                                 ClearRingsAfterTry(innerRing, outerRing);
                             }
                         }
                     }
                 }
-                
+
                 PatchAssemblyStage:
-                var gregory = new GregoryPatch(innerRing, outerRing);
                 if (innerRing.Count > 0)
                 {
+                    var gregory = new GregoryPatch(innerRing, outerRing);
                     var innerCurve = new InterpolatingBezierCurveC2();
                     foreach (var point in innerRing)
                     {
@@ -632,57 +629,56 @@ public class ObjectsController : INotifyPropertyChanged
                     icurveC00.ProcessPoint(innerRing[1]);
                     icurveC00.ProcessPoint(innerRing[2]);
                     icurveC00.ProcessPoint(innerRing[3]);
-                    
+
                     var icurveC01 = new BezierCurveC0();
                     icurveC01.ProcessPoint(innerRing[3]);
                     icurveC01.ProcessPoint(innerRing[4]);
                     icurveC01.ProcessPoint(innerRing[5]);
                     icurveC01.ProcessPoint(innerRing[6]);
-                    
+
                     var icurveC02 = new BezierCurveC0();
                     icurveC02.ProcessPoint(innerRing[6]);
                     icurveC02.ProcessPoint(innerRing[7]);
                     icurveC02.ProcessPoint(innerRing[8]);
                     icurveC02.ProcessPoint(innerRing[0]);
-                    
+
                     var ocurveC00 = new BezierCurveC0();
                     ocurveC00.ProcessPoint(outerRing[0]);
                     ocurveC00.ProcessPoint(outerRing[1]);
                     ocurveC00.ProcessPoint(outerRing[2]);
                     ocurveC00.ProcessPoint(outerRing[3]);
-                    
+
                     var ocurveC01 = new BezierCurveC0();
                     ocurveC01.ProcessPoint(outerRing[4]);
                     ocurveC01.ProcessPoint(outerRing[5]);
                     ocurveC01.ProcessPoint(outerRing[6]);
                     ocurveC01.ProcessPoint(outerRing[7]);
-                    
+
                     var ocurveC02 = new BezierCurveC0();
                     ocurveC02.ProcessPoint(outerRing[8]);
                     ocurveC02.ProcessPoint(outerRing[9]);
                     ocurveC02.ProcessPoint(outerRing[10]);
                     ocurveC02.ProcessPoint(outerRing[11]);
-                    
+
                     ParameterizedObjects.Add(innerCurve);
                     ParameterizedObjects.Add(outerCurve);
-                    
+
                     ParameterizedObjects.Add(icurveC00);
                     ParameterizedObjects.Add(icurveC01);
                     ParameterizedObjects.Add(icurveC02);
                     ParameterizedObjects.Add(ocurveC00);
                     ParameterizedObjects.Add(ocurveC01);
                     ParameterizedObjects.Add(ocurveC02);
-                    
                 }
             }
         }
     }
 
-    private bool HandleSurf2(List<List<ParameterizedPoint>> points2, int k, int l, BezierSurfaceC0 surf3, List<ParameterizedPoint> innerRing, List<ParameterizedPoint> outerRing, List<List<ParameterizedPoint>> points3,
+    private bool HandleSurf2(List<List<ParameterizedPoint>> points2, int k, int l, BezierSurfaceC0 surf3,
+        List<ParameterizedPoint> innerRing, List<ParameterizedPoint> outerRing, List<List<ParameterizedPoint>> points3,
         ParameterizedPoint first, out ParameterizedPoint third)
     {
-        if (k + 3 < points2.Count && points2[k + 3][l].IsCollapsedPoint
-                                  && points2[k + 3][l].parents.Contains(surf3))
+        if (k + 3 < points2.Count && points2[k + 3][l].parents.Contains(surf3))
         {
             innerRing.Add(points2[k + 1][l]);
             innerRing.Add(points2[k + 2][l]);
@@ -691,18 +687,17 @@ public class ObjectsController : INotifyPropertyChanged
             innerRing.Add(third);
 
             (int m, int n) = surf3.FindPointIndices(third);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points2,k,l,ascending:true, secondRow: true);
+            HandleOuterRing(outerRing, points2, k, l, ascending: true, secondRow: true);
 
             if (HandleSurf3(points3, m, n, first, innerRing, outerRing))
                 return true;
-            
+
             ClearRingsAfterTry(innerRing, outerRing);
         }
 
-        if (k - 3 >= 0 && points2[k - 3][l].IsCollapsedPoint
-                       && points2[k - 3][l].parents.Contains(surf3))
+        if (k - 3 >= 0 && points2[k - 3][l].parents.Contains(surf3))
         {
             innerRing.Add(points2[k - 1][l]);
             innerRing.Add(points2[k - 2][l]);
@@ -711,18 +706,17 @@ public class ObjectsController : INotifyPropertyChanged
             innerRing.Add(third);
 
             (int m, int n) = surf3.FindPointIndices(third);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points2,k,l,ascending:false, secondRow: true);
+            HandleOuterRing(outerRing, points2, k, l, ascending: false, secondRow: true);
 
             if (HandleSurf3(points3, m, n, first, innerRing, outerRing))
                 return true;
-            
+
             ClearRingsAfterTry(innerRing, outerRing);
         }
 
-        if (l + 3 < points2[0].Count && points2[k][l + 3].IsCollapsedPoint
-                                     && points2[k][l + 3].parents.Contains(surf3))
+        if (l + 3 < points2[0].Count && points2[k][l + 3].parents.Contains(surf3))
         {
             innerRing.Add(points2[k][l + 1]);
             innerRing.Add(points2[k][l + 2]);
@@ -731,18 +725,17 @@ public class ObjectsController : INotifyPropertyChanged
             innerRing.Add(third);
 
             (int m, int n) = surf3.FindPointIndices(third);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points2,k,l,ascending:true, secondRow: false);
+            HandleOuterRing(outerRing, points2, k, l, ascending: true, secondRow: false);
 
             if (HandleSurf3(points3, m, n, first, innerRing, outerRing))
                 return true;
-            
+
             ClearRingsAfterTry(innerRing, outerRing);
         }
 
-        if (l - 3 >= 0 && points2[k][l - 3].IsCollapsedPoint
-                       && points2[k][l - 3].parents.Contains(surf3))
+        if (l - 3 >= 0 && points2[k][l - 3].parents.Contains(surf3))
         {
             innerRing.Add(points2[k][l - 1]);
             innerRing.Add(points2[k][l - 2]);
@@ -751,15 +744,16 @@ public class ObjectsController : INotifyPropertyChanged
             innerRing.Add(third);
 
             (int m, int n) = surf3.FindPointIndices(third);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points2,k,l,ascending:false, secondRow: false);
+            HandleOuterRing(outerRing, points2, k, l, ascending: false, secondRow: false);
 
             if (HandleSurf3(points3, m, n, first, innerRing, outerRing))
                 return true;
-            
+
             ClearRingsAfterTry(innerRing, outerRing);
         }
+
         third = null;
         return false;
     }
@@ -767,60 +761,57 @@ public class ObjectsController : INotifyPropertyChanged
     private bool HandleSurf3(List<List<ParameterizedPoint>> points3, int m, int n, ParameterizedPoint first,
         List<ParameterizedPoint> innerRing, List<ParameterizedPoint> outerRing)
     {
-        if (m + 3 < points3.Count && points3[m + 3][n].IsCollapsedPoint
-                                  && points3[m + 3][n].Id == first.Id)
+        if (m + 3 < points3.Count && points3[m + 3][n].Id == first.Id)
         {
             innerRing.Add(points3[m + 1][n]);
             innerRing.Add(points3[m + 2][n]);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points3,m,n,ascending:true, secondRow: true);
-            
+            HandleOuterRing(outerRing, points3, m, n, ascending: true, secondRow: true);
+
             return true;
         }
 
-        if (m - 3 >= 0 && points3[m - 3][n].IsCollapsedPoint
-                       && points3[m - 3][n].Id == first.Id)
+        if (m - 3 >= 0 && points3[m - 3][n].Id == first.Id)
         {
             innerRing.Add(points3[m - 1][n]);
             innerRing.Add(points3[m - 2][n]);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points3,m,n,ascending:false, secondRow: true);
-            
+            HandleOuterRing(outerRing, points3, m, n, ascending: false, secondRow: true);
+
             return true;
         }
 
-        if (n + 3 < points3[0].Count && points3[m][n + 3].IsCollapsedPoint
-                                     && points3[m][n + 3].Id == first.Id)
+        if (n + 3 < points3[0].Count && points3[m][n + 3].Id == first.Id)
         {
             innerRing.Add(points3[m][n + 1]);
             innerRing.Add(points3[m][n + 2]);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points3,m,n,ascending:true, secondRow: false);
-            
+            HandleOuterRing(outerRing, points3, m, n, ascending: true, secondRow: false);
+
             return true;
         }
 
-        if (n - 3 >= 0 && points3[m][n - 3].IsCollapsedPoint
-                       && points3[m][n - 3].Id == first.Id)
+        if (n - 3 >= 0 && points3[m][n - 3].Id == first.Id)
         {
             innerRing.Add(points3[m][n - 3]);
             innerRing.Add(points3[m][n - 3]);
-            
+
             //Handle outer ring
-            HandleOuterRing(outerRing,points3,m,n,ascending:false, secondRow: false);
-            
+            HandleOuterRing(outerRing, points3, m, n, ascending: false, secondRow: false);
+
             return true;
         }
 
         return false;
     }
-    
-    private void HandleOuterRing(List<ParameterizedPoint> outerRing, List<List<ParameterizedPoint>> points, int i, int j, bool ascending, bool secondRow)
+
+    private void HandleOuterRing(List<ParameterizedPoint> outerRing, List<List<ParameterizedPoint>> points, int i,
+        int j, bool ascending, bool secondRow)
     {
-        if(secondRow)
+        if (secondRow)
         {
             if (ascending)
             {
@@ -898,14 +889,14 @@ public class ObjectsController : INotifyPropertyChanged
 
     private void ClearRingsAfterTry(List<ParameterizedPoint> innerRing, List<ParameterizedPoint> outerRing)
     {
-        innerRing.RemoveAt(innerRing.Count-1);
-        innerRing.RemoveAt(innerRing.Count-1);
-        innerRing.RemoveAt(innerRing.Count-1);
-                                
+        innerRing.RemoveAt(innerRing.Count - 1);
+        innerRing.RemoveAt(innerRing.Count - 1);
+        innerRing.RemoveAt(innerRing.Count - 1);
+
         //Handle outer ring
-        outerRing.RemoveAt(outerRing.Count-1);
-        outerRing.RemoveAt(outerRing.Count-1);
-        outerRing.RemoveAt(outerRing.Count-1);
-        outerRing.RemoveAt(outerRing.Count-1);
+        outerRing.RemoveAt(outerRing.Count - 1);
+        outerRing.RemoveAt(outerRing.Count - 1);
+        outerRing.RemoveAt(outerRing.Count - 1);
+        outerRing.RemoveAt(outerRing.Count - 1);
     }
 }

@@ -693,6 +693,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                                     x =>
                                         x.Id == sortedPatches[(int) (i * ret.VPatches + j)].controlPoints[k * 4 + l]
                                             .Id);
+                            ret.points[i + l][j + k].parents.Add(ret);
                         }
                     }
                 }
@@ -723,6 +724,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                                     x =>
                                         x.Id == sortedPatches[(int) (i * ret.VPatches + j)].controlPoints[k * 4 + l]
                                             .Id);
+                            ret.points[i + l][j + k].parents.Add(ret);
                         }
                     }
                 }

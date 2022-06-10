@@ -48,6 +48,7 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     private Vector3[] ai = new Vector3[3];
     private Vector3 p0;
     private Vector3[] P1 = new Vector3[3];
+    private Vector3[,] RedPoints = new Vector3[3, 2];
     
     private Vector3[] OB = new Vector3[3];
     private Vector3[,] OR = new Vector3[3,2];
@@ -110,89 +111,104 @@ public class GregoryPatch : ParameterizedObject, I2DObject
             P1[i] = Vector3.Lerp(p0,ai[i],2.0f/3);
         }
 
+        RedPoints[0, 0] = P1[0] - (SpD[0,0] - P2[0]).Normalized() / 3;
+        RedPoints[2, 1] = P1[0] + (SpD[0,0] - P2[0]).Normalized() / 3;
+
         for (int i = 0; i < 3; i++)
         {
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"B{i}")
             {
                 posX = B[i].X,
                 posY = B[i].Y,
                 posZ = B[i].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"R{i},0")
             {
                 posX = R[i,0].X,
                 posY = R[i,0].Y,
                 posZ = R[i,0].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"R{i},1")
             {
                 posX = R[i,1].X,
                 posY = R[i,1].Y,
                 posZ = R[i,1].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"S{i},0")
             {
                 posX = S[i,0].X,
                 posY = S[i,0].Y,
                 posZ = S[i,0].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"R{i},1")
             {
                 posX = S[i,1].X,
                 posY = S[i,1].Y,
                 posZ = S[i,1].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"T{i}")
             {
                 posX = T[i].X,
                 posY = T[i].Y,
                 posZ = T[i].Z,
             });
             
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"RpD{i},0")
             {
                 posX = RpD[i,0].X,
                 posY = RpD[i,0].Y,
                 posZ = RpD[i,0].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"RpD{i},1")
             {
                 posX = RpD[i,1].X,
                 posY = RpD[i,1].Y,
                 posZ = RpD[i,1].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"SpD{i},0")
             {
                 posX = SpD[i,0].X,
                 posY = SpD[i,0].Y,
                 posZ = SpD[i,0].Z
             });
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"SpD{i},1")
             {
                 posX = SpD[i,1].X,
                 posY = SpD[i,1].Y,
                 posZ = SpD[i,1].Z
             });
             
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"P2{i}")
             {
                 posX = P2[i].X,
                 posY = P2[i].Y,
                 posZ = P2[i].Z,
             });
             
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"P1{i}")
             {
                 posX = P1[i].X,
                 posY = P1[i].Y,
                 posZ = P1[i].Z,
             });
         }
-        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"P0")
         {
             posX = p0.X,
             posY = p0.Y,
             posZ = p0.Z,
+        });
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("RP0,0")
+        {
+            posX = RedPoints[0,0].X,
+            posY = RedPoints[0,0].Y,
+            posZ = RedPoints[0,0].Z,
+        });
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("RP2,1")
+        {
+            posX = RedPoints[2,1].X,
+            posY = RedPoints[2,1].Y,
+            posZ = RedPoints[2,1].Z,
         });
     }
 

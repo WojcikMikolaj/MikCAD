@@ -52,6 +52,12 @@ public class ObjectsController : INotifyPropertyChanged
         "Shaders/BezierCurveC2/BezierCurveC2TessControlShader.tesc",
         "Shaders/BezierCurveC2/BezierCurveC2TessEvaluationShader.tese");
 
+    internal Shader _gregoryPatchShader = new Shader(
+        "Shaders/BezierShader.vert",
+        "Shaders/BezierShader.frag",
+        "Shaders/GregoryPatch/GregoryPatchTessControlShader.tesc",
+        "Shaders/GregoryPatch/GregoryPatchTessEvaluationShader.tese");
+
     public Shader _interpolatingBezierCurveC2Shader = new Shader(
         "Shaders/BezierShader.vert",
         "Shaders/BezierShader.frag",
@@ -82,6 +88,7 @@ public class ObjectsController : INotifyPropertyChanged
             MainWindow.current.interpolatingBezierCurveC2Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierSurfaceC0Control.Visibility = Visibility.Hidden;
             MainWindow.current.bezierSurfaceC2Control.Visibility = Visibility.Hidden;
+            MainWindow.current.gregoryPatchControl.Visibility = Visibility.Hidden;
             MainWindow.current.compositeControl.Visibility = Visibility.Hidden;
             _selectedObject = value;
             if (_selectedObject is null)
@@ -93,6 +100,9 @@ public class ObjectsController : INotifyPropertyChanged
             {
                 case Torus torus:
                     MainWindow.current.torusControl.Visibility = Visibility.Visible;
+                    break;
+                case GregoryPatch:
+                    MainWindow.current.gregoryPatchControl.Visibility = Visibility.Visible;
                     break;
                 //must be before CompositeObject
                 case BezierSurfaceC0:
@@ -612,63 +622,64 @@ public class ObjectsController : INotifyPropertyChanged
                 if (innerRing.Count > 0)
                 {
                     var gregory = new GregoryPatch(innerRing, outerRing);
-                    var innerCurve = new InterpolatingBezierCurveC2();
-                    foreach (var point in innerRing)
-                    {
-                        innerCurve.ProcessObject(point);
-                    }
-
-                    var outerCurve = new InterpolatingBezierCurveC2();
-                    foreach (var point in outerRing)
-                    {
-                        outerCurve.ProcessObject(point);
-                    }
-
-                    var icurveC00 = new BezierCurveC0();
-                    icurveC00.ProcessPoint(innerRing[0]);
-                    icurveC00.ProcessPoint(innerRing[1]);
-                    icurveC00.ProcessPoint(innerRing[2]);
-                    icurveC00.ProcessPoint(innerRing[3]);
-
-                    var icurveC01 = new BezierCurveC0();
-                    icurveC01.ProcessPoint(innerRing[3]);
-                    icurveC01.ProcessPoint(innerRing[4]);
-                    icurveC01.ProcessPoint(innerRing[5]);
-                    icurveC01.ProcessPoint(innerRing[6]);
-
-                    var icurveC02 = new BezierCurveC0();
-                    icurveC02.ProcessPoint(innerRing[6]);
-                    icurveC02.ProcessPoint(innerRing[7]);
-                    icurveC02.ProcessPoint(innerRing[8]);
-                    icurveC02.ProcessPoint(innerRing[0]);
-
-                    var ocurveC00 = new BezierCurveC0();
-                    ocurveC00.ProcessPoint(outerRing[0]);
-                    ocurveC00.ProcessPoint(outerRing[1]);
-                    ocurveC00.ProcessPoint(outerRing[2]);
-                    ocurveC00.ProcessPoint(outerRing[3]);
-
-                    var ocurveC01 = new BezierCurveC0();
-                    ocurveC01.ProcessPoint(outerRing[4]);
-                    ocurveC01.ProcessPoint(outerRing[5]);
-                    ocurveC01.ProcessPoint(outerRing[6]);
-                    ocurveC01.ProcessPoint(outerRing[7]);
-
-                    var ocurveC02 = new BezierCurveC0();
-                    ocurveC02.ProcessPoint(outerRing[8]);
-                    ocurveC02.ProcessPoint(outerRing[9]);
-                    ocurveC02.ProcessPoint(outerRing[10]);
-                    ocurveC02.ProcessPoint(outerRing[11]);
-
-                    ParameterizedObjects.Add(innerCurve);
-                    ParameterizedObjects.Add(outerCurve);
-
-                    ParameterizedObjects.Add(icurveC00);
-                    ParameterizedObjects.Add(icurveC01);
-                    ParameterizedObjects.Add(icurveC02);
-                    ParameterizedObjects.Add(ocurveC00);
-                    ParameterizedObjects.Add(ocurveC01);
-                    ParameterizedObjects.Add(ocurveC02);
+                    AddObjectToScene(gregory);
+                    // var innerCurve = new InterpolatingBezierCurveC2();
+                    // foreach (var point in innerRing)
+                    // {
+                    //     innerCurve.ProcessObject(point);
+                    // }
+                    //
+                    // var outerCurve = new InterpolatingBezierCurveC2();
+                    // foreach (var point in outerRing)
+                    // {
+                    //     outerCurve.ProcessObject(point);
+                    // }
+                    //
+                    // var icurveC00 = new BezierCurveC0();
+                    // icurveC00.ProcessPoint(innerRing[0]);
+                    // icurveC00.ProcessPoint(innerRing[1]);
+                    // icurveC00.ProcessPoint(innerRing[2]);
+                    // icurveC00.ProcessPoint(innerRing[3]);
+                    //
+                    // var icurveC01 = new BezierCurveC0();
+                    // icurveC01.ProcessPoint(innerRing[3]);
+                    // icurveC01.ProcessPoint(innerRing[4]);
+                    // icurveC01.ProcessPoint(innerRing[5]);
+                    // icurveC01.ProcessPoint(innerRing[6]);
+                    //
+                    // var icurveC02 = new BezierCurveC0();
+                    // icurveC02.ProcessPoint(innerRing[6]);
+                    // icurveC02.ProcessPoint(innerRing[7]);
+                    // icurveC02.ProcessPoint(innerRing[8]);
+                    // icurveC02.ProcessPoint(innerRing[0]);
+                    //
+                    // var ocurveC00 = new BezierCurveC0();
+                    // ocurveC00.ProcessPoint(outerRing[0]);
+                    // ocurveC00.ProcessPoint(outerRing[1]);
+                    // ocurveC00.ProcessPoint(outerRing[2]);
+                    // ocurveC00.ProcessPoint(outerRing[3]);
+                    //
+                    // var ocurveC01 = new BezierCurveC0();
+                    // ocurveC01.ProcessPoint(outerRing[4]);
+                    // ocurveC01.ProcessPoint(outerRing[5]);
+                    // ocurveC01.ProcessPoint(outerRing[6]);
+                    // ocurveC01.ProcessPoint(outerRing[7]);
+                    //
+                    // var ocurveC02 = new BezierCurveC0();
+                    // ocurveC02.ProcessPoint(outerRing[8]);
+                    // ocurveC02.ProcessPoint(outerRing[9]);
+                    // ocurveC02.ProcessPoint(outerRing[10]);
+                    // ocurveC02.ProcessPoint(outerRing[11]);
+                    //
+                    // ParameterizedObjects.Add(innerCurve);
+                    // ParameterizedObjects.Add(outerCurve);
+                    //
+                    // ParameterizedObjects.Add(icurveC00);
+                    // ParameterizedObjects.Add(icurveC01);
+                    // ParameterizedObjects.Add(icurveC02);
+                    // ParameterizedObjects.Add(ocurveC00);
+                    // ParameterizedObjects.Add(ocurveC01);
+                    // ParameterizedObjects.Add(ocurveC02);
                 }
             }
         }

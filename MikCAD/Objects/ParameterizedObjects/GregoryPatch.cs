@@ -264,18 +264,51 @@ public class GregoryPatch : ParameterizedObject, I2DObject
 
     private uint[] _lines;
     public override uint[] lines => _lines;
-    
+
     private uint[] GenerateLines()
     {
-        int size = 3 * 3 + 3 * 8;
+        int size = 11*2*3;
         uint[] lines = new uint[size];
 
         var it = 0;
-        
-        //T do p2
-        lines[it++]=
-        lines[it++]=
-        
+
+        for (int i = 0; i < 3; i++)
+        {
+            //t-p2
+            lines[it++] = (uint)(i+3);
+            lines[it++] = (uint)(i+7);
+            //p2-p1
+            lines[it++] = (uint)(i+7);
+            lines[it++] = (uint)(i+11);
+            //p1-p0
+            lines[it++] = (uint)(i+11);
+            lines[it++] = (uint)(i+15);
+            //s0-spd
+            lines[it++] = (uint)(i+2);
+            lines[it++] = (uint)(i+6);
+            //p2-spd
+            lines[it++] = (uint)(i+7);
+            lines[it++] = (uint)(i+6);
+            //p1-rp
+            lines[it++] = (uint)(i+11);
+            lines[it++] = (uint)(i+18);
+            //r0-rpd
+            lines[it++] = (uint)(i+1);
+            lines[it++] = (uint)(i+16);
+            //r-1-rpd
+            lines[it++] = (uint)(i+4);
+            lines[it++] = (uint)(i+17);
+            //s-1-spd-1
+            lines[it++] = (uint)(i+8);
+            lines[it++] = (uint)(i+9);
+            //p2-1-spd-1
+            lines[it++] = (uint)(i+13);
+            lines[it++] = (uint)(i+9);
+            //p1-1-rp-1
+            lines[it++] = (uint)(i+14);
+            lines[it++] = (uint)(i+19);
+        }
+
         return lines;
     }
 
@@ -380,14 +413,12 @@ public class GregoryPatch : ParameterizedObject, I2DObject
             for (int j = 0; j < 20 * Point.Size; j++)
             {
                 _vertices[it++] = verticesPom[i, j];
-                _vertices[it++] = verticesPom[i, j];
-                _vertices[it++] = verticesPom[i, j];
             }
         }
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
+        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length *  sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
@@ -408,6 +439,10 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     }
 
     public uint[] patches => _patches;
+    public int UDivisions { get; set; } = 4;
+    public int VDivisions { get; set; } = 4;
+    public bool DrawPolygon { get; set; } = false;
+
     private uint[] _patches;
 
     private uint[] GeneratePatches()
@@ -419,7 +454,7 @@ public class GregoryPatch : ParameterizedObject, I2DObject
         {
             for (int j = 0; j < 20; j++)
             {
-                patches[it++] = (uint)(i*20+j);
+                patches[it++] = (uint) (i * 20 + j);
             }
         }
 

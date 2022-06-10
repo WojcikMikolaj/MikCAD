@@ -213,6 +213,8 @@ public class GregoryPatch : ParameterizedObject, I2DObject
                 posY = RedPoints[i, j].Y,
                 posZ = RedPoints[i, j].Z,
             });
+        _patches = GeneratePatches();
+        _lines = GenerateLines();
     }
 
     Vector3 MiddlePoint(Vector3 A, Vector3 B) => (A + B) / 2;
@@ -262,43 +264,171 @@ public class GregoryPatch : ParameterizedObject, I2DObject
 
     private uint[] _lines;
     public override uint[] lines => _lines;
+    
+    private uint[] GenerateLines()
+    {
+        int size = 3 * 3 + 3 * 8;
+        uint[] lines = new uint[size];
+
+        var it = 0;
+        
+        //T do p2
+        lines[it++]=
+        lines[it++]=
+        
+        return lines;
+    }
 
     private float[] _vertices;
     public float[] vertices => _vertices;
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        // var vertices = new float[ * Point.Size];
-        // for (int i = 0; i < _vertices.Length; i++)
-        // {
-        //     vertices[Point.Size * i] = _vertices[i].X;
-        //     vertices[Point.Size * i + 1] = _vertices[i].Y;
-        //     vertices[Point.Size * i + 2] = _vertices[i].Z;
-        // }
-        //
-        // var vertexBufferObject = GL.GenBuffer();
-        // GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        // GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
-        //     BufferUsageHint.StaticDraw);
-        //
-        // var vertexArrayObject = GL.GenVertexArray();
-        // GL.BindVertexArray(vertexArrayObject);
-        //
-        // GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-        // GL.EnableVertexAttribArray(0);
-        //
-        // var indexBufferObject = GL.GenBuffer();
-        // GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        // _lines = GenerateLines();
-        // GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
-        //     BufferUsageHint.StaticDraw);
-        //
-        // GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
-        // GL.EnableVertexAttribArray(1);
+        var verticesPom = new float[3, 20 * Point.Size];
+
+        _vertices = new float[3 * 20 * Point.Size];
+
+        var it = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            it = 0;
+            //B[i]
+            verticesPom[i, it++] = B[i].X;
+            verticesPom[i, it++] = B[i].Y;
+            verticesPom[i, it++] = B[i].Z;
+            //R[i,0]
+            verticesPom[i, it++] = R[i, 0].X;
+            verticesPom[i, it++] = R[i, 0].Y;
+            verticesPom[i, it++] = R[i, 0].Z;
+            //S[i,0]
+            verticesPom[i, it++] = S[i, 0].X;
+            verticesPom[i, it++] = S[i, 0].Y;
+            verticesPom[i, it++] = S[i, 0].Z;
+            //T[i]
+            verticesPom[i, it++] = T[i].X;
+            verticesPom[i, it++] = T[i].Y;
+            verticesPom[i, it++] = T[i].Z;
+            //R[i-1,1]
+            verticesPom[i, it++] = R[(i + 2) % 3, 1].X;
+            verticesPom[i, it++] = R[(i + 2) % 3, 1].Y;
+            verticesPom[i, it++] = R[(i + 2) % 3, 1].Z;
+            //miejsce łączenie RpD
+            verticesPom[i, it++] = 0;
+            verticesPom[i, it++] = 0;
+            verticesPom[i, it++] = 0;
+            //SpD[i,0]
+            verticesPom[i, it++] = SpD[i, 0].X;
+            verticesPom[i, it++] = SpD[i, 0].Y;
+            verticesPom[i, it++] = SpD[i, 0].Z;
+            //P2[i]
+            verticesPom[i, it++] = P2[i].X;
+            verticesPom[i, it++] = P2[i].Y;
+            verticesPom[i, it++] = P2[i].Z;
+            //S[i-1,1]
+            verticesPom[i, it++] = S[(i + 2) % 3, 1].X;
+            verticesPom[i, it++] = S[(i + 2) % 3, 1].Y;
+            verticesPom[i, it++] = S[(i + 2) % 3, 1].Z;
+            //SpD[i-1,1]
+            verticesPom[i, it++] = SpD[(i + 2) % 3, 1].X;
+            verticesPom[i, it++] = SpD[(i + 2) % 3, 1].Y;
+            verticesPom[i, it++] = SpD[(i + 2) % 3, 1].Z;
+            //miejsce łączenia czerwonych
+            verticesPom[i, it++] = 0;
+            verticesPom[i, it++] = 0;
+            verticesPom[i, it++] = 0;
+            //P1[i]
+            verticesPom[i, it++] = P1[i].X;
+            verticesPom[i, it++] = P1[i].Y;
+            verticesPom[i, it++] = P1[i].Z;
+            //T[i-1]
+            verticesPom[i, it++] = T[(i + 2) % 3].X;
+            verticesPom[i, it++] = T[(i + 2) % 3].Y;
+            verticesPom[i, it++] = T[(i + 2) % 3].Z;
+            //P2[i-1]
+            verticesPom[i, it++] = P2[(i + 2) % 3].X;
+            verticesPom[i, it++] = P2[(i + 2) % 3].Y;
+            verticesPom[i, it++] = P2[(i + 2) % 3].Z;
+            //P1[i-1]
+            verticesPom[i, it++] = P1[(i + 2) % 3].X;
+            verticesPom[i, it++] = P1[(i + 2) % 3].Y;
+            verticesPom[i, it++] = P1[(i + 2) % 3].Z;
+            //P0
+            verticesPom[i, it++] = p0.X;
+            verticesPom[i, it++] = p0.Y;
+            verticesPom[i, it++] = p0.Z;
+            //RpD[i,0]
+            verticesPom[i, it++] = RpD[i, 0].X;
+            verticesPom[i, it++] = RpD[i, 0].Y;
+            verticesPom[i, it++] = RpD[i, 0].Z;
+            //RpD[i-1,1]
+            verticesPom[i, it++] = RpD[(i + 2) % 3, 1].X;
+            verticesPom[i, it++] = RpD[(i + 2) % 3, 1].Y;
+            verticesPom[i, it++] = RpD[(i + 2) % 3, 1].Z;
+            //RedPoints[i-1,1]
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 1].X;
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 1].Y;
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 1].Z;
+            //RedPoints[i-1,0]
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 0].X;
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 0].Y;
+            verticesPom[i, it++] = RedPoints[(i + 2) % 3, 0].Z;
+        }
+
+        it = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 20 * Point.Size; j++)
+            {
+                _vertices[it++] = verticesPom[i, j];
+                _vertices[it++] = verticesPom[i, j];
+                _vertices[it++] = verticesPom[i, j];
+            }
+        }
+
+        var vertexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
+            BufferUsageHint.StaticDraw);
+
+        var vertexArrayObject = GL.GenVertexArray();
+        GL.BindVertexArray(vertexArrayObject);
+
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+
+        var indexBufferObject = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        _lines = GenerateLines();
+
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
+            BufferUsageHint.StaticDraw);
+
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+    }
+
+    public uint[] patches => _patches;
+    private uint[] _patches;
+
+    private uint[] GeneratePatches()
+    {
+        int patchesCount = 3;
+        uint[] patches = new uint[patchesCount * 20];
+        int it = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                patches[it++] = (uint)(i*20+j);
+            }
+        }
+
+        return patches;
     }
 
     public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
+        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
     }
 }

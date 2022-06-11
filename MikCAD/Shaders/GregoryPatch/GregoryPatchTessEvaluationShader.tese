@@ -5,6 +5,8 @@ layout (quads, equal_spacing, ccw) in;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
+float eps =  0.0001;
+
 vec4 Casteljau(float u, vec4 p0, vec4 p1, vec4 p2, vec4 p3, int size)
 {
     if (size>4)
@@ -35,13 +37,13 @@ void main()
     vec4 p3 = vec4(gl_in[3].gl_Position);
     //second row
     vec4 p4 = vec4(gl_in[4].gl_Position);
-    vec4 p5 = vec4((u*gl_in[17].gl_Position + v*gl_in[16].gl_Position)/(u+v));
+    vec4 p5 = vec4((u*gl_in[17].gl_Position + v*gl_in[16].gl_Position)/(u+v + eps));
     vec4 p6 = vec4(gl_in[6].gl_Position);
     vec4 p7 = vec4(gl_in[7].gl_Position);
     //third row
     vec4 p8 = vec4(gl_in[8].gl_Position);
     vec4 p9 = vec4(gl_in[9].gl_Position);
-    vec4 p10 = vec4(((1-u)*gl_in[19].gl_Position + (1-v)*gl_in[18].gl_Position)/(2-u-v));
+    vec4 p10 = vec4(((1-u)*gl_in[19].gl_Position + (1-v)*gl_in[18].gl_Position)/(2-u-v + eps));
     vec4 p11 = vec4(gl_in[11].gl_Position);
     //fourth row
     vec4 p12 = vec4(gl_in[12].gl_Position);

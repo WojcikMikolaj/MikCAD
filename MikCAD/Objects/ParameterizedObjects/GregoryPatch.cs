@@ -275,38 +275,38 @@ public class GregoryPatch : ParameterizedObject, I2DObject
         for (int i = 0; i < 3; i++)
         {
             //t-p2
-            lines[it++] = (uint)(i+3);
-            lines[it++] = (uint)(i+7);
+            lines[it++] = (uint)(i*20+3);
+            lines[it++] = (uint)(i*20+7);
             //p2-p1
-            lines[it++] = (uint)(i+7);
-            lines[it++] = (uint)(i+11);
+            lines[it++] = (uint)(i*20+7);
+            lines[it++] = (uint)(i*20+11);
             //p1-p0
-            lines[it++] = (uint)(i+11);
-            lines[it++] = (uint)(i+15);
+            lines[it++] = (uint)(i*20+11);
+            lines[it++] = (uint)(i*20+15);
             //s0-spd
-            lines[it++] = (uint)(i+2);
-            lines[it++] = (uint)(i+6);
+            lines[it++] = (uint)(i*20+2);
+            lines[it++] = (uint)(i*20+6);
             //p2-spd
-            lines[it++] = (uint)(i+7);
-            lines[it++] = (uint)(i+6);
+            lines[it++] = (uint)(i*20+7);
+            lines[it++] = (uint)(i*20+6);
             //p1-rp
-            lines[it++] = (uint)(i+11);
-            lines[it++] = (uint)(i+18);
+            lines[it++] = (uint)(i*20+11);
+            lines[it++] = (uint)(i*20+18);
             //r0-rpd
-            lines[it++] = (uint)(i+1);
-            lines[it++] = (uint)(i+16);
+            lines[it++] = (uint)(i*20+1);
+            lines[it++] = (uint)(i*20+16);
             //r-1-rpd
-            lines[it++] = (uint)(i+4);
-            lines[it++] = (uint)(i+17);
+            lines[it++] = (uint)(i*20+4);
+            lines[it++] = (uint)(i*20+17);
             //s-1-spd-1
-            lines[it++] = (uint)(i+8);
-            lines[it++] = (uint)(i+9);
+            lines[it++] = (uint)(i*20+8);
+            lines[it++] = (uint)(i*20+9);
             //p2-1-spd-1
-            lines[it++] = (uint)(i+13);
-            lines[it++] = (uint)(i+9);
+            lines[it++] = (uint)(i*20+13);
+            lines[it++] = (uint)(i*20+9);
             //p1-1-rp-1
-            lines[it++] = (uint)(i+14);
-            lines[it++] = (uint)(i+19);
+            lines[it++] = (uint)(i*20+14);
+            lines[it++] = (uint)(i*20+19);
         }
 
         return lines;
@@ -449,6 +449,7 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     {
         int patchesCount = 3;
         uint[] patches = new uint[patchesCount * 20];
+        return patches;
         int it = 0;
         for (int i = 0; i < 3; i++)
         {

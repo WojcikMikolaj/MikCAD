@@ -133,6 +133,7 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
 
     public CompositeObject(ParameterizedObject o) : base("composite")
     {
+        // ReSharper disable once VirtualMemberCallInConstructor
         ProcessObject(o);
     }
 
@@ -157,7 +158,6 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         }
 
         lastPos = _position;
-        MainWindow.current.Title = $"{_position.X - lastPos.X}, {_position.Y - lastPos.Y}, {_position.Z - lastPos.Z}";
         ApplyOnChilds();
         if (_centerRender != null)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
@@ -342,10 +343,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
     public override uint[] lines => _lines;
     public uint[] _lines;
 
-    private uint[] GenerateLines()
+    private void GenerateLines()
     {
         if (!_UpdateBuffers)
-            return _lines;
+            return;
         //nie zawijany
         int size = 0;
         if (!IsRolled)
@@ -357,7 +358,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             size = (int) (2 * UPatches * 4 * 3 * VPatches * 3 * 3);
         }
 
-        uint[] lines = new uint[size];
+        if (_lines == null || _lines.Length != size)
+            _lines = new uint[size];
         uint it = 0;
         for (int i = 0; i < points.Count; i++)
         {
@@ -369,7 +371,6 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     lines[it++] = (uint) (i * points[0].Count + j + 1);
                 }
 
-                
 
                 if (i < points.Count - 1)
                 {
@@ -383,25 +384,22 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
         {
             for (int j = 0; j < points[0].Count; j++)
             {
-
-                lines[it++] = (uint) (j);
-                lines[it++] = (uint) ((points.Count-1) * points[0].Count + j);
-
+                _lines[it++] = (uint) (j);
+                _lines[it++] = (uint) ((points.Count - 1) * points[0].Count + j);
             }
         }
-
-        return lines;
     }
 
     public uint[] patches => _patches;
     public uint[] _patches;
 
-    private uint[] GeneratePatches()
+    private void GeneratePatches()
     {
         if (!_UpdateBuffers)
-            return _patches;
+            return ;
         int patchesCount = (int) (UPatches * VPatches);
-        uint[] patches = new uint[patchesCount * 16];
+        if (_patches == null || _patches.Length != patchesCount * 16)
+            _patches = new uint[patchesCount * 16];
         int it = 0;
         for (int i = 0; i < UPatches; i++)
         {
@@ -409,13 +407,13 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             {
                 for (int k = 0; k < 16; k++)
                 {
-                    patches[it++] = _patchesIdx[i, j].GetIdAtI(k);
+                    _patches[it++] = _patchesIdx[i, j].GetIdAtI(k);
                 }
             }
         }
-
-        return patches;
     }
+
+    private float[] _vertices;
 
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
@@ -433,24 +431,30 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             colsCount = 3 * (int) UPatches;
         }
 
-        var vertices = new float[rowsCount * colsCount * 4];
+        if (_vertices == null || _vertices.Length != rowsCount * colsCount * 4)
+        {
+            _vertices = new float[rowsCount * colsCount * 4];
+            GC.Collect();
+        }
+
+
         int it = 0;
         for (int i = 0; i < points.Count; i++)
         {
             for (int j = 0; j < points[i].Count; j++)
             {
                 var posVector = points[i][j].GetModelMatrix().ExtractTranslation();
-                vertices[4 * it] = posVector.X;
-                vertices[4 * it + 1] = posVector.Y;
-                vertices[4 * it + 2] = posVector.Z;
-                vertices[4 * it + 3] = 1;
+                _vertices[4 * it] = posVector.X;
+                _vertices[4 * it + 1] = posVector.Y;
+                _vertices[4 * it + 2] = posVector.Z;
+                _vertices[4 * it + 3] = 1;
                 it++;
             }
         }
 
         var vertexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices,
+        GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), _vertices,
             BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
@@ -458,8 +462,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-        _lines = GenerateLines();
-        _patches = GeneratePatches();
+        GenerateLines();
+        GeneratePatches();
         _UpdateBuffers = false;
     }
 
@@ -566,7 +570,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[^1][j + k].Id});
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
                 }
-                
+
 
                 var patch3 = new BezierPatchC2()
                 {
@@ -586,7 +590,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[0][j + k].Id});
                     controlPoints.Add(new PointRef() {Id = surfaceC2.points[1][j + k].Id});
                 }
-                
+
                 var patch2 = new BezierPatchC2()
                 {
                     Id = 100000 * (surfaceC2.Id + 1) + it,
@@ -797,7 +801,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
             }
         }
     }
-    
+
     public void SubstitutePoints(ParameterizedPoint oldPoint, ParameterizedPoint newPoint)
     {
         for (int i = 0; i < points.Count; i++)

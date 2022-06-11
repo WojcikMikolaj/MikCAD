@@ -67,19 +67,17 @@ public class ParameterizedPoint : ParameterizedObject
         _scale[2] = 1;
     }
 
+    private float[] _vertices = new float[3];
+
+    private int _vbo = int.MinValue;
+    private uint[] _indexArray = {0};
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        var vertices = new float[1 * Point.Size];
-        var colors = new float[1 * Point.Size];
-
-        vertices[0] = 0;
-        vertices[1] = 0;
-        vertices[2] = 0;
-
-
-        var vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * 3 * sizeof(float), vertices,
+        
+        if(_vbo== Int32.MinValue)
+            _vbo = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _vertices,
             BufferUsageHint.StaticDraw);
 
         var vertexArrayObject = GL.GenVertexArray();
@@ -90,7 +88,7 @@ public class ParameterizedPoint : ParameterizedObject
 
         var indexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, 1 * sizeof(uint), new uint[] {0}, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, 1 * sizeof(uint), _indexArray, BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);

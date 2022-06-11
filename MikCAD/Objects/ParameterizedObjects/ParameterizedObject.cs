@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
 using MikCAD.Utilities;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 
@@ -179,6 +180,10 @@ namespace MikCAD
         public abstract void UpdateTranslationMatrix();
         public abstract void UpdateRotationMatrix(Axis axis);
         public abstract void UpdateScaleMatrix();
+
+        protected int _vbo;
+        protected int _vao;
+        protected int _ibo;
         
         protected ParameterizedObject(string name)
         {
@@ -192,6 +197,9 @@ namespace MikCAD
             if(this is not Pointer3D)
                 _position = Scene.CurrentScene.ObjectsController._pointer._position;
             _id = nextId++;
+            _vbo = GL.GenBuffer();
+            _vao = GL.GenVertexArray();
+            _ibo = GL.GenBuffer();
         }
 
         private static uint nextId = 0;

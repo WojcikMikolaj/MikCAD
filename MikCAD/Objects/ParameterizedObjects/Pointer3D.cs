@@ -70,16 +70,13 @@ public class Pointer3D : ParameterizedObject
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
 
-        var vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-        var vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArrayObject);
+        GL.BindVertexArray(_vao);
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
 
-        var indexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines, BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);

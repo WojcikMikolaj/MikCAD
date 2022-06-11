@@ -69,25 +69,20 @@ public class ParameterizedPoint : ParameterizedObject
 
     private float[] _vertices = new float[3];
 
-    private int _vbo = int.MinValue;
     private uint[] _indexArray = {0};
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         
-        if(_vbo== Int32.MinValue)
-            _vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _vertices,
             BufferUsageHint.StaticDraw);
 
-        var vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArrayObject);
+        GL.BindVertexArray(_vao);
 
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
 
-        var indexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, 1 * sizeof(uint), _indexArray, BufferUsageHint.StaticDraw);
 
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);

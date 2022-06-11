@@ -416,7 +416,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
 
         return patches;
     }
-
+    
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         //nie zawijany
@@ -447,14 +447,12 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 it++;
             }
         }
-
-        var vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
-
-        var vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArrayObject);
+        
+        GL.BindVertexArray(_vao);
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);

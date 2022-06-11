@@ -424,25 +424,23 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
             vertices[4 * i + 3] = 1;
         }
 
-        var vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count) * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
 
-        var vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArrayObject);
+        GL.BindVertexArray(_vao);
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
 
+        //TODO: poprawić pod kątem wydajności
         var indexArr = new uint[_objects.Count];
         for (int i = 0; i < _objects.Count; i++)
         {
             indexArr[i] = (uint) i;
         }
 
-        var indexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _objects.Count * sizeof(uint), indexArr,
             BufferUsageHint.StaticDraw);
 

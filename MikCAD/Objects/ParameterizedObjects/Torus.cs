@@ -96,7 +96,19 @@ namespace MikCAD
                     };
                 }
             }
+            
+            _verticesDraw = new float[_vertices.Length * Point.Size];
+            for (int i = 0; i < _vertices.Length; i++)
+            {
+                _verticesDraw[Point.Size * i] = _vertices[i].X;
+                _verticesDraw[Point.Size * i + 1] = _vertices[i].Y;
+                _verticesDraw[Point.Size * i + 2] = _vertices[i].Z;
+            }
+            
+            GenerateLines();
         }
+
+        private float[] _verticesDraw;
 
         private Matrix4 _modelMatrix = Matrix4.Identity;
         private Matrix4 _scaleMatrix = Matrix4.Identity;
@@ -137,30 +149,19 @@ namespace MikCAD
 
         public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
         {
-            var vertices = new float[_vertices.Length * Point.Size];
-            var colors = new float[_vertices.Length * Point.Size];
+            
 
-            for (int i = 0; i < _vertices.Length; i++)
-            {
-                vertices[Point.Size * i] = _vertices[i].X;
-                vertices[Point.Size * i + 1] = _vertices[i].Y;
-                vertices[Point.Size * i + 2] = _vertices[i].Z;
-            }
-
-            var vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), vertices,
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _verticesDraw,
                 BufferUsageHint.StaticDraw);
 
-            var vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(vertexArrayObject);
+            GL.BindVertexArray(_vao);
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
 
-            var indexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);
-            _lines = GenerateLines();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
+            
             GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
                 BufferUsageHint.StaticDraw);
 
@@ -168,11 +169,13 @@ namespace MikCAD
             GL.EnableVertexAttribArray(1);
         }
 
-        private uint[] GenerateLines()
+        private void GenerateLines()
         {
             //2 - ends of each line
             //2 - same number of big and small circles
-            uint[] lines = new uint[2 * _sectorsCount * 2 * _circlesCount];
+            int size = 2 * _sectorsCount * 2 * _circlesCount;
+            if (_lines == null || _lines.Length!= size)
+                _lines = new uint[size];
             uint it = 0;
             for (int i = 0; i < _sectorsCount; i++)
             {
@@ -181,30 +184,28 @@ namespace MikCAD
                     //duże okręgi
                     if (i != _sectorsCount - 1)
                     {
-                        lines[it++] = (uint) (i * _circlesCount + j);
-                        lines[it++] = (uint) ((i + 1) * _circlesCount + j);
+                        _lines[it++] = (uint) (i * _circlesCount + j);
+                        _lines[it++] = (uint) ((i + 1) * _circlesCount + j);
                     }
                     else
                     {
-                        lines[it++] = (uint) ((_sectorsCount - 1) * _circlesCount + j);
-                        lines[it++] = (uint) j;
+                        _lines[it++] = (uint) ((_sectorsCount - 1) * _circlesCount + j);
+                        _lines[it++] = (uint) j;
                     }
 
                     //małe okręgi
                     if (j != _circlesCount - 1)
                     {
-                        lines[it++] = (uint) (i * _circlesCount + j);
-                        lines[it++] = (uint) (i * _circlesCount + j + 1);
+                        _lines[it++] = (uint) (i * _circlesCount + j);
+                        _lines[it++] = (uint) (i * _circlesCount + j + 1);
                     }
                     else
                     {
-                        lines[it++] = (uint) (i * _circlesCount + _circlesCount - 1);
-                        lines[it++] = (uint) (i * _circlesCount);
+                        _lines[it++] = (uint) (i * _circlesCount + _circlesCount - 1);
+                        _lines[it++] = (uint) (i * _circlesCount);
                     }
                 }
             }
-
-            return lines;
         }
 
         public float[] GetVertices()

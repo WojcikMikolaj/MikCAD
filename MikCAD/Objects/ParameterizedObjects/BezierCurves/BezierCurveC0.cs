@@ -160,19 +160,15 @@ public class BezierCurveC0 : CompositeObject, IBezierCurve
                 maxY = posNDC.Y;
         }
 
-        var vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, (_objects.Count) * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
 
-        var vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(vertexArrayObject);
+        GL.BindVertexArray(_vao);
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-#if DEBUG
-        MainWindow.current.Title = $"X:{minX}, {maxX}; Y:{minY}, {maxY}";
-#endif
+
         tessLevel = (int) Math.Max(32, 256 * (maxX - minX) * (maxY - minY) / 4);
         _lines = GenerateLines();
         _patches = GeneratePatches();

@@ -439,8 +439,34 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     }
 
     public uint[] patches => _patches;
-    public int UDivisions { get; set; } = 4;
-    public int VDivisions { get; set; } = 4;
+    private int tessLevel = 4;
+    public int UDivisions
+    {
+        get => tessLevel;
+        set
+        {
+            if (value > 4)
+            {
+                tessLevel = value;
+                OnPropertyChanged(nameof(UDivisions));
+                OnPropertyChanged(nameof(VDivisions));
+            }
+        }
+    }
+
+    public int VDivisions
+    {
+        get => tessLevel;
+        set
+        {
+            if (value > 4)
+            {
+                tessLevel = value;
+                OnPropertyChanged(nameof(UDivisions));
+                OnPropertyChanged(nameof(VDivisions));
+            }
+        }
+    }
     public bool DrawPolygon { get; set; } = false;
 
     private uint[] _patches;
@@ -449,7 +475,7 @@ public class GregoryPatch : ParameterizedObject, I2DObject
     {
         int patchesCount = 3;
         uint[] patches = new uint[patchesCount * 20];
-        return patches;
+        //return patches;
         int it = 0;
         for (int i = 0; i < 3; i++)
         {

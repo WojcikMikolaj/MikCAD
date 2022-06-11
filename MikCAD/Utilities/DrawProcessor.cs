@@ -257,7 +257,7 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetInt("UTessLevels", (int)gregoriusz.UDivisions);
         Scene.CurrentScene._shader.SetInt("VTessLevels", (int)gregoriusz.VDivisions);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
+        GL.PatchParameter(PatchParameterInt.PatchVertices, 20);
         
         indexBufferObject = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBufferObject);

@@ -35,7 +35,7 @@ public class ParameterizedPoint : ParameterizedObject
     }
     public ParameterizedPoint(string name="Punkt") : base(name)
     {
-        parents = new List<CompositeObject>();
+        parents = new List<ParameterizedObject>();
         UpdateTranslationMatrix();
         PointId = random.Next();
         _pickingColor = new Vector3((PointId & 0xFF )/255.0f, ((PointId >> 8) &  0xFF)/255.0f, ((PointId >>16 ) & 0xFF)/255.0f);
@@ -101,7 +101,7 @@ public class ParameterizedPoint : ParameterizedObject
     
     public bool Draw { get; set; } = true;
     
-    public List<CompositeObject> parents { get; set; }
+    public List<ParameterizedObject> parents { get; set; }
     public bool Deleted { get; set; } = false;
     public bool CanBeDeleted { get; set; } = true;
 
@@ -111,6 +111,7 @@ public class ParameterizedPoint : ParameterizedObject
         {
             (parent as BezierCurveC2)?.ConvertBSplineToBernstein(false);
             (parent as InterpolatingBezierCurveC2)?.RecalculatePoints();
+            (parent as GregoryPatch)?.ReconstructPatch();
         }
     }
 
@@ -120,7 +121,8 @@ public class ParameterizedPoint : ParameterizedObject
         {
             for (int i = 0; i < parents.Count;)
             {
-                parents[i]?.ProcessObject(this);
+                if(parents[i] is CompositeObject parent)
+                    parent?.ProcessObject(this);
             }
         }
     }

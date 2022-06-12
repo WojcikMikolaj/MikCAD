@@ -454,12 +454,14 @@ public class ObjectsController : INotifyPropertyChanged
                 var set = new HashSet<CompositeObject>();
                 foreach (var parent in p1.parents)
                 {
-                    set.Add(parent);
+                    if(parent is CompositeObject comp)
+                        set.Add(comp);
                 }
 
                 foreach (var parent in p2.parents)
                 {
-                    set.Add(parent);
+                    if(parent is CompositeObject comp)
+                        set.Add(comp);
                 }
 
                 foreach (var parent in set)
@@ -623,6 +625,16 @@ public class ObjectsController : INotifyPropertyChanged
                 {
                     var gregory = new GregoryPatch(innerRing, outerRing);
                     AddObjectToScene(gregory);
+                    
+                    foreach (var point in innerRing)
+                    {
+                        point.parents.Add(gregory);            
+                    }
+                    
+                    foreach (var point in outerRing)
+                    {
+                        point.parents.Add(gregory);  
+                    }
                     // var innerCurve = new InterpolatingBezierCurveC2();
                     // foreach (var point in innerRing)
                     // {

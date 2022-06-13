@@ -10,11 +10,13 @@ namespace MikCAD;
 
 public partial class MainWindow
 {
+    //TODO: Sprawdzić do czego to służy
     private bool _clear = false;
 
     private void SetClear(object sender, RoutedEventArgs e)
     {
         _clear = !_clear;
+        scene.ObjectsController.ClearScene();
     }
     
     private void AddThreePoints(object sender, RoutedEventArgs e)

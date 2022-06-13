@@ -12,8 +12,7 @@
             <ListView
                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.scene.ObjectsController.ParameterizedObjects}"
-                MaxHeight="400"
-                >
+                MaxHeight="620">
                 <!--From: https://stackoverflow.com/questions/632519/how-can-i-hide-the-header-of-a-wpf-listview -->
                 <ListView.Resources>
                     <Style TargetType="GridViewColumnHeader">

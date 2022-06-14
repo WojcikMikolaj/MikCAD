@@ -582,6 +582,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
             }
         }
 
+        
         SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 ret =
             new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0()
             {
@@ -591,7 +592,6 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                 Size = new Uint2(surfaceC0.UPatches, surfaceC0.VPatches),
                 ParameterWrapped = new Bool2(surfaceC0.IsRolled, false)
             };
-
         return ret;
     }
 
@@ -651,6 +651,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                                         x.Id == sortedPatches[(int) (i * ret.VPatches + j)].controlPoints[k * 4 + l]
                                             .Id);
                             ret.points[i * 3 + l][j * 3 + k].parents.Add(ret);
+                            //TODO: ładniej
+                            if(!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
+                                ret._objects.Add(ret.points[i * 3 + l][j * 3 + k]);
                         }
                     }
                 }
@@ -682,6 +685,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                                         x.Id == sortedPatches[(int) (i * ret.VPatches + j)].controlPoints[k * 4 + l]
                                             .Id);
                             ret.points[i * 3 + l][j * 3 + k].parents.Add(ret);
+                            //TODO: ładniej
+                            if(!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
+                                ret._objects.Add(ret.points[i * 3 + l][j * 3 + k]);
                         }
                     }
                 }
@@ -699,6 +705,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, I2DObject
                                         (int) ((ret.UPatches - 1) * ret.VPatches + j)]
                                     .controlPoints[k * 4 + l].Id);
                         ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k].parents.Add(ret);
+                        //TODO: ładniej
+                        if(!ret._objects.Contains(ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k]))
+                            ret._objects.Add(ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k]);
                     }
                 }
             }

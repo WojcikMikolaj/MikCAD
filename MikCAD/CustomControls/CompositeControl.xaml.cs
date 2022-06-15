@@ -17,7 +17,8 @@ namespace MikCAD
 
         private void PatchHole(object sender, RoutedEventArgs e)
         {
-            Scene.CurrentScene.ObjectsController.PatchHole();
+            if (!Scene.CurrentScene.ObjectsController.PatchHole())
+                MessageBox.Show("Nie udało się zalepić dziury", "Błąd");
         }
     }
 }

@@ -109,6 +109,8 @@ public partial class MainWindow
                             break;
                     }
                 }
+
+                scene.ObjectsController.SelectedObject = null;
             }
         }
     }

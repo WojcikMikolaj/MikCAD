@@ -16,6 +16,10 @@ public partial class MainWindow
     private void SetClear(object sender, RoutedEventArgs e)
     {
         _clear = !_clear;
+    }
+
+    private void ClearScene(object sender, RoutedEventArgs e)
+    {
         scene.ObjectsController.ClearScene();
     }
     

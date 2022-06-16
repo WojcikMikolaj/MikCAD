@@ -30,6 +30,7 @@
         <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2"/>
         <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC0" Executed="AddBezierSurfaceC0"/>
         <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC2" Executed="AddBezierSurfaceC2"/>
+        <CommandBinding Command="cc:UtilityCommands.ClearScene" Executed="ClearScene"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="P" Modifiers="Control" Command="cc:AddCommands.AddPoint"></KeyBinding>
@@ -39,6 +40,7 @@
         <KeyBinding Key="D3"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC0"></KeyBinding>
         <KeyBinding Key="D4"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC2"></KeyBinding>
         <KeyBinding Key="I"  Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
+        <KeyBinding Key="N"  Modifiers="Control" Command="cc:UtilityCommands.ClearScene"></KeyBinding>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -65,7 +67,7 @@
                 <MenuItem Header="Wczytaj" x:Name="Load" Command="Open" InputGestureText="Ctrl+O"></MenuItem>
             </MenuItem>
             <MenuItem Header="Debug">
-                <MenuItem Header="Clear" Click="SetClear" x:Name="Clear" InputGestureText="Ctrl+N"></MenuItem>
+                <MenuItem Header="Clear" Click="ClearScene" x:Name="Clear" InputGestureText="Ctrl+N"></MenuItem>
                 <MenuItem Header="Dodaj 3"  x:Name="Add3">
                     <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
                     <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>

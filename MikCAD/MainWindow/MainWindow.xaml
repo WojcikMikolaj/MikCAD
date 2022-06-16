@@ -7,6 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
         xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
         xmlns:cc="clr-namespace:MikCAD.CustomCommands"
+        xmlns:st = "http://schemas.spicytaco.io/"
         mc:Ignorable="d"
         Title="MikCAD" MinHeight="400" MinWidth="950"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
@@ -45,7 +46,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="1*" MinWidth="400" />
             <ColumnDefinition Width="250" />
         </Grid.ColumnDefinitions>
@@ -76,10 +77,10 @@
                 <MenuItem Header="Interpolation test" Click="InterpolationTest"></MenuItem>
             </MenuItem>
         </Menu>
-        <StackPanel Grid.Row="1">
-            <local:CameraControl Grid.Column="0" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>
-            <local:ObjectsList></local:ObjectsList>
-        </StackPanel>
+        <st:AutoGrid Rows="Auto,*" Grid.Row="1" Width="240">
+            <local:CameraControl DockPanel.Dock="Top" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>
+            <local:ObjectsList DockPanel.Dock="Top"/>
+        </st:AutoGrid>
         <glWpfControl:GLWpfControl Grid.Row="1" Grid.Column="1" x:Name="OpenTkControl"
                                    Render="OpenTkControl_OnRender"
                                    MouseLeftButtonDown="Image_OnMouseLeftButtonDown"

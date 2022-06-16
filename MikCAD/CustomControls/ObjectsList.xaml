@@ -5,14 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:MikCAD"
              mc:Ignorable="d"
-             d:DesignWidth="250">
-    <Grid>
-        <StackPanel>
-            <Label>Obiekty na scenie</Label>
-            <ListView
+             d:DesignWidth="250"
+             Width="240">
+    <GroupBox Header="Obiekty na scenie">
+        <ListView
                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.scene.ObjectsController.ParameterizedObjects}"
-                MaxHeight="620">
+                             Path=DataContext.scene.ObjectsController.ParameterizedObjects}">
                 <!--From: https://stackoverflow.com/questions/632519/how-can-i-hide-the-header-of-a-wpf-listview -->
                 <ListView.Resources>
                     <Style TargetType="GridViewColumnHeader">
@@ -31,6 +29,6 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-        </StackPanel>
-    </Grid>
+
+    </GroupBox>
 </UserControl>

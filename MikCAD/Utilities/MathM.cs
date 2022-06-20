@@ -5,6 +5,7 @@ namespace MikCAD.Utilities;
 
 public static class MathM
 {
+    public static readonly float Eps = 0.0001f;
     public static float AbsMax(float a, float b)
     {
         return MathF.Abs(a) > MathF.Abs(b) ? a : b;

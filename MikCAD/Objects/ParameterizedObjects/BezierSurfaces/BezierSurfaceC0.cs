@@ -372,7 +372,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                     lines[it++] = (uint) (i * points[0].Count + j);
                     lines[it++] = (uint) (i * points[0].Count + j + 1);
                 }
-                
+
                 if (i < points.Count - 1)
                 {
                     lines[it++] = (uint) (i * points[0].Count + j);
@@ -386,10 +386,10 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             for (int j = 0; j < points[0].Count; j++)
             {
                 lines[it++] = (uint) (j);
-                lines[it++] = (uint) ((points.Count-1) * points[0].Count + j);
+                lines[it++] = (uint) ((points.Count - 1) * points[0].Count + j);
             }
         }
-        
+
         return lines;
     }
 
@@ -416,7 +416,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         return patches;
     }
-    
+
     public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         //nie zawijany
@@ -447,11 +447,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                 it++;
             }
         }
-        
+
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, rowsCount * colsCount * 4 * sizeof(float), vertices,
             BufferUsageHint.StaticDraw);
-        
+
         GL.BindVertexArray(_vao);
 
         GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
@@ -549,6 +549,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                     it++;
                 }
             }
+
             c0Patches.Add(new List<BezierPatchC0>());
             for (int j = 0; j < surfaceC0.VPatches; j++)
             {
@@ -558,18 +559,20 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                     for (int l = 0; l < 3; l++)
                     {
                         controlPoints.Add(new PointRef()
-                            {Id = surfaceC0.points[(int)(surfaceC0.UPatches-1) * 3 + l][j * 3 + k].Id});
+                            {Id = surfaceC0.points[(int) (surfaceC0.UPatches - 1) * 3 + l][j * 3 + k].Id});
                     }
-                    controlPoints.Add(new PointRef() 
+
+                    controlPoints.Add(new PointRef()
                         {Id = surfaceC0.points[0][j * 3 + k].Id});
                 }
+
                 var patchZ = new BezierPatchC0()
                 {
                     Id = 200000 * (surfaceC0.Id + 1) + it,
                     controlPoints = controlPoints.ToArray(),
                     Samples = new Uint2(surfaceC0.UDivisions, surfaceC0.VDivisions)
                 };
-                c0Patches[(int)surfaceC0.UPatches-1].Add(patchZ);
+                c0Patches[(int) surfaceC0.UPatches - 1].Add(patchZ);
                 it++;
             }
 
@@ -582,7 +585,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             }
         }
 
-        
+
         SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 ret =
             new SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0()
             {
@@ -652,7 +655,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                                             .Id);
                             ret.points[i * 3 + l][j * 3 + k].parents.Add(ret);
                             //TODO: ładniej
-                            if(!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
+                            if (!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
                                 ret._objects.Add(ret.points[i * 3 + l][j * 3 + k]);
                         }
                     }
@@ -662,7 +665,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         else
         {
             var rowsCount = 4 + 3 * (ret.VPatches - 1);
-            var colsCount = 4 + 3 * (ret.UPatches - 1) -1;
+            var colsCount = 4 + 3 * (ret.UPatches - 1) - 1;
 
             for (int i = 0; i < colsCount; i++)
             {
@@ -671,7 +674,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                     ret.points[i].Add(new ParameterizedPoint());
             }
 
-            for (int i = 0; i < ret.UPatches-1; i++)
+            for (int i = 0; i < ret.UPatches - 1; i++)
             {
                 for (int j = 0; j < ret.VPatches; j++)
                 {
@@ -686,7 +689,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                                             .Id);
                             ret.points[i * 3 + l][j * 3 + k].parents.Add(ret);
                             //TODO: ładniej
-                            if(!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
+                            if (!ret._objects.Contains(ret.points[i * 3 + l][j * 3 + k]))
                                 ret._objects.Add(ret.points[i * 3 + l][j * 3 + k]);
                         }
                     }
@@ -699,15 +702,15 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
                 {
                     for (int l = 0; l < 3; l++)
                     {
-                        ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k] =
+                        ret.points[(int) (ret.UPatches - 1) * 3 + l][j * 3 + k] =
                             (ParameterizedPoint) Scene.CurrentScene.ObjectsController.ParameterizedObjects.First(x =>
                                 x.Id == sortedPatches[
                                         (int) ((ret.UPatches - 1) * ret.VPatches + j)]
                                     .controlPoints[k * 4 + l].Id);
-                        ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k].parents.Add(ret);
+                        ret.points[(int) (ret.UPatches - 1) * 3 + l][j * 3 + k].parents.Add(ret);
                         //TODO: ładniej
-                        if(!ret._objects.Contains(ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k]))
-                            ret._objects.Add(ret.points[(int) (ret.UPatches-1) * 3 + l][j*3+k]);
+                        if (!ret._objects.Contains(ret.points[(int) (ret.UPatches - 1) * 3 + l][j * 3 + k]))
+                            ret._objects.Add(ret.points[(int) (ret.UPatches - 1) * 3 + l][j * 3 + k]);
                     }
                 }
             }
@@ -822,8 +825,29 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
     public Vector3 GetValueAt(float u, float v)
     {
-        
+        var patchUSize = 1.0f / UPatches;
+        var patchVSize = 1.0f / VPatches;
+
+        int startColumn = (int) Math.Floor(u / patchUSize);
+        int startRow = (int) Math.Floor(v / patchVSize);
+
+        ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4,4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            patchPoints[i, 1] = points[startColumn * 3][startRow * 3 +i];
+            patchPoints[i, 2] = points[startColumn * 3 + 1][startRow * 3 +i];
+            patchPoints[i, 3] = points[startColumn * 3 + 2][startRow * 3+i];
+            patchPoints[i, 4] = points[startColumn * 3 + 3][startRow * 3+i];
+        }
+
+        Vector3[] interArray = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+            interArray[i] = EvaluateCurveAtT(u,patchPoints[i,0]._position, patchPoints[i,1]._position, patchPoints[i,2]._position, patchPoints[i,3]._position);
+
+        return EvaluateCurveAtT(v, interArray[0], interArray[1], interArray[2], interArray[3]);
     }
+
 
     public Vector3 GetUDerivativeAt(float u, float v)
     {
@@ -833,5 +857,22 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
     public Vector3 GetVDerivativeAt(float u, float v)
     {
         throw new NotImplementedException();
+    }
+
+    Vector3 EvaluateCurveAtT(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        //t = 1 - t;
+        int i = 0;
+        int j = 0;
+        Vector3[] arr = new Vector3[] {p0, p1, p2, p3};
+        for (i = 1; i < 4; i++)
+        {
+            for (j = 0; j < 4 - i; j++)
+            {
+                arr[j] = arr[j] * (1.0f - t) + arr[j + 1] * t;
+            }
+        }
+
+        return arr[0];
     }
 }

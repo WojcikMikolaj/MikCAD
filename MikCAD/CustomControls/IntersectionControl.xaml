@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="MikCAD.IntersectionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
+             xmlns:local="clr-namespace:MikCAD"
+             mc:Ignorable="d"
+             d:DesignWidth="250"
+             Width="250"
+             >
+    <Grid>
+        <StackPanel>
+            <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0">Number of points</Label>
+                <n:UIntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" MinValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.NumberOfPoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="1" Grid.Column="0">Step size</Label>
+                <n:DecimalUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                                          Path=DataContext.Steps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.UseCursor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Użyj kursora</CheckBox>
+                </Grid>
+                <Button Height="30">Znajdź przecięcie</Button>
+            </StackPanel>
+    </Grid>
+</UserControl>

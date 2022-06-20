@@ -20,5 +20,16 @@ namespace MikCAD
             if (!Scene.CurrentScene.ObjectsController.PatchHole())
                 MessageBox.Show("Nie udało się zalepić dziury", "Błąd");
         }
+
+        private void IntersectObjects(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Window()
+            {
+                Content = new IntersectionControl(),
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize
+            };
+            dialog.ShowDialog();
+        }
     }
 }

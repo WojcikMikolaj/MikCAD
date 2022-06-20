@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace MikCAD;
 
-public class GregoryPatch : ParameterizedObject, I2DObject
+public class GregoryPatch : ParameterizedObject, IIntersectable
 {
     public GregoryPatch(List<ParameterizedPoint> innerRing, List<ParameterizedPoint> outerRing) : base("gregoryPatch")
     {

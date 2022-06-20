@@ -24,6 +24,8 @@
                              Path=DataContext.CanCollapse, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" Click="CollapsePoints">Collapse Points</Button>
                 <Button Visibility="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.CanPatchHole, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" Click="PatchHole">Patch hole</Button>
+                <Button Visibility="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.CanIntersectObjects, Mode=OneWay, Converter={StaticResource boolToVisibilityConverter}}" Click="IntersectObjects">Intersect objects</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

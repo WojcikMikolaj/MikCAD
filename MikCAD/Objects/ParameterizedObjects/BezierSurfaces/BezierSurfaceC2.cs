@@ -10,7 +10,7 @@ using SharpSceneSerializer.DTOs.Types;
 
 namespace MikCAD.BezierSurfaces;
 
-public class BezierSurfaceC2 : CompositeObject, ISurface, I2DObject
+public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 {
     private List<List<ParameterizedPoint>> points;
     private Patch[,] _patchesIdx;

@@ -8,7 +8,7 @@ using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD
 {
-    public class Torus : ParameterizedObject
+    public class Torus : ParameterizedObject, IIntersectable
     {
         public float R
         {

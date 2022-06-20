@@ -287,13 +287,13 @@ public class ObjectsController : INotifyPropertyChanged
         }
         else
         {
-            if (SelectedObject is BezierSurfaceC0 surfaceC0)
+            if (SelectedObject is IIntersectable intersectable)
             {
                 var cmp = new CompositeObject(null)
                 {
                     IsPointComposite = false
                 };
-                cmp.ProcessObject(surfaceC0);
+                cmp.ProcessObject((ParameterizedObject)intersectable);
                 cmp.ProcessObject(o);
                 SelectedObject = cmp;
                 o.Selected = true;

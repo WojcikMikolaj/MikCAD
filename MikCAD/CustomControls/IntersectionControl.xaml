@@ -22,9 +22,9 @@
                     </Grid.RowDefinitions>
                 
                 <Label Grid.Row="0" Grid.Column="0" >Number of points</Label>
-                <n:UIntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" MinValue="10" x:Name="PointsNum"/>
+                <n:UIntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" MinValue="10" x:Name="PointsNum" DisplayLength="10"/>
                 <Label Grid.Row="1" Grid.Column="0">Step size</Label>
-                <n:DecimalUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" x:Name="StepSize"/>
+                <n:DecimalUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" x:Name="StepSize" DisplayLength="10"/>
                 <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="UseCursor">Użyj kursora</CheckBox>
                 </Grid>
                 <Button Height="30" Click="CalculateIntersection">Znajdź przecięcie</Button>

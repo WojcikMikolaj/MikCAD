@@ -15,9 +15,6 @@
     <Reference Include="NumericUpDownLib, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>libs\NumericUpDownLib\net4\NumericUpDownLib.dll</HintPath>
     </Reference>
-    <Reference Include="SharpSceneSerializer">
-      <HintPath>C:\Users\mikow\RiderProjects\SharpSceneSerializer\SharpSceneSerializer\bin\net6.0\SharpSceneSerializer.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
@@ -125,5 +122,7 @@
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.15-beta1" />
     <PackageReference Include="OpenTK" Version="4.4.0" />
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
+    <PackageReference Include="SharpSceneSerializer" Version="1.2.1" />
+    <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
   </ItemGroup>
 </Project>

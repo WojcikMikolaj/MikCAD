@@ -9,6 +9,7 @@
   &lt;Assembly Path="D:\MG1\Aplikacja\MikCAD\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll" /&gt;&#xD;
   &lt;Assembly Path="D:\MG1\Aplikacja\MikCAD\MikCAD\libs\NumericUpDownLib\net4\NumericUpDownLib.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\mikow\RiderProjects\SharpSceneSerializer\SharpSceneSerializer\bin\net6.0\SharpSceneSerializer.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\mikow\.nuget\packages\sharpsceneserializer\1.2.1\lib\net6.0\SharpSceneSerializer.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
 	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=MikCAD_002FProperties_002FResources/@EntryIndexedValue">True</s:Boolean>
 	

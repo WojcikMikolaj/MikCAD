@@ -868,4 +868,14 @@ public class ObjectsController : INotifyPropertyChanged
         outerRing.RemoveAt(outerRing.Count - 1);
         outerRing.RemoveAt(outerRing.Count - 1);
     }
+
+    public Intersection GetNewIntersectionObject()
+    {
+        if (_selectedObject is CompositeObject {CanIntersectObjects: true} c)
+        {
+            return c.GetNewIntersectionObject();
+        }
+
+        return null;
+    }
 }

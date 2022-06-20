@@ -7,8 +7,7 @@
              xmlns:local="clr-namespace:MikCAD"
              mc:Ignorable="d"
              d:DesignWidth="250"
-             Width="250"
-             >
+             Width="250">
     <Grid>
         <StackPanel>
             <Grid>
@@ -22,16 +21,13 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                 
-                <Label Grid.Row="0" Grid.Column="0">Number of points</Label>
-                <n:UIntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" MinValue="10" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                                          Path=DataContext.NumberOfPoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="0" Grid.Column="0" >Number of points</Label>
+                <n:UIntegerUpDown Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" MinValue="10" x:Name="PointsNum"/>
                 <Label Grid.Row="1" Grid.Column="0">Step size</Label>
-                <n:DecimalUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" Value="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                                          Path=DataContext.Steps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <CheckBox Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=Grid},
-                             Path=DataContext.UseCursor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Użyj kursora</CheckBox>
+                <n:DecimalUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" x:Name="StepSize"/>
+                <CheckBox Grid.Row="2" Grid.ColumnSpan="2" x:Name="UseCursor">Użyj kursora</CheckBox>
                 </Grid>
-                <Button Height="30">Znajdź przecięcie</Button>
+                <Button Height="30" Click="CalculateIntersection">Znajdź przecięcie</Button>
             </StackPanel>
     </Grid>
 </UserControl>

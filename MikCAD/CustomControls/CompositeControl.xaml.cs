@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using MikCAD.Objects;
 
 namespace MikCAD
 {
@@ -25,10 +26,16 @@ namespace MikCAD
         {
             var dialog = new Window()
             {
-                Content = new IntersectionControl(),
+                Content = new IntersectionControl()
+                {
+                    intersection = Scene.CurrentScene.ObjectsController.GetNewIntersectionObject()
+                },
                 SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize
+                ResizeMode = ResizeMode.NoResize,
+                Owner = MainWindow.current,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
+            
             dialog.ShowDialog();
         }
     }

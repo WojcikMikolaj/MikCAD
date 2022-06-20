@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -221,5 +222,15 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         drawProcessor.ProcessObject(this,eye, vertexAttributeLocation, normalAttributeLocation);
+    }
+
+    public Intersection GetNewIntersectionObject()
+    {
+        if (CanIntersectObjects)
+        {
+            return new Intersection(_objects[0] as IIntersectable, _objects[1] as IIntersectable);
+        }
+
+        return null;
     }
 }

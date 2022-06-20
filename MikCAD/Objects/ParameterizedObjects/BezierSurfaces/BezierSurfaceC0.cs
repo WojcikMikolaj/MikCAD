@@ -863,8 +863,10 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
+        {
             interArray[i] = EvaluateCurveAtT(u, patchPoints[i, 0]._position, patchPoints[i, 1]._position,
                 patchPoints[i, 2]._position, patchPoints[i, 3]._position);
+        }
 
         return EvaluateCurveAtT(v, interArray[0], interArray[1], interArray[2], interArray[3]);
     }

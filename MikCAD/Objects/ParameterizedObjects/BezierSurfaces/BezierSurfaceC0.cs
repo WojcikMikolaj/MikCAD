@@ -819,4 +819,19 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         return (-1, -1);
     }
+
+    public Vector3 GetValueAt(float u, float v)
+    {
+        
+    }
+
+    public Vector3 GetUDerivativeAt(float u, float v)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Vector3 GetVDerivativeAt(float u, float v)
+    {
+        throw new NotImplementedException();
+    }
 }

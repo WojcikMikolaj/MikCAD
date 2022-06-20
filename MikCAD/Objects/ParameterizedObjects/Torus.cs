@@ -53,7 +53,7 @@ namespace MikCAD
                 OnPropertyChanged(nameof(CirclesCount));
             }
         }
-        
+
         private float _R;
         private float _r;
         private float _thetaStep;
@@ -67,7 +67,7 @@ namespace MikCAD
         public override uint[] lines => _lines;
         public uint[] _lines;
 
-        public Torus(): base("Torus")
+        public Torus() : base("Torus")
         {
             _R = 1;
             _r = 0.5f;
@@ -96,7 +96,7 @@ namespace MikCAD
                     };
                 }
             }
-            
+
             _verticesDraw = new float[_vertices.Length * Point.Size];
             for (int i = 0; i < _vertices.Length; i++)
             {
@@ -104,7 +104,7 @@ namespace MikCAD
                 _verticesDraw[Point.Size * i + 1] = _vertices[i].Y;
                 _verticesDraw[Point.Size * i + 2] = _vertices[i].Z;
             }
-            
+
             GenerateLines();
         }
 
@@ -136,7 +136,7 @@ namespace MikCAD
             _translationMatrix = Matrix4.CreateTranslation(_position);
             _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
         }
-        
+
         public override Matrix4 GetModelMatrix()
         {
             return _modelMatrix * CompositeOperationMatrix;
@@ -149,8 +149,6 @@ namespace MikCAD
 
         public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
         {
-            
-
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _verticesDraw,
                 BufferUsageHint.StaticDraw);
@@ -161,7 +159,7 @@ namespace MikCAD
             GL.EnableVertexAttribArray(0);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
-            
+
             GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
                 BufferUsageHint.StaticDraw);
 
@@ -174,7 +172,7 @@ namespace MikCAD
             //2 - ends of each line
             //2 - same number of big and small circles
             int size = 2 * _sectorsCount * 2 * _circlesCount;
-            if (_lines == null || _lines.Length!= size)
+            if (_lines == null || _lines.Length != size)
                 _lines = new uint[size];
             uint it = 0;
             for (int i = 0; i < _sectorsCount; i++)
@@ -227,11 +225,12 @@ namespace MikCAD
             return vertices;
         }
 
-        public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+        public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
+            uint normalAttributeLocation)
         {
             drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
         }
-        
+
         public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.Torus(Torus torus)
         {
             SharpSceneSerializer.DTOs.GeometryObjects.Torus ret = new SharpSceneSerializer.DTOs.GeometryObjects.Torus()
@@ -243,12 +242,12 @@ namespace MikCAD
                 Scale = new Float3(torus.scaleX, torus.scaleY, torus.scaleZ),
                 LargeRadius = torus.R,
                 SmallRadius = torus.r,
-                Samples = new Uint2((uint)torus.CirclesCount, (uint)torus.SectorsCount)
+                Samples = new Uint2((uint) torus.CirclesCount, (uint) torus.SectorsCount)
             };
-        
+
             return ret;
         }
-        
+
         public static explicit operator Torus(SharpSceneSerializer.DTOs.GeometryObjects.Torus torus)
         {
             Torus ret = new Torus()
@@ -266,11 +265,47 @@ namespace MikCAD
                 scaleZ = torus.Scale.Z,
                 R = torus.LargeRadius,
                 r = torus.SmallRadius,
-                CirclesCount = (int)torus.Samples.X,
-                SectorsCount = (int)torus.Samples.Y,
+                CirclesCount = (int) torus.Samples.X,
+                SectorsCount = (int) torus.Samples.Y,
             };
-        
+
             return ret;
+        }
+
+        public Vector3 GetValueAt(float u, float v)
+        {
+            var phi = MathHelper.DegreesToRadians(360.0f * u);
+            var theta = MathHelper.DegreesToRadians(360.0f * v);
+
+
+            var X = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
+            var Y = r * (float) MathHelper.Sin(theta);
+            var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
+            return new Vector3(X, Y, Z);
+        }
+
+        public Vector3 GetUDerivativeAt(float u, float v)
+        {
+            var phi = MathHelper.DegreesToRadians(360.0f * u);
+            var theta = MathHelper.DegreesToRadians(360.0f * v);
+
+
+            var X = -(R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi) * 2 * Math.PI;
+            var Y = 0;
+            var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi) * 2 * Math.PI;
+            return new Vector3((float) X, Y, (float) Z);
+        }
+
+        public Vector3 GetVDerivativeAt(float u, float v)
+        {
+            var phi = MathHelper.DegreesToRadians(360.0f * u);
+            var theta = MathHelper.DegreesToRadians(360.0f * v);
+
+
+            var X = -2 * Math.PI * r * (float) MathHelper.Sin(theta) * (float) MathHelper.Cos(phi);
+            var Y = 2 * Math.PI * r * (float) MathHelper.Cos(theta);
+            var Z = -2 * Math.PI * r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
+            return new Vector3((float) X, (float) Y, (float) Z);
         }
     }
 }

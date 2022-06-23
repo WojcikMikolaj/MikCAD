@@ -307,5 +307,10 @@ namespace MikCAD
             var Z = -2 * Math.PI * r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
             return new Vector3((float) X, (float) Y, (float) Z);
         }
+
+        public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
+        {
+            return (GetValueAt(u, v), GetUDerivativeAt(u, v), GetVDerivativeAt(u, v));
+        }
     }
 }

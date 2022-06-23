@@ -20,4 +20,9 @@ public static class MathM
     {
         return (b - a).Length;
     }
+    
+    public static float DistanceSquared(Vector3 a, Vector3 b)
+    {
+        return (b - a).LengthSquared;
+    }
 }

@@ -125,7 +125,4 @@
     <PackageReference Include="SharpSceneSerializer" Version="1.2.1" />
     <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="CustomCommands\UtilityCommands.cs" />
-  </ItemGroup>
 </Project>

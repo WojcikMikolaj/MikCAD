@@ -30,7 +30,7 @@
         <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2"/>
         <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC0" Executed="AddBezierSurfaceC0"/>
         <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC2" Executed="AddBezierSurfaceC2"/>
-        <!-- <CommandBinding Command="cc:UtilityCommands.ClearScene" Executed="ClearScene"/> -->
+        <CommandBinding Command="cc:UtilityCommands.ClearScene" Executed="ClearScene"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="P" Modifiers="Control" Command="cc:AddCommands.AddPoint"></KeyBinding>
@@ -40,7 +40,7 @@
         <KeyBinding Key="D3"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC0"></KeyBinding>
         <KeyBinding Key="D4"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC2"></KeyBinding>
         <KeyBinding Key="I"  Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
-       <!-- <KeyBinding Key="N"  Modifiers="Control" Command="cc:UtilityCommands.ClearScene"></KeyBinding>-->
+       <KeyBinding Key="N"  Modifiers="Control" Command="cc:UtilityCommands.ClearScene"></KeyBinding>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

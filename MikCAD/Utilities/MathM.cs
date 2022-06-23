@@ -21,7 +21,17 @@ public static class MathM
         return (b - a).Length;
     }
     
+    public static float Distance(Vector4 a, Vector4 b)
+    {
+        return (b - a).Length;
+    }
+    
     public static float DistanceSquared(Vector3 a, Vector3 b)
+    {
+        return (b - a).LengthSquared;
+    }
+    
+    public static float DistanceSquared(Vector4 a, Vector4 b)
     {
         return (b - a).LengthSquared;
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
 using MikCAD.Utilities;
@@ -24,7 +25,8 @@ public class Intersection : INotifyPropertyChanged
     private IIntersectable _firstObj;
     private IIntersectable _secondObj;
 
-    public float GradientStepLength { get; set; } = 0.1f;
+    public float StartingGradientStepLength { get; set; } = 0.1f;
+    public float GradientEps { get; set; } = 0.001f;
     public int NumberOfPoints { get; set; }
     public float Steps { get; set; }
     public bool UseCursor { get; set; }
@@ -38,11 +40,18 @@ public class Intersection : INotifyPropertyChanged
             var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond);
 
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            {
+                posX = firstIntersectionPoint.pos.X,
+                posY = firstIntersectionPoint.pos.Y,
+                posZ = firstIntersectionPoint.pos.Z,
+            });
         }
     }
 
     private (Vector3 pos, float u, float v, float s, float t) FindFirstIntersectionPoint(((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closestPoints)
     {
+        var stepLength = StartingGradientStepLength;
         var F = (float u, float v, float s, float t) =>
         {
             return (_firstObj.GetValueAt(u, v) - _secondObj.GetValueAt(s, t)).LengthSquared;
@@ -75,11 +84,21 @@ public class Intersection : INotifyPropertyChanged
 
         Vector4 uvstI1 = new Vector4();
         
-        while ()
+        while (MathM.DistanceSquared(uvstI, uvstI1) > GradientEps)
         {
-            uvstI1 = uvstI - GradientStepLength * 
+            uvstI1 = uvstI - stepLength * gradF(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W);
+            if (F(uvstI1.X, uvstI1.Y, uvstI1.Z, uvstI1.W) >= F(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W))
+            {
+                stepLength /= 2;
+            }
+            uvstI = uvstI1;
         }
 
+        float u = uvstI1.X;
+        float v = uvstI1.Y;
+        float s = uvstI1.Z;
+        float t = uvstI1.W;
+        return (_firstObj.GetValueAt(u,v),u,v,s,t);
     }
 
     private ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) FindClosestPoints(List<(Vector3 pos, float u, float v)> startingPointsFirst, List<(Vector3 pos, float u, float v)> startingPointsSecond)

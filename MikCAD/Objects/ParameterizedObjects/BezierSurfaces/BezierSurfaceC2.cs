@@ -820,7 +820,50 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 
     public Vector3 GetValueAt(float u, float v)
     {
-        throw new NotImplementedException();
+        if (u < 0)
+            u = 0;
+        if (u > 1)
+            u = 1;
+
+        if (v < 0)
+            v = 0;
+        if (v > 1)
+            v = 1;
+
+        var patchUSize = 1.0f / UPatches;
+        var patchVSize = 1.0f / VPatches;
+
+        int UPatchNum = (int) Math.Floor(u / patchUSize);
+        int VPatchNum = (int) Math.Floor(v / patchVSize);
+
+        if (UPatchNum == UPatches)
+            UPatchNum = (int) UPatches - 1;
+
+        if (VPatchNum == VPatches)
+            VPatchNum = (int) VPatches - 1;
+
+        ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
+
+
+        for (int i = 0; i < 4; i++)
+        {
+            patchPoints[i, 1] = points[UPatchNum * 3][VPatchNum * 3 + i];
+            patchPoints[i, 2] = points[UPatchNum * 3 + 1][VPatchNum * 3 + i];
+            patchPoints[i, 3] = points[UPatchNum * 3 + 2][VPatchNum * 3 + i];
+            if (IsRolled && UPatchNum == (int) UPatches - 1)
+            {
+                patchPoints[i, 4] = points[0][VPatchNum * 3 + i];
+            }
+        }
+
+        Vector3[] interArray = new Vector3[4];
+        for (int i = 0; i < 4; i++)
+        {
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, patchPoints[i, 0]._position, patchPoints[i, 1]._position,
+                patchPoints[i, 2]._position, patchPoints[i, 3]._position);
+        }
+
+        return (this as ISurface).EvaluateCurveAtT(v, interArray[0], interArray[1], interArray[2], interArray[3]);
     }
 
     public Vector3 GetUDerivativeAt(float u, float v)
@@ -832,4 +875,6 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
     {
         throw new NotImplementedException();
     }
+    
+   
 }

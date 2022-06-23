@@ -825,6 +825,21 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
     public Vector3 GetValueAt(float u, float v)
     {
+        return GetPositionAndGradient(u, v).pos;
+    }
+
+    public Vector3 GetUDerivativeAt(float u, float v)
+    {
+        return GetPositionAndGradient(u, v).dU;
+    }
+
+    public Vector3 GetVDerivativeAt(float u, float v)
+    {
+        return GetPositionAndGradient(u, v).dV;
+    }
+
+    public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
+    {
         if (u < 0)
             u = 0;
         if (u > 1)
@@ -864,38 +879,39 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            interArray[i] = EvaluateCurveAtT(u, patchPoints[i, 0]._position, patchPoints[i, 1]._position,
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, patchPoints[i, 0]._position,
+                patchPoints[i, 1]._position,
                 patchPoints[i, 2]._position, patchPoints[i, 3]._position);
         }
 
-        return EvaluateCurveAtT(v, interArray[0], interArray[1], interArray[2], interArray[3]);
-    }
+        var pos = (this as ISurface).EvaluateCurveAtT(v,
+            interArray[0],
+            interArray[1],
+            interArray[2],
+            interArray[3]);
+        
+        var dV = (this as ISurface).EvaluateCurveAtT(v, 
+            3 * interArray[1] - 3 * interArray[0],
+            3 * interArray[2] - 3 * interArray[1],
+            3 * interArray[3] - 3 * interArray[2],
+            interArray[3]);
 
-
-    public Vector3 GetUDerivativeAt(float u, float v)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Vector3 GetVDerivativeAt(float u, float v)
-    {
-        throw new NotImplementedException();
-    }
-
-    Vector3 EvaluateCurveAtT(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
-    {
-        //t = 1 - t;
-        int i = 0;
-        int j = 0;
-        Vector3[] arr = new Vector3[] {p0, p1, p2, p3};
-        for (i = 1; i < 4; i++)
+        Vector3[] interUArray = new Vector3[4];
+        for (int i = 0; i < 4; i++)
         {
-            for (j = 0; j < 4 - i; j++)
-            {
-                arr[j] = arr[j] * (1.0f - t) + arr[j + 1] * t;
-            }
+            interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
+                patchPoints[0, i]._position,
+                patchPoints[1, i]._position,
+                patchPoints[2, i]._position,
+                patchPoints[3, i]._position);
         }
+        
+        var dU = (this as ISurface).EvaluateCurveAtT(u, 
+            3 * interUArray[1] - 3 * interUArray[0],
+            3 * interUArray[2] - 3 * interUArray[1],
+            3 * interUArray[3] - 3 * interUArray[2],
+            interUArray[3]);
 
-        return arr[0];
+        return (pos, dU, dV);
     }
 }

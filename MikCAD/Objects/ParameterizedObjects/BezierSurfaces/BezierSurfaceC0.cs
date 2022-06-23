@@ -867,12 +867,16 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         for (int i = 0; i < 4; i++)
         {
-            patchPoints[i, 1] = points[UPatchNum * 3][VPatchNum * 3 + i];
-            patchPoints[i, 2] = points[UPatchNum * 3 + 1][VPatchNum * 3 + i];
-            patchPoints[i, 3] = points[UPatchNum * 3 + 2][VPatchNum * 3 + i];
+            patchPoints[i, 0] = points[UPatchNum * 3][VPatchNum * 3 + i];
+            patchPoints[i, 1] = points[UPatchNum * 3 + 1][VPatchNum * 3 + i];
+            patchPoints[i, 2] = points[UPatchNum * 3 + 2][VPatchNum * 3 + i];
             if (IsRolled && UPatchNum == (int) UPatches - 1)
             {
-                patchPoints[i, 4] = points[0][VPatchNum * 3 + i];
+                patchPoints[i, 3] = points[0][VPatchNum * 3 + i];
+            }
+            else
+            {
+                patchPoints[i, 3] = points[UPatchNum * 3 + 3][VPatchNum * 3 + i];
             }
         }
 

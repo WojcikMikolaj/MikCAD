@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using MikCAD.BezierCurves;
 using MikCAD.Objects;
 
@@ -16,7 +17,7 @@ public partial class IntersectionControl : UserControl
     private void CalculateIntersection(object sender, RoutedEventArgs e)
     {
         intersection.NumberOfPoints = (int) PointsNum.Value;
-        intersection.Steps = (float)StepSize.Value;
+        intersection.Steps = StepSize.Value;
         intersection.UseCursor = UseCursor.IsChecked.Value;
         intersection.Intersect();
     }

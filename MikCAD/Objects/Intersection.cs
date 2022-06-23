@@ -83,16 +83,27 @@ public class Intersection : INotifyPropertyChanged
         };
 
         Vector4 uvstI1 = new Vector4();
-        
-        while (MathM.DistanceSquared(uvstI, uvstI1) > GradientEps)
+
+        do
         {
             uvstI1 = uvstI - stepLength * gradF(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W);
             if (F(uvstI1.X, uvstI1.Y, uvstI1.Z, uvstI1.W) >= F(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W))
             {
                 stepLength /= 2;
             }
+
             uvstI = uvstI1;
-        }
+
+            Vector3 pos = _firstObj.GetValueAt(uvstI.X, uvstI.Y);
+
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z
+            });
+
+        } while (MathM.DistanceSquared(uvstI, uvstI1) > GradientEps);
 
         float u = uvstI1.X;
         float v = uvstI1.Y;

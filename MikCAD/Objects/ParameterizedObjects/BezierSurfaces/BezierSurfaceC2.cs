@@ -396,7 +396,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
     private void GeneratePatches()
     {
         if (!_UpdateBuffers)
-            return ;
+            return;
         int patchesCount = (int) (UPatches * VPatches);
         if (_patches == null || _patches.Length != patchesCount * 16)
             _patches = new uint[patchesCount * 16];
@@ -697,7 +697,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
                                             .Id);
                             ret.points[i + l][j + k].parents.Add(ret);
                             //TODO: ładniej
-                            if(!ret._objects.Contains(ret.points[i + l][j + k]))
+                            if (!ret._objects.Contains(ret.points[i + l][j + k]))
                                 ret._objects.Add(ret.points[i + l][j + k]);
                         }
                     }
@@ -731,7 +731,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
                                             .Id);
                             ret.points[i + l][j + k].parents.Add(ret);
                             //TODO: ładniej
-                            if(!ret._objects.Contains(ret.points[i + l][j + k]))
+                            if (!ret._objects.Contains(ret.points[i + l][j + k]))
                                 ret._objects.Add(ret.points[i + l][j + k]);
                         }
                     }
@@ -818,7 +818,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         }
     }
 
-   public Vector3 GetValueAt(float u, float v)
+    public Vector3 GetValueAt(float u, float v)
     {
         return GetPositionAndGradient(u, v).pos;
     }
@@ -863,16 +863,19 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 
         for (int i = 0; i < 4; i++)
         {
-            patchPoints[i, 0] = points[UPatchNum][VPatchNum + i];
-            patchPoints[i, 1] = points[UPatchNum + 1][VPatchNum + i];
-            patchPoints[i, 2] = points[UPatchNum + 2][VPatchNum + i];
-            if (IsRolled && UPatchNum == (int) UPatches - 1)
+            if (IsRolled)
             {
-                patchPoints[i, 3] = points[0][VPatchNum * 3 + i];
+                patchPoints[i, 0] = points[(UPatchNum) % (int) (UPatches - 1)][VPatchNum + i];
+                patchPoints[i, 1] = points[(UPatchNum + 1) % (int) (UPatches - 1)][VPatchNum + i];
+                patchPoints[i, 2] = points[(UPatchNum + 2) % (int) (UPatches - 1)][VPatchNum + i];
+                patchPoints[i, 3] = points[(UPatchNum + 3) % (int) (UPatches - 1)][VPatchNum * 3 + i];
             }
             else
             {
-                patchPoints[i, 3] = points[UPatchNum + 3][VPatchNum + i];    
+                patchPoints[i, 0] = points[UPatchNum][VPatchNum + i];
+                patchPoints[i, 1] = points[UPatchNum + 1][VPatchNum + i];
+                patchPoints[i, 2] = points[UPatchNum + 2][VPatchNum + i];
+                patchPoints[i, 3] = points[UPatchNum + 3][VPatchNum + i];
             }
         }
 
@@ -889,8 +892,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             interArray[1],
             interArray[2],
             interArray[3]);
-        
-        var dV = (this as ISurface).EvaluateCurveAtT(v, 
+
+        var dV = (this as ISurface).EvaluateCurveAtT(v,
             3 * interArray[1] - 3 * interArray[0],
             3 * interArray[2] - 3 * interArray[1],
             3 * interArray[3] - 3 * interArray[2],
@@ -905,8 +908,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
                 patchPoints[2, i]._position,
                 patchPoints[3, i]._position);
         }
-        
-        var dU = (this as ISurface).EvaluateCurveAtT(u, 
+
+        var dU = (this as ISurface).EvaluateCurveAtT(u,
             3 * interUArray[1] - 3 * interUArray[0],
             3 * interUArray[2] - 3 * interUArray[1],
             3 * interUArray[3] - 3 * interUArray[2],
@@ -914,6 +917,4 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 
         return (pos, dU, dV);
     }
-    
-   
 }

@@ -1,9 +1,23 @@
-﻿using OpenTK.Mathematics;
+﻿using System.Collections.Generic;
+using OpenTK.Mathematics;
 
 namespace MikCAD;
 
 public interface IIntersectable
 {
+    List<(float, float)> GetStartingPoints()
+    {
+        var result = new List<(float, float)>();
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 20; j++)
+            {
+                result.Add((i*0.05f,j*0.05f));
+            }
+        }
+
+        return result;
+    }
     Vector3 GetValueAt(float u, float v);
     Vector3 GetUDerivativeAt(float u, float v);
     Vector3 GetVDerivativeAt(float u, float v);

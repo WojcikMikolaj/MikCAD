@@ -5,14 +5,14 @@ namespace MikCAD;
 
 public interface IIntersectable
 {
-    List<(float, float)> GetStartingPoints()
+    List<(Vector3 pos,float u, float v)> GetStartingPoints()
     {
-        var result = new List<(float, float)>();
+        var result = new List<(Vector3 pos,float u, float v)>();
         for (int i = 0; i < 20; i++)
         {
             for (int j = 0; j < 20; j++)
             {
-                result.Add((i*0.05f,j*0.05f));
+                result.Add((GetValueAt(i*0.05f,j*0.05f), i*0.05f,j*0.05f));
             }
         }
 

@@ -15,4 +15,9 @@ public static class MathM
     {
         return (b.GetModelMatrix().ExtractTranslation() - a.GetModelMatrix().ExtractTranslation()).Length;
     }
+    
+    public static float Distance(Vector3 a, Vector3 b)
+    {
+        return (b - a).Length;
+    }
 }

@@ -90,15 +90,15 @@ public class Intersection : INotifyPropertyChanged
             lastPoint = FindNextPoint(lastPoint);
             if (lastPoint == null)
                 break;
-            if (lastPoint.u >= 1 || lastPoint.u <= 0)
-                break;
-            if (lastPoint.v >= 1 || lastPoint.v <= 0)
-                break;
-            if (lastPoint.s >= 1 || lastPoint.s <= 0)
-                break;
-            if (lastPoint.t >= 1 || lastPoint.t <= 0)
-                break;
             rightPoints.Add(lastPoint);
+            if (lastPoint.u > 1 || lastPoint.u < 0)
+                break;
+            if (lastPoint.v > 1 || lastPoint.v < 0)
+                break;
+            if (lastPoint.s > 1 || lastPoint.s < 0)
+                break;
+            if (lastPoint.t > 1 || lastPoint.t < 0)
+                break;
         }
 
         lastPoint = firstIntersectionPoint;
@@ -107,15 +107,15 @@ public class Intersection : INotifyPropertyChanged
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
                 break;
-            if (lastPoint.u >= 1 || lastPoint.u <= 0)
-                break;
-            if (lastPoint.v >= 1 || lastPoint.v <= 0)
-                break;
-            if (lastPoint.s >= 1 || lastPoint.s <= 0)
-                break;
-            if (lastPoint.t >= 1 || lastPoint.t <= 0)
-                break;
             leftPoints.Add(lastPoint);
+            if (lastPoint.u > 1 || lastPoint.u < 0)
+                break;
+            if (lastPoint.v > 1 || lastPoint.v < 0)
+                break;
+            if (lastPoint.s > 1 || lastPoint.s < 0)
+                break;
+            if (lastPoint.t > 1 || lastPoint.t < 0)
+                break;
         }
 
         leftPoints.Reverse();

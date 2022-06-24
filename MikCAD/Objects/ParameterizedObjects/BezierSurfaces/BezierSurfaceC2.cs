@@ -894,9 +894,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, patchPoints[i, 0],
-                patchPoints[i, 1],
-                patchPoints[i, 2], patchPoints[i, 3]);
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, 
+                patchPoints[0,i],
+                patchPoints[1,i],
+                patchPoints[2,i],
+                patchPoints[3,i]);
         }
 
         var pos = (this as ISurface).EvaluateCurveAtT(v,
@@ -916,10 +918,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         for (int i = 0; i < 4; i++)
         {
             interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
-                patchPoints[0, i],
-                patchPoints[1, i],
-                patchPoints[2, i],
-                patchPoints[3, i]);
+                patchPoints[i, 0],
+                patchPoints[i, 1],
+                patchPoints[i, 2],
+                patchPoints[i, 3]);
         }
 
         var dU = (this as ISurface).EvaluateCurveAtT(u,

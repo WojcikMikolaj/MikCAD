@@ -73,6 +73,7 @@
                     </Grid>
                 </GroupBox>
                 <Button Height="50" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged, UpdateSourceTrigger=PropertyChanged}" Click="ButtonBase_OnClick">Apply</Button>
+                <Button Height="50"  Click="SpawnPoints">Show points</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

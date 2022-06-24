@@ -840,6 +840,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
     public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
     {
+
         if (u < 0)
             u = 0;
         if (u > 1)
@@ -856,11 +857,15 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         int UPatchNum = (int) Math.Floor(u / patchUSize);
         int VPatchNum = (int) Math.Floor(v / patchVSize);
 
-        if (UPatchNum == UPatches)
-            UPatchNum = (int) UPatches - 1;
-
-        if (VPatchNum == VPatches)
-            VPatchNum = (int) VPatches - 1;
+        //przeskalowanie u i v na 0,1 dla danego patcha
+        u = (u - (UPatchNum * patchUSize)) / (patchUSize);
+        v = (v - (VPatchNum * patchVSize)) / (patchVSize);
+        
+        // if (UPatchNum == UPatches)
+        //     UPatchNum = (int) UPatches - 1;
+        //
+        // if (VPatchNum == VPatches)
+        //     VPatchNum = (int) VPatches - 1;
 
         ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
 
@@ -883,9 +888,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, patchPoints[i, 0].pos,
-                patchPoints[i, 1].pos,
-                patchPoints[i, 2].pos, patchPoints[i, 3].pos);
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, 
+                patchPoints[i,0].pos,
+                patchPoints[i,1].pos,
+                patchPoints[i,2].pos,
+                patchPoints[i,3].pos);
         }
 
         var pos = (this as ISurface).EvaluateCurveAtT(v,
@@ -893,28 +900,30 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             interArray[1],
             interArray[2],
             interArray[3]);
-        
-        var dV = (this as ISurface).EvaluateCurveAtT(v, 
+
+        var dV = (this as ISurface).EvaluateCurveAtT(v,
             3 * interArray[1] - 3 * interArray[0],
             3 * interArray[2] - 3 * interArray[1],
             3 * interArray[3] - 3 * interArray[2],
-            interArray[3]);
+            interArray[3],
+            3);
 
         Vector3[] interUArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
             interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
-                patchPoints[0, i].pos,
-                patchPoints[1, i].pos,
-                patchPoints[2, i].pos,
-                patchPoints[3, i].pos);
+                patchPoints[0,i ].pos,
+                patchPoints[1,i ].pos,
+                patchPoints[2,i ].pos,
+                patchPoints[3,i ].pos);
         }
-        
-        var dU = (this as ISurface).EvaluateCurveAtT(u, 
+
+        var dU = (this as ISurface).EvaluateCurveAtT(u,
             3 * interUArray[1] - 3 * interUArray[0],
             3 * interUArray[2] - 3 * interUArray[1],
             3 * interUArray[3] - 3 * interUArray[2],
-            interUArray[3]);
+            interUArray[3],
+            3);
 
         return (pos, dU, dV);
     }

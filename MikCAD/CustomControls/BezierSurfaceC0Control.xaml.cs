@@ -23,4 +23,20 @@ public partial class BezierSurfaceC0Control : UserControl
             surf2.Applied = true;
         }
     }
+    
+    private void SpawnPoints(object sender, RoutedEventArgs e)
+    {
+        var obj = Scene.CurrentScene.ObjectsController.SelectedObject;
+        var startingPoints = (obj as IIntersectable)?.GetStartingPoints();
+
+        foreach (var p in startingPoints)
+        {
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"{p.u}; {p.v}")
+            {
+                posX = p.pos.X,
+                posY = p.pos.Y,
+                posZ = p.pos.Z,
+            });    
+        }
+    }
 }

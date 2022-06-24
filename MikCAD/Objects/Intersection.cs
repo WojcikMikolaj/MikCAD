@@ -44,6 +44,16 @@ public class Intersection : INotifyPropertyChanged
             var startingPointsSecond = _secondObj.GetStartingPoints();
             var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond);
 
+            // foreach (var p in startingPointsSecond)
+            // {
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("p")
+            //     {
+            //         posX = p.pos.X,
+            //         posY = p.pos.Y,
+            //         posZ = p.pos.Z,
+            //     });    
+            // }
+            
             Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
             {
                 posX = closestPoints.first.pos.X,

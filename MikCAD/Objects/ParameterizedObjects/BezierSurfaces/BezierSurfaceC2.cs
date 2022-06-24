@@ -851,6 +851,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         //????????????????????????????? czy to tu zadziała?
         int UPatchNum = (int) Math.Floor(u / patchUSize);
         int VPatchNum = (int) Math.Floor(v / patchVSize);
+        
+        //przeskalowanie u i v na 0,1 dla danego patcha
+        u = (u - (UPatchNum * patchUSize)) / (patchUSize);
+        v = (v - (VPatchNum * patchVSize)) / (patchVSize);
+        
 
         if (UPatchNum == UPatches)
             UPatchNum = (int) UPatches - 1;
@@ -866,15 +871,15 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             if (IsRolled)
             {
                 var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
-                    points[(UPatchNum) % (int) (UPatches - 1)][VPatchNum + i].pos,
-                    points[(UPatchNum + 1) % (int) (UPatches - 1)][VPatchNum + i].pos,
-                    points[(UPatchNum + 2) % (int) (UPatches - 1)][VPatchNum + i].pos,
-                    points[(UPatchNum + 3) % (int) (UPatches - 1)][VPatchNum * 3 + i].pos);
+                    points[(UPatchNum) % (int) (UPatches )][VPatchNum + i].pos,
+                    points[(UPatchNum + 1) % (int) (UPatches )][VPatchNum + i].pos,
+                    points[(UPatchNum + 2) % (int) (UPatches )][VPatchNum + i].pos,
+                    points[(UPatchNum + 3) % (int) (UPatches )][VPatchNum + i].pos);
                 
-                patchPoints[i, 0] = bezierPoints[0];
-                patchPoints[i, 1] = bezierPoints[1];
-                patchPoints[i, 2] = bezierPoints[2];
-                patchPoints[i, 3] = bezierPoints[3];
+                patchPoints[i,0 ] = bezierPoints[0];
+                patchPoints[i,1 ] = bezierPoints[1];
+                patchPoints[i,2 ] = bezierPoints[2];
+                patchPoints[i,3 ] = bezierPoints[3];
             }
             else
             {
@@ -884,10 +889,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
                     points[UPatchNum + 2][VPatchNum + i].pos,
                     points[UPatchNum + 3][VPatchNum + i].pos);
 
-                patchPoints[i, 0] = bezierPoints[0];
-                patchPoints[i, 1] = bezierPoints[1];
-                patchPoints[i, 2] = bezierPoints[2];
-                patchPoints[i, 3] = bezierPoints[3];
+                patchPoints[i,0] = bezierPoints[0];
+                patchPoints[i,1] = bezierPoints[1];
+                patchPoints[i,2] = bezierPoints[2];
+                patchPoints[i,3] = bezierPoints[3];
             }
         }
 
@@ -895,10 +900,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         for (int i = 0; i < 4; i++)
         {
             interArray[i] = (this as ISurface).EvaluateCurveAtT(u, 
-                patchPoints[0,i],
-                patchPoints[1,i],
-                patchPoints[2,i],
-                patchPoints[3,i]);
+                patchPoints[i,0],
+                patchPoints[i,1],
+                patchPoints[i,2],
+                patchPoints[i,3]);
         }
 
         var pos = (this as ISurface).EvaluateCurveAtT(v,
@@ -918,10 +923,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         for (int i = 0; i < 4; i++)
         {
             interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
-                patchPoints[i, 0],
-                patchPoints[i, 1],
-                patchPoints[i, 2],
-                patchPoints[i, 3]);
+                patchPoints[0,i ],
+                patchPoints[1,i ],
+                patchPoints[2,i ],
+                patchPoints[3,i ]);
         }
 
         var dU = (this as ISurface).EvaluateCurveAtT(u,

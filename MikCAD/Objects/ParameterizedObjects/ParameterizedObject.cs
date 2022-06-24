@@ -105,6 +105,8 @@ namespace MikCAD
             }
         }
 
+        public Vector3 pos => new Vector3(posX, posY, posZ);
+        
         public float rotX
         {
             get => _rotation.X;

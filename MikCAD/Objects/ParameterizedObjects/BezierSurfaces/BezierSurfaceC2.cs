@@ -866,10 +866,11 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             if (IsRolled)
             {
                 var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
-                    points[(UPatchNum) % (int) (UPatches - 1)][VPatchNum + i]._position,
-                    points[(UPatchNum + 1) % (int) (UPatches - 1)][VPatchNum + i]._position,
-                    points[(UPatchNum + 2) % (int) (UPatches - 1)][VPatchNum + i]._position,
-                    points[(UPatchNum + 3) % (int) (UPatches - 1)][VPatchNum * 3 + i]._position);
+                    points[(UPatchNum) % (int) (UPatches - 1)][VPatchNum + i].pos,
+                    points[(UPatchNum + 1) % (int) (UPatches - 1)][VPatchNum + i].pos,
+                    points[(UPatchNum + 2) % (int) (UPatches - 1)][VPatchNum + i].pos,
+                    points[(UPatchNum + 3) % (int) (UPatches - 1)][VPatchNum * 3 + i].pos);
+                
                 patchPoints[i, 0] = bezierPoints[0];
                 patchPoints[i, 1] = bezierPoints[1];
                 patchPoints[i, 2] = bezierPoints[2];
@@ -878,10 +879,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             else
             {
                 var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
-                    points[UPatchNum][VPatchNum + i]._position,
-                    points[UPatchNum + 1][VPatchNum + i]._position,
-                    points[UPatchNum + 2][VPatchNum + i]._position,
-                    points[UPatchNum + 3][VPatchNum + i]._position);
+                    points[UPatchNum][VPatchNum + i].pos,
+                    points[UPatchNum + 1][VPatchNum + i].pos,
+                    points[UPatchNum + 2][VPatchNum + i].pos,
+                    points[UPatchNum + 3][VPatchNum + i].pos);
 
                 patchPoints[i, 0] = bezierPoints[0];
                 patchPoints[i, 1] = bezierPoints[1];
@@ -908,7 +909,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             3 * interArray[1] - 3 * interArray[0],
             3 * interArray[2] - 3 * interArray[1],
             3 * interArray[3] - 3 * interArray[2],
-            interArray[3]);
+            interArray[3],
+            3);
 
         Vector3[] interUArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
@@ -924,7 +926,8 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
             3 * interUArray[1] - 3 * interUArray[0],
             3 * interUArray[2] - 3 * interUArray[1],
             3 * interUArray[3] - 3 * interUArray[2],
-            interUArray[3]);
+            interUArray[3],
+            3);
 
         return (pos, dU, dV);
     }

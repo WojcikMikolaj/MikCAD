@@ -31,7 +31,7 @@ public class Intersection : INotifyPropertyChanged
     public float StartingGradientStepLength { get; set; } = 0.1f;
     public float GradientEps { get; set; } = 0.001f;
 
-    public float PointsDist { get; set; } = 0.05f;
+    public float PointsDist { get; set; } = 0.025f;
     public float NewtonEps { get; set; } = 0.001f;
 
     public void Intersect()
@@ -44,10 +44,24 @@ public class Intersection : INotifyPropertyChanged
             var startingPointsSecond = _secondObj.GetStartingPoints();
             var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond);
 
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+            {
+                posX = closestPoints.first.pos.X,
+                posY = closestPoints.first.pos.Y,
+                posZ = closestPoints.first.pos.Z,
+            });
+            
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+            {
+                posX = closestPoints.second.pos.X,
+                posY = closestPoints.second.pos.Y,
+                posZ = closestPoints.second.pos.Z,
+            });
+            
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
             if (MathM.DistanceSquared(
                     _firstObj.GetValueAt(firstIntersectionPoint.u, firstIntersectionPoint.v),
-                    _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps)
+                    _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps*10)
             {
                 return;
             }
@@ -214,6 +228,8 @@ public class Intersection : INotifyPropertyChanged
         } while (MathM.DistanceSquared(_firstObj.GetValueAt(xk1.X, xk1.Y), _firstObj.GetValueAt(xk.X, xk.Y)) >
                  NewtonEps);
 
+        if (MathM.Distance(_firstObj.GetValueAt(xk1.X, xk1.Y), lastPoint.pos) > PointsDist * 1.5f)
+            return null;
         return new IntersectionPoint()
         {
             pos = _firstObj.GetValueAt(xk1.X, xk1.Y),
@@ -279,15 +295,15 @@ public class Intersection : INotifyPropertyChanged
                 stepLength /= 2f;
             }
 
-            Vector3 pos = _firstObj.GetValueAt(uvstI.X, uvstI.Y);
+            Vector3 pos = _firstObj.GetValueAt(uvstI1.X, uvstI1.Y);
 
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
-            // {
-            //     posX = pos.X,
-            //     posY = pos.Y,
-            //     posZ = pos.Z
-            // });
-        } while (MathM.DistanceSquared(uvstI, uvstI1) > GradientEps);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z
+            });
+        } while (MathM.DistanceSquared(_firstObj.GetValueAt(uvstI.X, uvstI.Y), _firstObj.GetValueAt(uvstI1.X, uvstI1.Y)) > GradientEps);
 
         float u = uvstI1.X;
         float v = uvstI1.Y;

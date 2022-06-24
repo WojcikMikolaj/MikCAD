@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
+using MikCAD.BezierCurves;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 
@@ -31,8 +32,9 @@ public class Intersection : INotifyPropertyChanged
     public float StartingGradientStepLength { get; set; } = 0.1f;
     public float GradientEps { get; set; } = 0.001f;
 
-    public float PointsDist { get; set; } = 0.025f;
+    public float PointsDist { get; set; } = 0.05f;
     public float NewtonEps { get; set; } = 0.001f;
+    public int NewtonMaxIterations { get; set; } = 500;
 
     public void Intersect()
     {
@@ -54,19 +56,20 @@ public class Intersection : INotifyPropertyChanged
             //     });    
             // }
             
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-            {
-                posX = closestPoints.first.pos.X,
-                posY = closestPoints.first.pos.Y,
-                posZ = closestPoints.first.pos.Z,
-            });
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+            // {
+            //     posX = closestPoints.first.pos.X,
+            //     posY = closestPoints.first.pos.Y,
+            //     posZ = closestPoints.first.pos.Z,
+            // });
+            //
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+            // {
+            //     posX = closestPoints.second.pos.X,
+            //     posY = closestPoints.second.pos.Y,
+            //     posZ = closestPoints.second.pos.Z,
+            // });
             
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-            {
-                posX = closestPoints.second.pos.X,
-                posY = closestPoints.second.pos.Y,
-                posZ = closestPoints.second.pos.Z,
-            });
             
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
             if (MathM.DistanceSquared(
@@ -75,17 +78,43 @@ public class Intersection : INotifyPropertyChanged
             {
                 return;
             }
-
+            
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            var interpolating = new InterpolatingBezierCurveC2();
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            
             intersectionPoints.Add(firstIntersectionPoint);
             var points = FindOtherPoints(firstIntersectionPoint);
             foreach (var point in points)
             {
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+                var pos = _firstObj.GetValueAt(point.u, point.v);
+                var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
                 {
-                    posX = point.pos.X,
-                    posY = point.pos.Y,
-                    posZ = point.pos.Z,
-                });
+                    posX = pos.X,
+                    posY = pos.Y,
+                    posZ = pos.Z,
+                };
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+                interpolating.ProcessObject(p);
+            }
+            
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            var interpolating2 = new InterpolatingBezierCurveC2();
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating2);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            
+            foreach (var point in points)
+            {
+                var pos = _secondObj.GetValueAt(point.s, point.t);
+                var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+                {
+                    posX = pos.X,
+                    posY = pos.Y,
+                    posZ = pos.Z,
+                };
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+                interpolating2.ProcessObject(p);
             }
         }
     }
@@ -225,7 +254,9 @@ public class Intersection : INotifyPropertyChanged
         int it = 0;
         do
         {
-            if (it != 0)
+            if (it > NewtonMaxIterations)
+                return null;
+            if (it > 0)
             {
                 xk = xk1;
             }
@@ -233,13 +264,10 @@ public class Intersection : INotifyPropertyChanged
             it++;
 
             xk1 = xk - dF(xk).Inverted() * F(xk);
-            if (it > 10)
-                return null;
-        } while (MathM.DistanceSquared(_firstObj.GetValueAt(xk1.X, xk1.Y), _firstObj.GetValueAt(xk.X, xk.Y)) >
+            
+        } while (MathM.Distance(_firstObj.GetValueAt(xk1.X, xk1.Y), _firstObj.GetValueAt(xk.X, xk.Y)) >
                  NewtonEps);
 
-        if (MathM.Distance(_firstObj.GetValueAt(xk1.X, xk1.Y), lastPoint.pos) > PointsDist * 1.5f)
-            return null;
         return new IntersectionPoint()
         {
             pos = _firstObj.GetValueAt(xk1.X, xk1.Y),
@@ -281,8 +309,8 @@ public class Intersection : INotifyPropertyChanged
         {
             X = closestPoints.first.u,
             Y = closestPoints.first.v,
-            Z = closestPoints.second.u,
-            W = closestPoints.second.v,
+            Z = closestPoints.second.u,//s
+            W = closestPoints.second.v,//t
         };
 
         Vector4 uvstI1 = new Vector4();
@@ -307,12 +335,12 @@ public class Intersection : INotifyPropertyChanged
 
             Vector3 pos = _firstObj.GetValueAt(uvstI1.X, uvstI1.Y);
 
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
-            {
-                posX = pos.X,
-                posY = pos.Y,
-                posZ = pos.Z
-            });
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            // {
+            //     posX = pos.X,
+            //     posY = pos.Y,
+            //     posZ = pos.Z
+            // });
         } while (MathM.DistanceSquared(_firstObj.GetValueAt(uvstI.X, uvstI.Y), _firstObj.GetValueAt(uvstI1.X, uvstI1.Y)) > GradientEps);
 
         float u = uvstI1.X;

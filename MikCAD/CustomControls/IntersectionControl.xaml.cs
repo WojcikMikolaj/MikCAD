@@ -16,7 +16,7 @@ public partial class IntersectionControl : UserControl
 
     private void CalculateIntersection(object sender, RoutedEventArgs e)
     {
-        intersection.NumberOfPoints = (int) PointsNum.Value;
+        //intersection.NumberOfPoints = (int) PointsNum.Value;
         intersection.Steps = StepSize.Value;
         intersection.UseCursor = UseCursor.IsChecked.Value;
         intersection.Intersect();

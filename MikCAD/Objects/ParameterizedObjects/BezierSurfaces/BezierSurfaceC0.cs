@@ -861,11 +861,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         u = (u - (UPatchNum * patchUSize)) / (patchUSize);
         v = (v - (VPatchNum * patchVSize)) / (patchVSize);
         
-        // if (UPatchNum == UPatches)
-        //     UPatchNum = (int) UPatches - 1;
-        //
-        // if (VPatchNum == VPatches)
-        //     VPatchNum = (int) VPatches - 1;
+        if (UPatchNum == UPatches)
+            UPatchNum = (int) UPatches - 1;
+        
+        if (VPatchNum == VPatches)
+            VPatchNum = (int) VPatches - 1;
 
         ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
 

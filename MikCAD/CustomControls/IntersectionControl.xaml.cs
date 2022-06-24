@@ -20,5 +20,6 @@ public partial class IntersectionControl : UserControl
         intersection.Steps = StepSize.Value;
         intersection.UseCursor = UseCursor.IsChecked.Value;
         intersection.Intersect();
+        (this.Parent as Window)?.Close();
     }
 }

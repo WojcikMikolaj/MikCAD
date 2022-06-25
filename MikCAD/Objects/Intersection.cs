@@ -140,6 +140,8 @@ public class Intersection : INotifyPropertyChanged
         List<IntersectionPoint> rightPoints = new List<IntersectionPoint>();
 
 
+        bool finish = false;
+        
         while (true)
         {
             lastPoint = FindNextPoint(lastPoint);
@@ -166,12 +168,15 @@ public class Intersection : INotifyPropertyChanged
                 break;
             if (lastPoint.t > 1 || lastPoint.t < 0)
                 break;
-            // if (MathM.DistanceSquared(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist)
-            //     break;
+            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
+            {
+                finish = true;
+                break;
+            }
         }
 
         lastPoint = firstIntersectionPoint;
-        while (true)
+        while (!finish)
         {
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
@@ -196,8 +201,8 @@ public class Intersection : INotifyPropertyChanged
                 break;
             if (lastPoint.t > 1 || lastPoint.t < 0)
                 break;
-            // if (MathM.DistanceSquared(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist)
-            //     break;
+            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
+                break;
         }
 
         leftPoints.Reverse();
@@ -291,8 +296,8 @@ public class Intersection : INotifyPropertyChanged
 
             it++;
 
-            if (Math.Abs(dF(xk).Determinant) > 1e-6)
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("g"));
+            // if (Math.Abs(dF(xk).Determinant) > 1e-6)
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("g"));
             
             xk1 = xk - dF(xk).Inverted() * F(xk);
             

@@ -858,8 +858,10 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         int VPatchNum = (int) Math.Floor(v / patchVSize);
 
         //przeskalowanie u i v na 0,1 dla danego patcha
-        u = (u - (UPatchNum * patchUSize)) / (patchUSize);
-        v = (v - (VPatchNum * patchVSize)) / (patchVSize);
+        if(u is > 0 and < 1)
+            u = (u - (UPatchNum * patchUSize)) / (patchUSize);
+        if(v is > 0 and < 1)
+            v = (v - (VPatchNum * patchVSize)) / (patchVSize);
         
         if (UPatchNum == UPatches)
             UPatchNum = (int) UPatches - 1;

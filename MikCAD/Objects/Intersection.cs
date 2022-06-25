@@ -32,7 +32,7 @@ public class Intersection : INotifyPropertyChanged
     public float StartingGradientStepLength { get; set; } = 0.1f;
     public float GradientEps { get; set; } = 0.001f;
 
-    public float PointsDist { get; set; } = 0.005f;
+    public float PointsDist { get; set; } = 0.05f;
     public float NewtonEps { get; set; } = 0.001f;
     public int NewtonMaxIterations { get; set; } = 5000;
 
@@ -335,95 +335,95 @@ public class Intersection : INotifyPropertyChanged
                 xk1.W -= MathF.Floor(xk1.W);
             }
 
-            if (right)
-            {
-                var f = _firstObj.GetPositionAndGradient(xk1.X, xk1.Y);
-                var fdU = new BezierCurveC0()
-                {
-                    Name = $"fdU{it}"
-                };
-                var fdV = new BezierCurveC0(){
-
-                    Name = $"fdV{it}"
-                };
-                var fPos = new ParameterizedPoint($"f {it}")
-                {
-                    posX = f.pos.X,
-                    posY = f.pos.Y,
-                    posZ = f.pos.Z,
-                };
-                var fPosdU = new ParameterizedPoint()
-                {
-                    posX = f.pos.X + f.dU.X,
-                    posY = f.pos.Y+ f.dU.Y,
-                    posZ = f.pos.Z+ f.dU.Z,
-                };
-                var fPosdV = new ParameterizedPoint()
-                {
-                    posX = f.pos.X + f.dV.X,
-                    posY = f.pos.Y+ f.dV.Y,
-                    posZ = f.pos.Z+ f.dV.Z,
-                };
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(fdU);
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(fdV);
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPos);
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdU);
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdV);
-                fdU.ProcessObject(fPos);
-                fdU.ProcessObject(fPosdU);
-                fdV.ProcessObject(fPos);
-                fdV.ProcessObject(fPosdV);
-                
-                var s = _secondObj.GetPositionAndGradient(xk1.Z, xk1.W);
-                var sdU = new BezierCurveC0()
-                {
-                    Name = $"sdU{it}"
-                };
-                var sdV = new BezierCurveC0(){
-
-                    Name = $"sdV{it}"
-                };
-                var sPos = new ParameterizedPoint($"s {it}; s: {xk1.Z} t: {xk1.W}")
-                {
-                    posX = s.pos.X,
-                    posY = s.pos.Y,
-                    posZ = s.pos.Z,
-                };
-                var sPosdU = new ParameterizedPoint()
-                {
-                    posX = s.pos.X +s.dU.X,
-                    posY = s.pos.Y+ s.dU.Y,
-                    posZ = s.pos.Z+ s.dU.Z,
-                };
-                var sPosdV = new ParameterizedPoint()
-                {
-                    posX = s.pos.X + s.dV.X,
-                    posY = s.pos.Y+ s.dV.Y,
-                    posZ = s.pos.Z+ s.dV.Z,
-                };
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(sdU);
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(sdV);
-                Scene.CurrentScene.ObjectsController.SelectedObject = null;
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPos);
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdU);
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdV);
-                sdU.ProcessObject(sPos);
-                sdU.ProcessObject(sPosdU);
-                sdV.ProcessObject(sPos);
-                sdV.ProcessObject(sPosdV);
-                // var s = _firstObj.GetPositionAndGradient(xk1.Z, xk1.W);
-                // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"s {it}")
-                // {
-                //     posX = s.pos.X,
-                //     posY = s.pos.Y,
-                //     posZ = s.pos.Z,
-                // });
-            }
+            // if (right)
+            // {
+            //     var f = _firstObj.GetPositionAndGradient(xk1.X, xk1.Y);
+            //     var fdU = new BezierCurveC0()
+            //     {
+            //         Name = $"fdU{it}"
+            //     };
+            //     var fdV = new BezierCurveC0(){
+            //
+            //         Name = $"fdV{it}"
+            //     };
+            //     var fPos = new ParameterizedPoint($"f {it}")
+            //     {
+            //         posX = f.pos.X,
+            //         posY = f.pos.Y,
+            //         posZ = f.pos.Z,
+            //     };
+            //     var fPosdU = new ParameterizedPoint()
+            //     {
+            //         posX = f.pos.X + f.dU.X,
+            //         posY = f.pos.Y+ f.dU.Y,
+            //         posZ = f.pos.Z+ f.dU.Z,
+            //     };
+            //     var fPosdV = new ParameterizedPoint()
+            //     {
+            //         posX = f.pos.X + f.dV.X,
+            //         posY = f.pos.Y+ f.dV.Y,
+            //         posZ = f.pos.Z+ f.dV.Z,
+            //     };
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(fdU);
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(fdV);
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(fPos);
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdU);
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdV);
+            //     fdU.ProcessObject(fPos);
+            //     fdU.ProcessObject(fPosdU);
+            //     fdV.ProcessObject(fPos);
+            //     fdV.ProcessObject(fPosdV);
+            //     
+            //     var s = _secondObj.GetPositionAndGradient(xk1.Z, xk1.W);
+            //     var sdU = new BezierCurveC0()
+            //     {
+            //         Name = $"sdU{it}"
+            //     };
+            //     var sdV = new BezierCurveC0(){
+            //
+            //         Name = $"sdV{it}"
+            //     };
+            //     var sPos = new ParameterizedPoint($"s {it}; s: {xk1.Z} t: {xk1.W}")
+            //     {
+            //         posX = s.pos.X,
+            //         posY = s.pos.Y,
+            //         posZ = s.pos.Z,
+            //     };
+            //     var sPosdU = new ParameterizedPoint()
+            //     {
+            //         posX = s.pos.X +s.dU.X,
+            //         posY = s.pos.Y+ s.dU.Y,
+            //         posZ = s.pos.Z+ s.dU.Z,
+            //     };
+            //     var sPosdV = new ParameterizedPoint()
+            //     {
+            //         posX = s.pos.X + s.dV.X,
+            //         posY = s.pos.Y+ s.dV.Y,
+            //         posZ = s.pos.Z+ s.dV.Z,
+            //     };
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(sdU);
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(sdV);
+            //     Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(sPos);
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdU);
+            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdV);
+            //     sdU.ProcessObject(sPos);
+            //     sdU.ProcessObject(sPosdU);
+            //     sdV.ProcessObject(sPos);
+            //     sdV.ProcessObject(sPosdV);
+            //     // var s = _firstObj.GetPositionAndGradient(xk1.Z, xk1.W);
+            //     // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"s {it}")
+            //     // {
+            //     //     posX = s.pos.X,
+            //     //     posY = s.pos.Y,
+            //     //     posZ = s.pos.Z,
+            //     // });
+            // }
 
             if (xk1.X > 1 || xk1.Y > 1 || xk1.Z > 1 || xk1.W > 1)
                 break;

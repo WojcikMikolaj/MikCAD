@@ -841,15 +841,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
     public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
     {
 
-        if (u < 0)
-            u = 0;
-        if (u > 1)
-            u = 1;
-
-        if (v < 0)
-            v = 0;
-        if (v > 1)
-            v = 1;
+        
 
         var patchUSize = 1.0f / UPatches;
         var patchVSize = 1.0f / VPatches;
@@ -868,6 +860,30 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         
         if (VPatchNum == VPatches)
             VPatchNum = (int) VPatches - 1;
+
+        if (u < 0)
+        {
+            u = 0;
+            UPatchNum = 0;
+        }
+
+        if (u > 1)
+        {
+            u = 1;
+            UPatchNum = (int) UPatches - 1;
+        }
+
+        if (v < 0)
+        {
+            v = 0;
+            VPatchNum = 0;
+        }
+
+        if (v > 1)
+        {
+            v = 1;
+            VPatchNum = (int) VPatches - 1;
+        }
 
         ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
 
@@ -904,9 +920,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             interArray[3]);
 
         var dV = (this as ISurface).EvaluateCurveAtT(v,
-            3 * interArray[1] - 3 * interArray[0],
-            3 * interArray[2] - 3 * interArray[1],
-            3 * interArray[3] - 3 * interArray[2],
+            3 * VPatches * interArray[1] - 3 * VPatches * interArray[0],
+            3 * VPatches * interArray[2] - 3 * VPatches * interArray[1],
+            3 * VPatches * interArray[3] - 3 * VPatches * interArray[2],
             interArray[3],
             3);
 
@@ -921,9 +937,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         }
 
         var dU = (this as ISurface).EvaluateCurveAtT(u,
-            3 * interUArray[1] - 3 * interUArray[0],
-            3 * interUArray[2] - 3 * interUArray[1],
-            3 * interUArray[3] - 3 * interUArray[2],
+            3 * UPatches* interUArray[1] - 3 * UPatches* interUArray[0],
+            3 * UPatches* interUArray[2] - 3 * UPatches* interUArray[1],
+            3 * UPatches* interUArray[3] - 3 * UPatches* interUArray[2],
             interUArray[3],
             3);
 

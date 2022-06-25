@@ -312,5 +312,8 @@ namespace MikCAD
         {
             return (GetValueAt(u, v), GetUDerivativeAt(u, v), GetVDerivativeAt(u, v));
         }
+        
+        public bool IsUWrapped => true;
+        public bool IsVWrapped => true;
     }
 }

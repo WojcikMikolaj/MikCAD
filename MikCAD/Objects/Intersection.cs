@@ -32,9 +32,9 @@ public class Intersection : INotifyPropertyChanged
     public float StartingGradientStepLength { get; set; } = 0.1f;
     public float GradientEps { get; set; } = 0.001f;
 
-    public float PointsDist { get; set; } = 0.05f;
+    public float PointsDist { get; set; } = 0.005f;
     public float NewtonEps { get; set; } = 0.001f;
-    public int NewtonMaxIterations { get; set; } = 500;
+    public int NewtonMaxIterations { get; set; } = 5000;
 
     public void Intersect()
     {
@@ -55,37 +55,39 @@ public class Intersection : INotifyPropertyChanged
             //         posZ = p.pos.Z,
             //     });    
             // }
-            
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-            // {
-            //     posX = closestPoints.first.pos.X,
-            //     posY = closestPoints.first.pos.Y,
-            //     posZ = closestPoints.first.pos.Z,
-            // });
-            //
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-            // {
-            //     posX = closestPoints.second.pos.X,
-            //     posY = closestPoints.second.pos.Y,
-            //     posZ = closestPoints.second.pos.Z,
-            // });
-            
-            
+
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+            {
+                posX = closestPoints.first.pos.X,
+                posY = closestPoints.first.pos.Y,
+                posZ = closestPoints.first.pos.Z,
+            });
+
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+            {
+                posX = closestPoints.second.pos.X,
+                posY = closestPoints.second.pos.Y,
+                posZ = closestPoints.second.pos.Z,
+            });
+
+
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
             if (MathM.DistanceSquared(
                     _firstObj.GetValueAt(firstIntersectionPoint.u, firstIntersectionPoint.v),
-                    _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps*10)
+                    _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps * 10)
             {
                 return;
             }
-            
+
             Scene.CurrentScene.ObjectsController.SelectedObject = null;
             var interpolating = new InterpolatingBezierCurveC2();
             Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
             Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            
+
+            //Newton
             intersectionPoints.Add(firstIntersectionPoint);
             var points = FindOtherPoints(firstIntersectionPoint);
+
             foreach (var point in points)
             {
                 var pos = _firstObj.GetValueAt(point.u, point.v);
@@ -98,12 +100,12 @@ public class Intersection : INotifyPropertyChanged
                 Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
                 interpolating.ProcessObject(p);
             }
-            
+
             Scene.CurrentScene.ObjectsController.SelectedObject = null;
             var interpolating2 = new InterpolatingBezierCurveC2();
             Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating2);
             Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            
+
             foreach (var point in points)
             {
                 var pos = _secondObj.GetValueAt(point.s, point.t);
@@ -144,6 +146,18 @@ public class Intersection : INotifyPropertyChanged
             if (lastPoint == null)
                 break;
             rightPoints.Add(lastPoint);
+
+            if ((lastPoint.u > 1 || lastPoint.u < 0) && _firstObj.IsUWrapped)
+                lastPoint.u -= MathF.Floor(lastPoint.u);
+            if ((lastPoint.v > 1 || lastPoint.v < 0) && _firstObj.IsVWrapped)
+                lastPoint.v -= MathF.Floor(lastPoint.v);
+
+            if ((lastPoint.s > 1 || lastPoint.s < 0) && _secondObj.IsUWrapped)
+                lastPoint.s -= MathF.Floor(lastPoint.s);
+            if ((lastPoint.t > 1 || lastPoint.t < 0) && _secondObj.IsVWrapped)
+                lastPoint.t -= MathF.Floor(lastPoint.t);
+
+
             if (lastPoint.u > 1 || lastPoint.u < 0)
                 break;
             if (lastPoint.v > 1 || lastPoint.v < 0)
@@ -152,6 +166,8 @@ public class Intersection : INotifyPropertyChanged
                 break;
             if (lastPoint.t > 1 || lastPoint.t < 0)
                 break;
+            // if (MathM.DistanceSquared(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist)
+            //     break;
         }
 
         lastPoint = firstIntersectionPoint;
@@ -161,6 +177,17 @@ public class Intersection : INotifyPropertyChanged
             if (lastPoint == null)
                 break;
             leftPoints.Add(lastPoint);
+
+            if ((lastPoint.u > 1 || lastPoint.u < 0) && _firstObj.IsUWrapped)
+                lastPoint.u -= MathF.Floor(lastPoint.u);
+            if ((lastPoint.v > 1 || lastPoint.v < 0) && _firstObj.IsVWrapped)
+                lastPoint.v -= MathF.Floor(lastPoint.v);
+
+            if ((lastPoint.s > 1 || lastPoint.s < 0) && _secondObj.IsUWrapped)
+                lastPoint.s -= MathF.Floor(lastPoint.s);
+            if ((lastPoint.t > 1 || lastPoint.t < 0) && _secondObj.IsVWrapped)
+                lastPoint.t -= MathF.Floor(lastPoint.t);
+
             if (lastPoint.u > 1 || lastPoint.u < 0)
                 break;
             if (lastPoint.v > 1 || lastPoint.v < 0)
@@ -169,6 +196,8 @@ public class Intersection : INotifyPropertyChanged
                 break;
             if (lastPoint.t > 1 || lastPoint.t < 0)
                 break;
+            // if (MathM.DistanceSquared(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist)
+            //     break;
         }
 
         leftPoints.Reverse();
@@ -186,10 +215,11 @@ public class Intersection : INotifyPropertyChanged
         var lastPointP = _firstObj.GetPositionAndGradient(lastPoint.u, lastPoint.v);
         var lastPointQ = _secondObj.GetPositionAndGradient(lastPoint.s, lastPoint.t);
 
-        var NP = Vector3.Cross(lastPointP.dU, lastPointP.dV);
-        var NQ = Vector3.Cross(lastPointQ.dU, lastPointQ.dV);
+        var NP = Vector3.Cross(lastPointP.dU, lastPointP.dV).Normalized();
+        var NQ = Vector3.Cross(lastPointQ.dU, lastPointQ.dV).Normalized();
 
         var cross = right ? Vector3.Cross(NP, NQ) : Vector3.Cross(NQ, NP);
+        cross.Normalize();
 
         var F = (Vector4 vec) =>
         {
@@ -241,7 +271,7 @@ public class Intersection : INotifyPropertyChanged
                 M43 = 0,
                 M44 = 0,
             };
-            // mat.Transpose();
+            //mat.Transpose();
             return mat;
         };
         List<IntersectionPoint> points = new List<IntersectionPoint>();
@@ -264,8 +294,142 @@ public class Intersection : INotifyPropertyChanged
             it++;
 
             xk1 = xk - dF(xk).Inverted() * F(xk);
-            
-        } while (MathM.Distance(_firstObj.GetValueAt(xk1.X, xk1.Y), _firstObj.GetValueAt(xk.X, xk.Y)) >
+
+            if (xk1.X > 1 && _firstObj.IsUWrapped)
+            {
+                xk1.X -= MathF.Floor(xk1.X);
+            }
+
+            if (xk1.X < 0 && _firstObj.IsUWrapped)
+            {
+                xk1.X -= MathF.Floor(xk1.X);
+            }
+
+            if (xk1.Y > 1 && _firstObj.IsVWrapped)
+            {
+                xk1.Y -= MathF.Floor(xk1.Y);
+            }
+
+            if (xk1.Y < 0 && _firstObj.IsVWrapped)
+            {
+                xk1.Y -= MathF.Floor(xk1.Y);
+            }
+
+            if (xk1.Z > 1 && _secondObj.IsUWrapped)
+            {
+                xk1.Z -= MathF.Floor(xk1.Z);
+            }
+
+            if (xk1.Z < 0 && _secondObj.IsUWrapped)
+            {
+                xk1.Z -= MathF.Floor(xk1.Z);
+            }
+
+            if (xk1.W > 1 && _secondObj.IsVWrapped)
+            {
+                xk1.W -= MathF.Floor(xk1.W);
+            }
+
+            if (xk1.W < 0 && _secondObj.IsVWrapped)
+            {
+                xk1.W -= MathF.Floor(xk1.W);
+            }
+
+            if (right)
+            {
+                var f = _firstObj.GetPositionAndGradient(xk1.X, xk1.Y);
+                var fdU = new BezierCurveC0()
+                {
+                    Name = $"fdU{it}"
+                };
+                var fdV = new BezierCurveC0(){
+
+                    Name = $"fdV{it}"
+                };
+                var fPos = new ParameterizedPoint($"f {it}")
+                {
+                    posX = f.pos.X,
+                    posY = f.pos.Y,
+                    posZ = f.pos.Z,
+                };
+                var fPosdU = new ParameterizedPoint()
+                {
+                    posX = f.pos.X + f.dU.X,
+                    posY = f.pos.Y+ f.dU.Y,
+                    posZ = f.pos.Z+ f.dU.Z,
+                };
+                var fPosdV = new ParameterizedPoint()
+                {
+                    posX = f.pos.X + f.dV.X,
+                    posY = f.pos.Y+ f.dV.Y,
+                    posZ = f.pos.Z+ f.dV.Z,
+                };
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(fdU);
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(fdV);
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPos);
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdU);
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdV);
+                fdU.ProcessObject(fPos);
+                fdU.ProcessObject(fPosdU);
+                fdV.ProcessObject(fPos);
+                fdV.ProcessObject(fPosdV);
+                
+                var s = _secondObj.GetPositionAndGradient(xk1.Z, xk1.W);
+                var sdU = new BezierCurveC0()
+                {
+                    Name = $"sdU{it}"
+                };
+                var sdV = new BezierCurveC0(){
+
+                    Name = $"sdV{it}"
+                };
+                var sPos = new ParameterizedPoint($"s {it}; s: {xk1.Z} t: {xk1.W}")
+                {
+                    posX = s.pos.X,
+                    posY = s.pos.Y,
+                    posZ = s.pos.Z,
+                };
+                var sPosdU = new ParameterizedPoint()
+                {
+                    posX = s.pos.X +s.dU.X,
+                    posY = s.pos.Y+ s.dU.Y,
+                    posZ = s.pos.Z+ s.dU.Z,
+                };
+                var sPosdV = new ParameterizedPoint()
+                {
+                    posX = s.pos.X + s.dV.X,
+                    posY = s.pos.Y+ s.dV.Y,
+                    posZ = s.pos.Z+ s.dV.Z,
+                };
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(sdU);
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(sdV);
+                Scene.CurrentScene.ObjectsController.SelectedObject = null;
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPos);
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdU);
+                Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdV);
+                sdU.ProcessObject(sPos);
+                sdU.ProcessObject(sPosdU);
+                sdV.ProcessObject(sPos);
+                sdV.ProcessObject(sPosdV);
+                // var s = _firstObj.GetPositionAndGradient(xk1.Z, xk1.W);
+                // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"s {it}")
+                // {
+                //     posX = s.pos.X,
+                //     posY = s.pos.Y,
+                //     posZ = s.pos.Z,
+                // });
+            }
+
+            if (xk1.X > 1 || xk1.Y > 1 || xk1.Z > 1 || xk1.W > 1)
+                break;
+            if (xk1.X < 0 || xk1.Y < 0 || xk1.Z < 0 || xk1.W < 0)
+                break;
+        } while (MathM.DistanceSquared(_firstObj.GetValueAt(xk1.X, xk1.Y), _firstObj.GetValueAt(xk.X, xk.Y)) >
                  NewtonEps);
 
         return new IntersectionPoint()
@@ -309,8 +473,8 @@ public class Intersection : INotifyPropertyChanged
         {
             X = closestPoints.first.u,
             Y = closestPoints.first.v,
-            Z = closestPoints.second.u,//s
-            W = closestPoints.second.v,//t
+            Z = closestPoints.second.u, //s
+            W = closestPoints.second.v, //t
         };
 
         Vector4 uvstI1 = new Vector4();
@@ -318,19 +482,17 @@ public class Intersection : INotifyPropertyChanged
         int it = 0;
         do
         {
-            if (it != 0)
+            if (it > 0)
             {
                 uvstI = uvstI1;
             }
-            else
-            {
-                it++;
-            }
+
+            it++;
 
             uvstI1 = uvstI - stepLength * gradF(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W);
             if (F(uvstI1.X, uvstI1.Y, uvstI1.Z, uvstI1.W) >= F(uvstI.X, uvstI.Y, uvstI.Z, uvstI.W))
             {
-                stepLength /= 2f;
+                stepLength /= 1.5f;
             }
 
             Vector3 pos = _firstObj.GetValueAt(uvstI1.X, uvstI1.Y);
@@ -341,7 +503,8 @@ public class Intersection : INotifyPropertyChanged
             //     posY = pos.Y,
             //     posZ = pos.Z
             // });
-        } while (MathM.DistanceSquared(_firstObj.GetValueAt(uvstI.X, uvstI.Y), _firstObj.GetValueAt(uvstI1.X, uvstI1.Y)) > GradientEps);
+        } while (MathM.DistanceSquared(_firstObj.GetValueAt(uvstI.X, uvstI.Y),
+                     _firstObj.GetValueAt(uvstI1.X, uvstI1.Y)) > GradientEps);
 
         float u = uvstI1.X;
         float v = uvstI1.Y;

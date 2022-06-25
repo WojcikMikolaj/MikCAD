@@ -8,7 +8,7 @@ public interface ISurface
 
     Vector3 EvaluateCurveAtT(float u, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int size = 4)
     {
-        //t = 1 - t;
+        //u = 1 - u;
         int i = 0;
         int j = 0;
         Vector3[] arr = new Vector3[] {p0, p1, p2, p3};

@@ -927,4 +927,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         return (pos, dU, dV);
     }
+
+    public bool IsUWrapped => IsRolled;
+    public bool IsVWrapped => false;
 }

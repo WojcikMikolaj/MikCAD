@@ -45,6 +45,7 @@
                              Path=DataContext.CirclesCount, Mode=TwoWay}" DisplayLength="10" IsReadOnly="False"/>
                     </Grid>
                 </GroupBox>
+                <Button Height="50"  Click="SpawnPoints">Show points</Button>
             </StackPanel>
         </GroupBox>
     </Grid>

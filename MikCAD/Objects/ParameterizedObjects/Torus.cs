@@ -271,7 +271,8 @@ namespace MikCAD
 
             return ret;
         }
-
+        
+        //TODO: uwzględnić macierz
         public Vector3 GetValueAt(float u, float v)
         {
             var phi = MathHelper.DegreesToRadians(360.0f * u);

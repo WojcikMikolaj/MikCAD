@@ -5,25 +5,16 @@ namespace MikCAD;
 
 public interface IIntersectable
 {
-    List<(Vector3 pos,float u, float v)> GetStartingPoints()
+    List<(Vector3 pos,float u, float v)> GetStartingPoints(int uDivs =20, int vDivs=20 )
     {
         var result = new List<(Vector3 pos,float u, float v)>();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < uDivs; i++)
         {
-            for (int j = 0; j < 20; j++)
+            for (int j = 0; j < vDivs; j++)
             {
-                result.Add((GetValueAt(i*0.05f,j*0.05f), i*0.05f,j*0.05f));
+                result.Add((GetValueAt(i*USize/uDivs,j*VSize/vDivs), i*USize/uDivs,j*VSize/vDivs));
             }
         }
-
-        // for (int i = 0; i <= 4; i++)
-        // {
-        //     for (int j = 0; j <= 4; j++)
-        //     {
-        //         result.Add((GetValueAt(i*0.25f,j*0.25f), i*0.25f,j*0.25f));
-        //     }
-        // }
-        
         return result;
     }
     Vector3 GetValueAt(float u, float v);
@@ -32,4 +23,7 @@ public interface IIntersectable
     (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v);
     bool IsUWrapped { get; }
     bool IsVWrapped { get; }
+    
+    float USize { get; }
+    float VSize { get; }
 }

@@ -271,12 +271,12 @@ namespace MikCAD
 
             return ret;
         }
-        
+
         //TODO: uwzględnić macierz
         public Vector3 GetValueAt(float u, float v)
         {
-            var phi = MathHelper.DegreesToRadians(360.0f * u);
-            var theta = MathHelper.DegreesToRadians(360.0f * v);
+            var phi = u;
+            var theta = v;
 
 
             var X = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
@@ -287,34 +287,36 @@ namespace MikCAD
 
         public Vector3 GetUDerivativeAt(float u, float v)
         {
-            var phi = MathHelper.DegreesToRadians(360.0f * u);
-            var theta = MathHelper.DegreesToRadians(360.0f * v);
+            var phi = u;
+            var theta = v;
 
 
-            var X = -(R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi) * 2 * Math.PI;
+            var X = -(R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
             var Y = 0;
-            var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi) * 2 * Math.PI;
-            return new Vector3((float) X, Y, (float) Z);
+            var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
+            return new Vector3(X, Y, Z);
         }
 
         public Vector3 GetVDerivativeAt(float u, float v)
         {
-            var phi = MathHelper.DegreesToRadians(360.0f * u);
-            var theta = MathHelper.DegreesToRadians(360.0f * v);
+            var phi = u;
+            var theta = v;
 
 
-            var X = -2 * Math.PI * r * (float) MathHelper.Sin(theta) * (float) MathHelper.Cos(phi);
-            var Y = 2 * Math.PI * r * (float) MathHelper.Cos(theta);
-            var Z = -2 * Math.PI * r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
-            return new Vector3((float) X, (float) Y, (float) Z);
+            var X = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Cos(phi);
+            var Y = r * (float) MathHelper.Cos(theta);
+            var Z = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
+            return new Vector3(X, Y, Z);
         }
 
         public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
         {
             return (GetValueAt(u, v), GetUDerivativeAt(u, v), GetVDerivativeAt(u, v));
         }
-        
+
         public bool IsUWrapped => true;
         public bool IsVWrapped => true;
+        public float USize => 2 * MathF.PI;
+        public float VSize => 2 * MathF.PI;
     }
 }

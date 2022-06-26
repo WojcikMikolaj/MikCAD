@@ -149,24 +149,7 @@ public class Intersection : INotifyPropertyChanged
                 break;
             rightPoints.Add(lastPoint);
 
-            if ((lastPoint.u > 1 || lastPoint.u < 0) && _firstObj.IsUWrapped)
-                lastPoint.u -= MathF.Floor(lastPoint.u);
-            if ((lastPoint.v > 1 || lastPoint.v < 0) && _firstObj.IsVWrapped)
-                lastPoint.v -= MathF.Floor(lastPoint.v);
-
-            if ((lastPoint.s > 1 || lastPoint.s < 0) && _secondObj.IsUWrapped)
-                lastPoint.s -= MathF.Floor(lastPoint.s);
-            if ((lastPoint.t > 1 || lastPoint.t < 0) && _secondObj.IsVWrapped)
-                lastPoint.t -= MathF.Floor(lastPoint.t);
-
-
-            if (lastPoint.u > 1 || lastPoint.u < 0)
-                break;
-            if (lastPoint.v > 1 || lastPoint.v < 0)
-                break;
-            if (lastPoint.s > 1 || lastPoint.s < 0)
-                break;
-            if (lastPoint.t > 1 || lastPoint.t < 0)
+            if (HandleWrapping(lastPoint)) 
                 break;
             if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
             {
@@ -183,23 +166,7 @@ public class Intersection : INotifyPropertyChanged
                 break;
             leftPoints.Add(lastPoint);
 
-            if ((lastPoint.u > 1 || lastPoint.u < 0) && _firstObj.IsUWrapped)
-                lastPoint.u -= MathF.Floor(lastPoint.u);
-            if ((lastPoint.v > 1 || lastPoint.v < 0) && _firstObj.IsVWrapped)
-                lastPoint.v -= MathF.Floor(lastPoint.v);
-
-            if ((lastPoint.s > 1 || lastPoint.s < 0) && _secondObj.IsUWrapped)
-                lastPoint.s -= MathF.Floor(lastPoint.s);
-            if ((lastPoint.t > 1 || lastPoint.t < 0) && _secondObj.IsVWrapped)
-                lastPoint.t -= MathF.Floor(lastPoint.t);
-
-            if (lastPoint.u > 1 || lastPoint.u < 0)
-                break;
-            if (lastPoint.v > 1 || lastPoint.v < 0)
-                break;
-            if (lastPoint.s > 1 || lastPoint.s < 0)
-                break;
-            if (lastPoint.t > 1 || lastPoint.t < 0)
+            if (HandleWrapping(lastPoint)) 
                 break;
             if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
                 break;
@@ -213,6 +180,43 @@ public class Intersection : INotifyPropertyChanged
         }
 
         return leftPoints;
+    }
+
+    private bool HandleWrapping(IntersectionPoint lastPoint)
+    {
+        if (lastPoint.u > _firstObj.USize && _firstObj.IsUWrapped)
+            lastPoint.u -= MathF.Floor(lastPoint.u);
+        if( lastPoint.u < 0 && _firstObj.IsUWrapped)
+            lastPoint.u = _firstObj.USize + lastPoint.u;
+        
+        if (lastPoint.v > _firstObj.VSize && _firstObj.IsVWrapped)
+            lastPoint.v -= MathF.Floor(lastPoint.v);
+        if( lastPoint.v < 0 && _firstObj.IsVWrapped)
+            lastPoint.v = _firstObj.VSize + lastPoint.v;
+
+        
+        
+        if (lastPoint.s > _secondObj.USize && _secondObj.IsUWrapped)
+            lastPoint.s -= MathF.Floor(lastPoint.s);
+        if (lastPoint.s < 0 && _secondObj.IsUWrapped)
+            lastPoint.s = _secondObj.USize + lastPoint.s;
+        
+        if (lastPoint.t > _secondObj.VSize && _secondObj.IsVWrapped)
+            lastPoint.t -= MathF.Floor(lastPoint.t);
+        if (lastPoint.t < 0 && _secondObj.IsVWrapped)
+            lastPoint.t = _secondObj.VSize + lastPoint.t;
+                
+
+
+        if (lastPoint.u > _firstObj.USize || lastPoint.u < 0)
+            return true;
+        if (lastPoint.v > _firstObj.VSize || lastPoint.v < 0)
+            return true;
+        if (lastPoint.s > _secondObj.USize || lastPoint.s < 0)
+            return true;
+        if (lastPoint.t > _secondObj.VSize || lastPoint.t < 0)
+            return true;
+        return false;
     }
 
     private IntersectionPoint FindNextPoint(IntersectionPoint lastPoint, bool right = true)
@@ -303,9 +307,9 @@ public class Intersection : INotifyPropertyChanged
             
             xk1 = Wrap(xk1);
 
-//            Print(right, xk1, it);
+            //Print(right, xk1, it);
 
-            if (xk1.X > 1 || xk1.Y > 1 || xk1.Z > 1 || xk1.W > 1)
+            if (xk1.X > _firstObj.USize || xk1.Y > _firstObj.VSize || xk1.Z > _secondObj.USize || xk1.W > _secondObj.VSize)
                 break;
             if (xk1.X < 0 || xk1.Y < 0 || xk1.Z < 0 || xk1.W < 0)
                 break;
@@ -417,45 +421,27 @@ public class Intersection : INotifyPropertyChanged
 
     private Vector4 Wrap(Vector4 xk1)
     {
-        if (xk1.X > 1 && _firstObj.IsUWrapped)
-        {
+        if (xk1.X > _firstObj.USize && _firstObj.IsUWrapped)
             xk1.X -= MathF.Floor(xk1.X);
-        }
-
-        if (xk1.X < 0 && _firstObj.IsUWrapped)
-        {
-            xk1.X -= MathF.Floor(xk1.X);
-        }
-
-        if (xk1.Y > 1 && _firstObj.IsVWrapped)
-        {
+        if( xk1.X < 0 && _firstObj.IsUWrapped)
+            xk1.X = _firstObj.USize + xk1.X;
+        
+        if (xk1.Y > _firstObj.VSize && _firstObj.IsVWrapped)
             xk1.Y -= MathF.Floor(xk1.Y);
-        }
+        if( xk1.Y < 0 && _firstObj.IsVWrapped)
+            xk1.Y = _firstObj.VSize + xk1.Y;
 
-        if (xk1.Y < 0 && _firstObj.IsVWrapped)
-        {
-            xk1.Y -= MathF.Floor(xk1.Y);
-        }
-
-        if (xk1.Z > 1 && _secondObj.IsUWrapped)
-        {
+        
+        
+        if (xk1.Z > _secondObj.USize && _secondObj.IsUWrapped)
             xk1.Z -= MathF.Floor(xk1.Z);
-        }
-
         if (xk1.Z < 0 && _secondObj.IsUWrapped)
-        {
-            xk1.Z -= MathF.Floor(xk1.Z);
-        }
-
-        if (xk1.W > 1 && _secondObj.IsVWrapped)
-        {
+            xk1.Z = _secondObj.USize + xk1.Z;
+        
+        if (xk1.W > _secondObj.VSize && _secondObj.IsVWrapped)
             xk1.W -= MathF.Floor(xk1.W);
-        }
-
         if (xk1.W < 0 && _secondObj.IsVWrapped)
-        {
-            xk1.W -= MathF.Floor(xk1.W);
-        }
+            xk1.W = _secondObj.VSize + xk1.W;
 
         return xk1;
     }

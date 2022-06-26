@@ -835,27 +835,17 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 
     public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
     {
-        if (u < 0)
-            u = 0;
-        if (u > 1)
-            u = 1;
-
-        if (v < 0)
-            v = 0;
-        if (v > 1)
-            v = 1;
-
         var patchUSize = 1.0f / UPatches;
         var patchVSize = 1.0f / VPatches;
 
-        //????????????????????????????? czy to tu zadziała?
         int UPatchNum = (int) Math.Floor(u / patchUSize);
         int VPatchNum = (int) Math.Floor(v / patchVSize);
-        
+
         //przeskalowanie u i v na 0,1 dla danego patcha
-        u = (u - (UPatchNum * patchUSize)) / (patchUSize);
-        v = (v - (VPatchNum * patchVSize)) / (patchVSize);
-        
+        if (u is > 0 and < 1)
+            u = (u - (UPatchNum * patchUSize)) / (patchUSize);
+        if (v is > 0 and < 1)
+            v = (v - (VPatchNum * patchVSize)) / (patchVSize);
 
         if (UPatchNum == UPatches)
             UPatchNum = (int) UPatches - 1;
@@ -863,82 +853,128 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         if (VPatchNum == VPatches)
             VPatchNum = (int) VPatches - 1;
 
-        Vector3[,] patchPoints = new Vector3[4, 4];
+        if (u < 0)
+        {
+            u = 0;
+            UPatchNum = 0;
+        }
+
+        if (u > 1)
+        {
+            u = 1;
+            UPatchNum = (int) UPatches - 1;
+        }
+
+        if (v < 0)
+        {
+            v = 0;
+            VPatchNum = 0;
+        }
+
+        if (v > 1)
+        {
+            v = 1;
+            VPatchNum = (int) VPatches - 1;
+        }
+
+        ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
+        Vector3[,] patchPosdVPoints = new Vector3[4, 4];
+        Vector3[,] patchdUPoints = new Vector3[4, 4];
 
 
         for (int i = 0; i < 4; i++)
         {
             if (IsRolled)
             {
-                var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
-                    points[(UPatchNum) % (int) (UPatches )][VPatchNum + i].pos,
-                    points[(UPatchNum + 1) % (int) (UPatches )][VPatchNum + i].pos,
-                    points[(UPatchNum + 2) % (int) (UPatches )][VPatchNum + i].pos,
-                    points[(UPatchNum + 3) % (int) (UPatches )][VPatchNum + i].pos);
-                
-                patchPoints[i,0 ] = bezierPoints[0];
-                patchPoints[i,1 ] = bezierPoints[1];
-                patchPoints[i,2 ] = bezierPoints[2];
-                patchPoints[i,3 ] = bezierPoints[3];
+                patchPoints[i, 0] = points[(UPatchNum) % (int) (UPatches)][VPatchNum + i];
+                patchPoints[i, 1] = points[(UPatchNum + 1) % (int) (UPatches)][VPatchNum + i];
+                patchPoints[i, 2] = points[(UPatchNum + 2) % (int) (UPatches)][VPatchNum + i];
+                patchPoints[i, 3] = points[(UPatchNum + 3) % (int) (UPatches)][VPatchNum + i];
             }
             else
             {
-                var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
-                    points[UPatchNum][VPatchNum + i].pos,
-                    points[UPatchNum + 1][VPatchNum + i].pos,
-                    points[UPatchNum + 2][VPatchNum + i].pos,
-                    points[UPatchNum + 3][VPatchNum + i].pos);
-
-                patchPoints[i,0] = bezierPoints[0];
-                patchPoints[i,1] = bezierPoints[1];
-                patchPoints[i,2] = bezierPoints[2];
-                patchPoints[i,3] = bezierPoints[3];
+                patchPoints[i, 0] = points[UPatchNum][VPatchNum + i];
+                patchPoints[i, 1] = points[UPatchNum + 1][VPatchNum + i];
+                patchPoints[i, 2] = points[UPatchNum + 2][VPatchNum + i];
+                patchPoints[i, 3] = points[UPatchNum + 3][VPatchNum + i];
             }
+
+            var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
+                patchPoints[i, 0].pos,
+                patchPoints[i, 1].pos,
+                patchPoints[i, 2].pos,
+                patchPoints[i, 3].pos);
+
+            patchPosdVPoints[i, 0] = bezierPoints[0];
+            patchPosdVPoints[i, 1] = bezierPoints[1];
+            patchPosdVPoints[i, 2] = bezierPoints[2];
+            patchPosdVPoints[i, 3] = bezierPoints[3];
         }
 
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, 
-                patchPoints[i,0],
-                patchPoints[i,1],
-                patchPoints[i,2],
-                patchPoints[i,3]);
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u,
+                patchPosdVPoints[i, 0],
+                patchPosdVPoints[i, 1],
+                patchPosdVPoints[i, 2],
+                patchPosdVPoints[i, 3]);
         }
 
+        var interBezierPoints =
+            (this as ISurface).ConvertBSplineToBezier(interArray[0], interArray[1], interArray[2], interArray[3]);
+
         var pos = (this as ISurface).EvaluateCurveAtT(v,
-            interArray[0],
-            interArray[1],
-            interArray[2],
-            interArray[3]);
+            interBezierPoints[0],
+            interBezierPoints[1],
+            interBezierPoints[2],
+            interBezierPoints[3]);
 
         var dV = (this as ISurface).EvaluateCurveAtT(v,
-            3 * interArray[1] - 3 * interArray[0],
-            3 * interArray[2] - 3 * interArray[1],
-            3 * interArray[3] - 3 * interArray[2],
-            interArray[3],
+            (3 + VPatches - 1) * interBezierPoints[1] - (3 + VPatches - 1) * interBezierPoints[0],
+            (3 + VPatches - 1) * interBezierPoints[2] - (3 + VPatches - 1) * interBezierPoints[1],
+            (3 + VPatches - 1) * interBezierPoints[3] - (3 + VPatches - 1) * interBezierPoints[2],
+            interBezierPoints[3],
             3);
 
+        
+        for (int i = 0; i < 4; i++)
+        {
+            var bezierPoints = (this as ISurface).ConvertBSplineToBezier(
+                patchPoints[0, i].pos,
+                patchPoints[1, i].pos,
+                patchPoints[2, i].pos,
+                patchPoints[3, i].pos);
+
+            patchdUPoints[0, i] = bezierPoints[0];
+            patchdUPoints[1, i] = bezierPoints[1];
+            patchdUPoints[2, i] = bezierPoints[2];
+            patchdUPoints[3, i] = bezierPoints[3];
+        }
+        
         Vector3[] interUArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
             interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
-                patchPoints[0,i ],
-                patchPoints[1,i ],
-                patchPoints[2,i ],
-                patchPoints[3,i ]);
+                patchdUPoints[0, i],
+                patchdUPoints[1, i],
+                patchdUPoints[2, i],
+                patchdUPoints[3, i]);
         }
 
+        var interUBezierArray =
+            (this as ISurface).ConvertBSplineToBezier(interUArray[0], interUArray[1], interUArray[2], interUArray[3]);
+
         var dU = (this as ISurface).EvaluateCurveAtT(u,
-            3 * interUArray[1] - 3 * interUArray[0],
-            3 * interUArray[2] - 3 * interUArray[1],
-            3 * interUArray[3] - 3 * interUArray[2],
-            interUArray[3],
+            (3 + UPatches - 1) * interUBezierArray[1] - (3 + UPatches - 1) * interUBezierArray[0],
+            (3 + UPatches - 1) * interUBezierArray[2] - (3 + UPatches - 1) * interUBezierArray[1],
+            (3 + UPatches - 1) * interUBezierArray[3] - (3 + UPatches - 1) * interUBezierArray[2],
+            interUBezierArray[3],
             3);
 
         return (pos, dU, dV);
     }
-    
+
     public bool IsUWrapped => IsRolled;
     public bool IsVWrapped => false;
 }

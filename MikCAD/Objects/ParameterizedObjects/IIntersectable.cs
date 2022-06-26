@@ -16,6 +16,14 @@ public interface IIntersectable
             }
         }
 
+        // for (int i = 0; i <= 4; i++)
+        // {
+        //     for (int j = 0; j <= 4; j++)
+        //     {
+        //         result.Add((GetValueAt(i*0.25f,j*0.25f), i*0.25f,j*0.25f));
+        //     }
+        // }
+        
         return result;
     }
     Vector3 GetValueAt(float u, float v);

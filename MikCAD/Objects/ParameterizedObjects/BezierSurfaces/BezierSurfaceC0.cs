@@ -840,9 +840,6 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
     public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
     {
-
-        
-
         var patchUSize = 1.0f / UPatches;
         var patchVSize = 1.0f / VPatches;
 

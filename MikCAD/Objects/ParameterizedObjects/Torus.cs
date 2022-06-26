@@ -282,7 +282,7 @@ namespace MikCAD
             var X = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
             var Y = r * (float) MathHelper.Sin(theta);
             var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
-            return new Vector3(X, Y, Z);
+            return (new Vector4(X, Y, Z, 1)*GetModelMatrix()).Xyz;
         }
 
         public Vector3 GetUDerivativeAt(float u, float v)
@@ -294,7 +294,7 @@ namespace MikCAD
             var X = -(R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
             var Y = 0;
             var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
-            return new Vector3(X, Y, Z);
+            return (new Vector4(X, Y, Z, 0)*GetModelMatrix()).Xyz;
         }
 
         public Vector3 GetVDerivativeAt(float u, float v)
@@ -306,7 +306,7 @@ namespace MikCAD
             var X = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Cos(phi);
             var Y = r * (float) MathHelper.Cos(theta);
             var Z = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
-            return new Vector3(X, Y, Z);
+            return (new Vector4(X, Y, Z,0)*GetModelMatrix()).Xyz;
         }
 
         public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)

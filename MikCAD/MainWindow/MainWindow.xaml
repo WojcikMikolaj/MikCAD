@@ -7,7 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interop;assembly=PresentationCore"
         xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
         xmlns:cc="clr-namespace:MikCAD.CustomCommands"
-        xmlns:st = "http://schemas.spicytaco.io/"
+        xmlns:st="http://schemas.spicytaco.io/"
         mc:Ignorable="d"
         Title="MikCAD" MinHeight="400" MinWidth="950"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
@@ -17,92 +17,130 @@
         KeyUp="MainWindow_OnKeyUp">
     <Window.Resources>
         <DataTemplate DataType="{x:Type local:Torus}" x:Key="Torus">
-            <local:TorusControl DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"/>
+            <local:TorusControl DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" />
         </DataTemplate>
     </Window.Resources>
     <Window.CommandBindings>
-        <CommandBinding Command="Save" Executed="OnSaveCommand"/>
-        <CommandBinding Command="Open" Executed="OnLoadCommand"/>
-        <CommandBinding Command="cc:AddCommands.AddPoint" Executed="AddPoint"/>
-        <CommandBinding Command="cc:AddCommands.AddTorus" Executed="AddTorus"/>
-        <CommandBinding Command="cc:AddCommands.AddBezierCurveC0" Executed="AddBezierCurveC0"/>
-        <CommandBinding Command="cc:AddCommands.AddBezierCurveC2" Executed="AddBezierCurveC2"/>
-        <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2"/>
-        <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC0" Executed="AddBezierSurfaceC0"/>
-        <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC2" Executed="AddBezierSurfaceC2"/>
-        <CommandBinding Command="cc:UtilityCommands.ClearScene" Executed="ClearScene"/>
+        <CommandBinding Command="Save" Executed="OnSaveCommand" />
+        <CommandBinding Command="Open" Executed="OnLoadCommand" />
+        <CommandBinding Command="cc:AddCommands.AddPoint" Executed="AddPoint" />
+        <CommandBinding Command="cc:AddCommands.AddTorus" Executed="AddTorus" />
+        <CommandBinding Command="cc:AddCommands.AddBezierCurveC0" Executed="AddBezierCurveC0" />
+        <CommandBinding Command="cc:AddCommands.AddBezierCurveC2" Executed="AddBezierCurveC2" />
+        <CommandBinding Command="cc:AddCommands.AddInterpolatingBezierCurveC2" Executed="AddInterpolatingBezierCurveC2" />
+        <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC0" Executed="AddBezierSurfaceC0" />
+        <CommandBinding Command="cc:AddCommands.AddBezierSurfaceC2" Executed="AddBezierSurfaceC2" />
+        <CommandBinding Command="cc:UtilityCommands.ClearScene" Executed="ClearScene" />
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Key="P" Modifiers="Control" Command="cc:AddCommands.AddPoint"></KeyBinding>
         <KeyBinding Key="T" Modifiers="Control" Command="cc:AddCommands.AddTorus"></KeyBinding>
-        <KeyBinding Key="D0"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC0"></KeyBinding>
-        <KeyBinding Key="D2"  Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC2"></KeyBinding>
-        <KeyBinding Key="D3"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC0"></KeyBinding>
-        <KeyBinding Key="D4"  Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC2"></KeyBinding>
-        <KeyBinding Key="I"  Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
-       <KeyBinding Key="N"  Modifiers="Control" Command="cc:UtilityCommands.ClearScene"></KeyBinding>
+        <KeyBinding Key="D0" Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC0"></KeyBinding>
+        <KeyBinding Key="D2" Modifiers="Control" Command="cc:AddCommands.AddBezierCurveC2"></KeyBinding>
+        <KeyBinding Key="D3" Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC0"></KeyBinding>
+        <KeyBinding Key="D4" Modifiers="Control" Command="cc:AddCommands.AddBezierSurfaceC2"></KeyBinding>
+        <KeyBinding Key="I" Modifiers="Control" Command="cc:AddCommands.AddInterpolatingBezierCurveC2"></KeyBinding>
+        <KeyBinding Key="N" Modifiers="Control" Command="cc:UtilityCommands.ClearScene"></KeyBinding>
     </Window.InputBindings>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="1*" MinWidth="400" />
-            <ColumnDefinition Width="250" />
-        </Grid.ColumnDefinitions>
-        <Menu Grid.ColumnSpan="3">
-            <MenuItem Header="Dodaj">
-                <MenuItem Header="Punkt" Click="AddPoint" InputGestureText="Ctrl+P"></MenuItem>
-                <MenuItem Header="Torus" Click="AddTorus" InputGestureText="Ctrl+T"/>
-                <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+0"/>
-                <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+2"/>
-                <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2" InputGestureText="Ctrl+I"/>
-                <MenuItem Header="Płatek bikubiczny C0" Click="AddBezierSurfaceC0" InputGestureText="Ctrl+3"/>
-                <MenuItem Header="Płatek bikubiczny C2" Click="AddBezierSurfaceC2" InputGestureText="Ctrl+4"/>
-            </MenuItem>
-            <MenuItem Header="Edycja">
-                <MenuItem Header="Zapisz" x:Name="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>
-                <MenuItem Header="Wczytaj" x:Name="Load" Command="Open" InputGestureText="Ctrl+O"></MenuItem>
-            </MenuItem>
-            <MenuItem Header="Debug">
-                <MenuItem Header="Clear" Click="ClearScene" x:Name="Clear" InputGestureText="Ctrl+N"></MenuItem>
-                <MenuItem Header="Dodaj 3"  x:Name="Add3">
-                    <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
-                    <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>
-                </MenuItem>
-                <MenuItem Header="Rot test" Click="RotTest"></MenuItem>
-                <MenuItem Header="Bezier Curve C0 test" Click="BezierCurveC0Test"></MenuItem>
-                <MenuItem Header="Bezier Curve C2 test" Click="BezierCurveC2Test"></MenuItem>
-                <MenuItem Header="Bezier Curve C2 Bernstein test" Click="BezierCurveC2BernsteinTest"></MenuItem>
-                <MenuItem Header="Interpolation test" Click="InterpolationTest"></MenuItem>
-            </MenuItem>
-        </Menu>
-        <st:AutoGrid Rows="Auto,*" Grid.Row="1" Width="240">
-            <local:CameraControl DockPanel.Dock="Top" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>
-            <local:ObjectsList DockPanel.Dock="Top"/>
-        </st:AutoGrid>
-        <glWpfControl:GLWpfControl Grid.Row="1" Grid.Column="1" x:Name="OpenTkControl"
-                                   Render="OpenTkControl_OnRender"
-                                   MouseLeftButtonDown="Image_OnMouseLeftButtonDown"
-                                   MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
-                                   MouseRightButtonDown="Image_OnMouseRightButtonDown"
-                                   PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp"
-                                   MouseMove="Image_OnMouseMove"
-                                   MouseWheel="Image_OnMouseWheel"
-                                   SizeChanged="OpenTkControl_OnSizeChanged"
-                                   MinWidth="400"
-                                   MinHeight="400" />
-        <local:TorusControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="torusControl" Visibility="Hidden"/>
-        <local:PointControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointControl" Visibility="Hidden"/>
-        <local:PointerControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="pointerControl" Visibility="Hidden"/>
-        <local:BezierCurveC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC0Control" Visibility="Hidden"/>
-        <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierCurveC2Control" Visibility="Hidden"/>
-        <local:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden"/>
-        <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierSurfaceC0Control" Visibility="Hidden"/>
-        <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="bezierSurfaceC2Control" Visibility="Hidden"/>
-        <local:GregoryPatchControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="gregoryPatchControl" Visibility="Hidden"/>
-        <local:CompositeControl Grid.Row="1" Grid.Column="2" DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}" x:Name="compositeControl" Visibility="Hidden"/>
-    </Grid>
+    <TabControl>
+        <TabItem>
+            <TabItem.Header>Główne okno</TabItem.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="1*" MinWidth="400" />
+                    <ColumnDefinition Width="250" />
+                </Grid.ColumnDefinitions>
+                <Menu Grid.ColumnSpan="3">
+                    <MenuItem Header="Dodaj">
+                        <MenuItem Header="Punkt" Click="AddPoint" InputGestureText="Ctrl+P"></MenuItem>
+                        <MenuItem Header="Torus" Click="AddTorus" InputGestureText="Ctrl+T" />
+                        <MenuItem Header="Krzywa Beziera C0" Click="AddBezierCurveC0" InputGestureText="Ctrl+0" />
+                        <MenuItem Header="Krzywa Beziera C2" Click="AddBezierCurveC2" InputGestureText="Ctrl+2" />
+                        <MenuItem Header="Interpolująca krzywa Beziera C2" Click="AddInterpolatingBezierCurveC2"
+                                  InputGestureText="Ctrl+I" />
+                        <MenuItem Header="Płatek bikubiczny C0" Click="AddBezierSurfaceC0" InputGestureText="Ctrl+3" />
+                        <MenuItem Header="Płatek bikubiczny C2" Click="AddBezierSurfaceC2" InputGestureText="Ctrl+4" />
+                    </MenuItem>
+                    <MenuItem Header="Edycja">
+                        <MenuItem Header="Zapisz" x:Name="Save" Command="Save" InputGestureText="Ctrl+S"></MenuItem>
+                        <MenuItem Header="Wczytaj" x:Name="Load" Command="Open" InputGestureText="Ctrl+O"></MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Debug">
+                        <MenuItem Header="Clear" Click="ClearScene" x:Name="Clear" InputGestureText="Ctrl+N"></MenuItem>
+                        <MenuItem Header="Dodaj 3" x:Name="Add3">
+                            <MenuItem Header="Punkty" Click="AddThreePoints"></MenuItem>
+                            <MenuItem Header="Torusy" Click="AddThreeToruses"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Rot test" Click="RotTest"></MenuItem>
+                        <MenuItem Header="Bezier Curve C0 test" Click="BezierCurveC0Test"></MenuItem>
+                        <MenuItem Header="Bezier Curve C2 test" Click="BezierCurveC2Test"></MenuItem>
+                        <MenuItem Header="Bezier Curve C2 Bernstein test" Click="BezierCurveC2BernsteinTest"></MenuItem>
+                        <MenuItem Header="Interpolation test" Click="InterpolationTest"></MenuItem>
+                    </MenuItem>
+                </Menu>
+                <st:AutoGrid Rows="Auto,*" Grid.Row="1" Width="240">
+                    <local:CameraControl DockPanel.Dock="Top" DataContext="{Binding scene.camera, Mode=TwoWay}"></local:CameraControl>
+                    <local:ObjectsList DockPanel.Dock="Top" />
+                </st:AutoGrid>
+                <glWpfControl:GLWpfControl Grid.Row="1" Grid.Column="1" x:Name="OpenTkControl"
+                                           Render="OpenTkControl_OnRender"
+                                           MouseLeftButtonDown="Image_OnMouseLeftButtonDown"
+                                           MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
+                                           MouseRightButtonDown="Image_OnMouseRightButtonDown"
+                                           PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp"
+                                           MouseMove="Image_OnMouseMove"
+                                           MouseWheel="Image_OnMouseWheel"
+                                           SizeChanged="OpenTkControl_OnSizeChanged"
+                                           MinWidth="400"
+                                           MinHeight="400" />
+                <local:TorusControl Grid.Row="1" Grid.Column="2"
+                                    DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                    x:Name="torusControl" Visibility="Hidden" />
+                <local:PointControl Grid.Row="1" Grid.Column="2"
+                                    DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                    x:Name="pointControl" Visibility="Hidden" />
+                <local:PointerControl Grid.Row="1" Grid.Column="2"
+                                      DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                      x:Name="pointerControl" Visibility="Hidden" />
+                <local:BezierCurveC0Control Grid.Row="1" Grid.Column="2"
+                                            DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                            x:Name="bezierCurveC0Control" Visibility="Hidden" />
+                <local:BezierCurveC2Control Grid.Row="1" Grid.Column="2"
+                                            DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                            x:Name="bezierCurveC2Control" Visibility="Hidden" />
+                <local:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2"
+                                                         DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                                         x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden" />
+                <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2"
+                                              DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                              x:Name="bezierSurfaceC0Control" Visibility="Hidden" />
+                <local:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2"
+                                              DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                              x:Name="bezierSurfaceC2Control" Visibility="Hidden" />
+                <local:GregoryPatchControl Grid.Row="1" Grid.Column="2"
+                                           DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                           x:Name="gregoryPatchControl" Visibility="Hidden" />
+                <local:CompositeControl Grid.Row="1" Grid.Column="2"
+                                        DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                        x:Name="compositeControl" Visibility="Hidden" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Podgląd tekstury">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="firstImage" Grid.Column="0" /><!--Height="400" Width="400"-->
+                <Image x:Name="secondImage" Grid.Column="2" /><!--Height="400" Width="400"-->
+            </Grid>
+            
+        </TabItem>
+    </TabControl>
 </Window>

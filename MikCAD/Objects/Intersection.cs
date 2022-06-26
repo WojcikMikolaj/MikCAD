@@ -22,8 +22,8 @@ public class Intersection : INotifyPropertyChanged
 
     private readonly bool _selfIntersection;
 
-    private IIntersectable _firstObj;
-    private IIntersectable _secondObj;
+    internal IIntersectable _firstObj;
+    internal IIntersectable _secondObj;
 
     public int NumberOfPoints { get; set; }
     public float Steps { get; set; }
@@ -36,7 +36,9 @@ public class Intersection : INotifyPropertyChanged
     public float NewtonEps { get; set; } = 0.001f;
     public int NewtonMaxIterations { get; set; } = 5000;
 
-    public void Intersect()
+    public List<IntersectionPoint> points;
+    
+    public bool Intersect()
     {
         if (!_selfIntersection)
         {
@@ -76,7 +78,7 @@ public class Intersection : INotifyPropertyChanged
                     _firstObj.GetValueAt(firstIntersectionPoint.u, firstIntersectionPoint.v),
                     _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps * 10)
             {
-                return;
+                return false;
             }
 
             Scene.CurrentScene.ObjectsController.SelectedObject = null;
@@ -118,10 +120,14 @@ public class Intersection : INotifyPropertyChanged
                 Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
                 interpolating2.ProcessObject(p);
             }
+
+            this.points = points;
+            return true;
         }
+        return false;
     }
 
-    class IntersectionPoint
+    public class IntersectionPoint
     {
         public Vector3 pos { get; set; }
         public float u { get; set; }

@@ -469,6 +469,28 @@ public class Intersection : INotifyPropertyChanged
         //     interpolating2.ProcessObject(p);
         // }
     }
+    
+    public void ShowC0()
+    {
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        var intersectionC0 = new IntersectionCurve();
+        intersectionC0.Name = "intersectionC0";
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(intersectionC0);
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            
+        foreach (var point in points)
+        {
+            var pos = _firstObj.GetValueAt(point.u, point.v);
+            var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z,
+            };
+            //Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+            intersectionC0.ProcessObject(p);
+        }
+    }
 
     #region Misc
 

@@ -29,4 +29,9 @@ public partial class IntersectionControl : UserControl
         MainWindow.current.firstImage.Source = null;
         MainWindow.current.secondImage.Source = null;
     }
+
+    private void ShowC0(object sender, RoutedEventArgs e)
+    {
+        (DataContext as Intersection).ShowC0();
+    }
 }

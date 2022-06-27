@@ -943,5 +943,14 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
     public float USize => UPatches;
     public float VSize => VPatches;
     
-    public Intersection Intersection { get; set; }
+    private Intersection _intersection;
+    public Intersection Intersection
+    {
+        get => _intersection;
+        set
+        {
+            _intersection = value;
+            OnPropertyChanged(nameof(Intersection));
+        }
+    }
 }

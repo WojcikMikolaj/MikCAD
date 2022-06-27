@@ -22,7 +22,10 @@ public class Intersection : INotifyPropertyChanged
 
     private readonly bool _selfIntersection;
 
+    public ParameterizedObject FirstObject => (ParameterizedObject) _firstObj;
     internal IIntersectable _firstObj;
+    
+    public ParameterizedObject SecondObject => (ParameterizedObject) _secondObj;
     internal IIntersectable _secondObj;
 
     public int NumberOfPoints { get; set; }
@@ -39,6 +42,8 @@ public class Intersection : INotifyPropertyChanged
     public List<IntersectionPoint> points;
     
     private bool _looped = false;
+    public DirectBitmap secondBmp;
+    public DirectBitmap firstBmp;
     public bool Looped => _looped; 
     
     public bool Intersect()
@@ -84,47 +89,11 @@ public class Intersection : INotifyPropertyChanged
             {
                 return false;
             }
-
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            var interpolating = new InterpolatingBezierCurveC2();
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-
+            
             //Newton
             intersectionPoints.Add(firstIntersectionPoint);
             var points = FindOtherPoints(firstIntersectionPoint);
-
-            foreach (var point in points)
-            {
-                var pos = _firstObj.GetValueAt(point.u, point.v);
-                var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
-                {
-                    posX = pos.X,
-                    posY = pos.Y,
-                    posZ = pos.Z,
-                };
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
-                interpolating.ProcessObject(p);
-            }
-
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            var interpolating2 = new InterpolatingBezierCurveC2();
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating2);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-
-            foreach (var point in points)
-            {
-                var pos = _secondObj.GetValueAt(point.s, point.t);
-                var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
-                {
-                    posX = pos.X,
-                    posY = pos.Y,
-                    posZ = pos.Z,
-                };
-                Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
-                interpolating2.ProcessObject(p);
-            }
-
+            
             this.points = points;
             return true;
         }
@@ -341,99 +310,6 @@ public class Intersection : INotifyPropertyChanged
         };
     }
 
-    private void Print(bool right, Vector4 xk1, int it)
-    {
-        if (right)
-        {
-            var f = _firstObj.GetPositionAndGradient(xk1.X, xk1.Y);
-            var fdU = new BezierCurveC0()
-            {
-                Name = $"fdU{it}"
-            };
-            var fdV = new BezierCurveC0()
-            {
-                Name = $"fdV{it}"
-            };
-            var fPos = new ParameterizedPoint($"f {it}")
-            {
-                posX = f.pos.X,
-                posY = f.pos.Y,
-                posZ = f.pos.Z,
-            };
-            var fPosdU = new ParameterizedPoint()
-            {
-                posX = f.pos.X + f.dU.X,
-                posY = f.pos.Y + f.dU.Y,
-                posZ = f.pos.Z + f.dU.Z,
-            };
-            var fPosdV = new ParameterizedPoint()
-            {
-                posX = f.pos.X + f.dV.X,
-                posY = f.pos.Y + f.dV.Y,
-                posZ = f.pos.Z + f.dV.Z,
-            };
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(fdU);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(fdV);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPos);
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdU);
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdV);
-            fdU.ProcessObject(fPos);
-            fdU.ProcessObject(fPosdU);
-            fdV.ProcessObject(fPos);
-            fdV.ProcessObject(fPosdV);
-
-            var s = _secondObj.GetPositionAndGradient(xk1.Z, xk1.W);
-            var sdU = new BezierCurveC0()
-            {
-                Name = $"sdU{it}"
-            };
-            var sdV = new BezierCurveC0()
-            {
-                Name = $"sdV{it}"
-            };
-            var sPos = new ParameterizedPoint($"s {it}; s: {xk1.Z} t: {xk1.W}")
-            {
-                posX = s.pos.X,
-                posY = s.pos.Y,
-                posZ = s.pos.Z,
-            };
-            var sPosdU = new ParameterizedPoint()
-            {
-                posX = s.pos.X + s.dU.X,
-                posY = s.pos.Y + s.dU.Y,
-                posZ = s.pos.Z + s.dU.Z,
-            };
-            var sPosdV = new ParameterizedPoint()
-            {
-                posX = s.pos.X + s.dV.X,
-                posY = s.pos.Y + s.dV.Y,
-                posZ = s.pos.Z + s.dV.Z,
-            };
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(sdU);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(sdV);
-            Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPos);
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdU);
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdV);
-            sdU.ProcessObject(sPos);
-            sdU.ProcessObject(sPosdU);
-            sdV.ProcessObject(sPos);
-            sdV.ProcessObject(sPosdV);
-            // var s = _firstObj.GetPositionAndGradient(xk1.Z, xk1.W);
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"s {it}")
-            // {
-            //     posX = s.pos.X,
-            //     posY = s.pos.Y,
-            //     posZ = s.pos.Z,
-            // });
-        }
-    }
-
     private Vector4 Wrap(Vector4 xk1)
     {
         if (xk1.X > _firstObj.USize && _firstObj.IsUWrapped)
@@ -554,6 +430,142 @@ public class Intersection : INotifyPropertyChanged
 
         return closest;
     }
+
+    public void ConvertToInterpolating()
+    {
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        var interpolating = new InterpolatingBezierCurveC2();
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            
+        foreach (var point in points)
+        {
+            var pos = _firstObj.GetValueAt(point.u, point.v);
+            var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z,
+            };
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+            interpolating.ProcessObject(p);
+        }
+
+        // Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        // var interpolating2 = new InterpolatingBezierCurveC2();
+        // Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating2);
+        // Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        //
+        // foreach (var point in points)
+        // {
+        //     var pos = _secondObj.GetValueAt(point.s, point.t);
+        //     var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+        //     {
+        //         posX = pos.X,
+        //         posY = pos.Y,
+        //         posZ = pos.Z,
+        //     };
+        //     Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+        //     interpolating2.ProcessObject(p);
+        // }
+    }
+
+    #region Misc
+
+    private void Print(bool right, Vector4 xk1, int it)
+    {
+        if (right)
+        {
+            var f = _firstObj.GetPositionAndGradient(xk1.X, xk1.Y);
+            var fdU = new BezierCurveC0()
+            {
+                Name = $"fdU{it}"
+            };
+            var fdV = new BezierCurveC0()
+            {
+                Name = $"fdV{it}"
+            };
+            var fPos = new ParameterizedPoint($"f {it}")
+            {
+                posX = f.pos.X,
+                posY = f.pos.Y,
+                posZ = f.pos.Z,
+            };
+            var fPosdU = new ParameterizedPoint()
+            {
+                posX = f.pos.X + f.dU.X,
+                posY = f.pos.Y + f.dU.Y,
+                posZ = f.pos.Z + f.dU.Z,
+            };
+            var fPosdV = new ParameterizedPoint()
+            {
+                posX = f.pos.X + f.dV.X,
+                posY = f.pos.Y + f.dV.Y,
+                posZ = f.pos.Z + f.dV.Z,
+            };
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(fdU);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(fdV);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPos);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdU);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(fPosdV);
+            fdU.ProcessObject(fPos);
+            fdU.ProcessObject(fPosdU);
+            fdV.ProcessObject(fPos);
+            fdV.ProcessObject(fPosdV);
+
+            var s = _secondObj.GetPositionAndGradient(xk1.Z, xk1.W);
+            var sdU = new BezierCurveC0()
+            {
+                Name = $"sdU{it}"
+            };
+            var sdV = new BezierCurveC0()
+            {
+                Name = $"sdV{it}"
+            };
+            var sPos = new ParameterizedPoint($"s {it}; s: {xk1.Z} t: {xk1.W}")
+            {
+                posX = s.pos.X,
+                posY = s.pos.Y,
+                posZ = s.pos.Z,
+            };
+            var sPosdU = new ParameterizedPoint()
+            {
+                posX = s.pos.X + s.dU.X,
+                posY = s.pos.Y + s.dU.Y,
+                posZ = s.pos.Z + s.dU.Z,
+            };
+            var sPosdV = new ParameterizedPoint()
+            {
+                posX = s.pos.X + s.dV.X,
+                posY = s.pos.Y + s.dV.Y,
+                posZ = s.pos.Z + s.dV.Z,
+            };
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(sdU);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(sdV);
+            Scene.CurrentScene.ObjectsController.SelectedObject = null;
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPos);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdU);
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(sPosdV);
+            sdU.ProcessObject(sPos);
+            sdU.ProcessObject(sPosdU);
+            sdV.ProcessObject(sPos);
+            sdV.ProcessObject(sPosdV);
+            // var s = _firstObj.GetPositionAndGradient(xk1.Z, xk1.W);
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint($"s {it}")
+            // {
+            //     posX = s.pos.X,
+            //     posY = s.pos.Y,
+            //     posZ = s.pos.Z,
+            // });
+        }
+    }
+
+    #endregion
 
     public event PropertyChangedEventHandler PropertyChanged;
 

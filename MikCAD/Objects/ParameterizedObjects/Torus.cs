@@ -319,7 +319,16 @@ namespace MikCAD
         public bool IsVWrapped => true;
         public float USize => 2 * MathF.PI;
         public float VSize => 2 * MathF.PI;
-        
-        public Intersection Intersection { get; set; }
+
+        private Intersection _intersection;
+        public Intersection Intersection
+        {
+            get => _intersection;
+            set
+            {
+                _intersection = value;
+                OnPropertyChanged(nameof(Intersection));
+            }
+        }
     }
 }

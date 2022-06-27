@@ -47,6 +47,8 @@
                     </Grid>
                 </GroupBox>
                 <Button Height="50"  Click="SpawnPoints">Show points</Button>
+                <customControls:IntersectionControl  DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.Intersection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -67,6 +67,11 @@ public partial class IntersectionModalControl : UserControl
                     first = intersection.points[^1];
                     second = intersection.points[0];
                     LineDrawer.Line(
+                        ((int) (first.u / firstUSize * firstBmp.Width), (int) (first.v / firstVSize * firstBmp.Height)),
+                        ((int) (second.u / firstUSize * firstBmp.Width), (int) (second.v / firstVSize * firstBmp.Height)),
+                        firstBmp,
+                        Color.Lime);
+                    LineDrawer.Line(
                         ((int) (first.s / secondUSize * firstBmp.Width), (int) (first.t / secondVSize * firstBmp.Height)),
                         ((int) (second.s/ secondUSize * firstBmp.Width), (int) (second.t/ secondVSize * firstBmp.Height)),
                         secondBmp,
@@ -79,8 +84,15 @@ public partial class IntersectionModalControl : UserControl
             
             firstBmp.Bitmap.Save("firstBitmap.bmp");
             secondBmp.Bitmap.Save("secondBitmap.bmp");
-            MainWindow.current.firstImage.Source = firstBmp.BitmapToImageSource();
-            MainWindow.current.secondImage.Source = secondBmp.BitmapToImageSource();
+
+            intersection.firstBmp = firstBmp;
+            intersection.secondBmp = secondBmp;
+            
+            MainWindow.current.firstImage.Source = intersection.firstBmp.BitmapToImageSource();
+            MainWindow.current.secondImage.Source = intersection.secondBmp.BitmapToImageSource();
+
+            intersection._firstObj.Intersection = intersection;
+            intersection._secondObj.Intersection = intersection;
         }
 
         (Parent as Window)?.Close();

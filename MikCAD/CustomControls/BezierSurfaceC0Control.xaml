@@ -6,6 +6,7 @@
              xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
              xmlns:c="clr-namespace:MikCAD.Converters"
              xmlns:local="clr-namespace:MikCAD"
+             xmlns:customControls="clr-namespace:MikCAD.CustomControls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -74,6 +75,8 @@
                 </GroupBox>
                 <Button Height="50" IsEnabled="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=DataContext.CanBeChanged, UpdateSourceTrigger=PropertyChanged}" Click="ButtonBase_OnClick">Apply</Button>
                 <Button Height="50"  Click="SpawnPoints">Show points</Button>
+                <customControls:IntersectionControl  DataContext="{Binding RelativeSource={RelativeSource AncestorType=Grid},
+                             Path=DataContext.Intersection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
         </GroupBox>
     </Grid>

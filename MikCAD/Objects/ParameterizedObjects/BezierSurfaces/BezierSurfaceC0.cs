@@ -846,7 +846,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
         if (UPatchNum == UPatches)
             UPatchNum = (int) UPatches - 1;
-        
+
         if (VPatchNum == VPatches)
             VPatchNum = (int) VPatches - 1;
 
@@ -874,8 +874,8 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             VPatchNum = (int) VPatches - 1;
         }
 
-        u -= MathF.Floor(u); 
-        v -= MathF.Floor(v); 
+        u -= MathF.Floor(u);
+        v -= MathF.Floor(v);
 
         ParameterizedPoint[,] patchPoints = new ParameterizedPoint[4, 4];
 
@@ -898,11 +898,11 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         Vector3[] interArray = new Vector3[4];
         for (int i = 0; i < 4; i++)
         {
-            interArray[i] = (this as ISurface).EvaluateCurveAtT(u, 
-                patchPoints[i,0].pos,
-                patchPoints[i,1].pos,
-                patchPoints[i,2].pos,
-                patchPoints[i,3].pos);
+            interArray[i] = (this as ISurface).EvaluateCurveAtT(u,
+                patchPoints[i, 0].pos,
+                patchPoints[i, 1].pos,
+                patchPoints[i, 2].pos,
+                patchPoints[i, 3].pos);
         }
 
         var pos = (this as ISurface).EvaluateCurveAtT(v,
@@ -912,9 +912,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             interArray[3]);
 
         var dV = (this as ISurface).EvaluateCurveAtT(v,
-            3* interArray[1] - 3 * interArray[0],
-            3* interArray[2] - 3 * interArray[1],
-            3* interArray[3] - 3 * interArray[2],
+            3 * interArray[1] - 3 * interArray[0],
+            3 * interArray[2] - 3 * interArray[1],
+            3 * interArray[3] - 3 * interArray[2],
             interArray[3],
             3);
 
@@ -922,16 +922,16 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
         for (int i = 0; i < 4; i++)
         {
             interUArray[i] = (this as ISurface).EvaluateCurveAtT(v,
-                patchPoints[0,i ].pos,
-                patchPoints[1,i ].pos,
-                patchPoints[2,i ].pos,
-                patchPoints[3,i ].pos);
+                patchPoints[0, i].pos,
+                patchPoints[1, i].pos,
+                patchPoints[2, i].pos,
+                patchPoints[3, i].pos);
         }
 
         var dU = (this as ISurface).EvaluateCurveAtT(u,
-            3 *  interUArray[1] - 3 *  interUArray[0],
-            3 *  interUArray[2] - 3 *  interUArray[1],
-            3 *  interUArray[3] - 3 *  interUArray[2],
+            3 * interUArray[1] - 3 * interUArray[0],
+            3 * interUArray[2] - 3 * interUArray[1],
+            3 * interUArray[3] - 3 * interUArray[2],
             interUArray[3],
             3);
 
@@ -942,8 +942,9 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
     public bool IsVWrapped => false;
     public float USize => UPatches;
     public float VSize => VPatches;
-    
-    private Intersection _intersection;
+
+    private Intersection _intersection = null;
+
     public Intersection Intersection
     {
         get => _intersection;
@@ -956,13 +957,18 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             var width = TexWidth = _intersection._firstObj == this
                 ? _intersection.firstBmp.Width
                 : _intersection.secondBmp.Width;
-                
+
+            var bmp = _intersection._firstObj == this
+                ? _intersection.firstBmp
+                : _intersection.secondBmp;
+
             var texture = new List<byte>(4 * width * height);
-            for (int i = 0; i < height; i++)
+
+            for (int j = 0; j < height; j++)
             {
-                for (int j = 0; j < width; j++)
+                for (int i = 0; i < width; i++)
                 {
-                    var color = _intersection.firstBmp.GetPixel(j, i);
+                    var color = bmp.GetPixel(i, j);
                     texture.Add(color.R);
                     texture.Add(color.G);
                     texture.Add(color.B);
@@ -974,19 +980,20 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             OnPropertyChanged(nameof(Intersection));
         }
     }
-    
+
     public override void SetTexture()
     {
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight,0, PixelFormat.Rgba, PixelType.UnsignedByte, Texture);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) TextureMagFilter.Nearest);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight, 0, PixelFormat.Rgba,
+            PixelType.UnsignedByte, Texture);
     }
-    
+
     private byte[] _texture;
     public byte[] Texture => _texture;
-        
+
     public int TexWidth { get; private set; }
     public int TexHeight { get; private set; }
 }

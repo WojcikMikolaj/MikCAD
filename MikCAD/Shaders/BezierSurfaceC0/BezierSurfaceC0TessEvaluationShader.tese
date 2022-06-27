@@ -5,6 +5,11 @@ layout (quads, equal_spacing, ccw) in;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
+uniform int HorizontalPatchesCount;
+uniform int VerticalPatchesCount;
+
+out vec2 texCoord;
+
 vec4 Casteljau(float u, vec4 p0, vec4 p1, vec4 p2, vec4 p3, int size)
 {
     if (size>4)
@@ -56,4 +61,14 @@ void main()
     
     vec4 pos = Casteljau(u, inter1, inter2, inter3, inter4, 4);
     gl_Position = pos * viewMatrix * projectionMatrix;
+    
+    float unum = gl_PrimitiveID / VerticalPatchesCount;
+    float vnum = gl_PrimitiveID % VerticalPatchesCount;
+    float patchUSize = 1.0f/HorizontalPatchesCount;
+    float patchVSize = 1.0f/VerticalPatchesCount;
+
+    float startU = unum/HorizontalPatchesCount;
+    float startV = vnum/VerticalPatchesCount;
+    
+    texCoord = vec2(startU + v*patchUSize, startV +u*patchVSize);  
 }

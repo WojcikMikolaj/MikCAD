@@ -217,6 +217,17 @@ public class DrawProcessor
         Scene.CurrentScene._shader = _controller._bezierSurfaceC0Shader;
         Scene.CurrentScene._shader.SetInt("UTessLevels", (int) surfaceC0.UDivisions);
         Scene.CurrentScene._shader.SetInt("VTessLevels", (int) surfaceC0.VDivisions);
+        Scene.CurrentScene._shader.SetInt("HorizontalPatchesCount", (int) surfaceC0.UPatches);
+        Scene.CurrentScene._shader.SetInt("VerticalPatchesCount", (int) surfaceC0.VPatches);
+        if (surfaceC0.Intersection!=null)
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 1);
+            Scene.CurrentScene._shader.SetFloat("ignoreBlack", 1);
+        }
+        else
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 0);
+        }
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
 
@@ -225,7 +236,7 @@ public class DrawProcessor
             BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
@@ -251,6 +262,17 @@ public class DrawProcessor
         Scene.CurrentScene._shader = _controller._bezierSurfaceC2Shader;
         Scene.CurrentScene._shader.SetInt("UTessLevels", (int) surfaceC2.UDivisions);
         Scene.CurrentScene._shader.SetInt("VTessLevels", (int) surfaceC2.VDivisions);
+        Scene.CurrentScene._shader.SetInt("HorizontalPatchesCount", (int) surfaceC2.UPatches);
+        Scene.CurrentScene._shader.SetInt("VerticalPatchesCount", (int) surfaceC2.VPatches);
+        if (surfaceC2.Intersection!=null)
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 1);
+            Scene.CurrentScene._shader.SetFloat("ignoreBlack", 1);
+        }
+        else
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 0);
+        }
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
 
@@ -259,7 +281,7 @@ public class DrawProcessor
             BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+      //  GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         GL.DrawElements(PrimitiveType.Patches, surfaceC2.patches.Length, DrawElementsType.UnsignedInt, 0);
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }

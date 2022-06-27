@@ -38,8 +38,12 @@ public class Intersection : INotifyPropertyChanged
 
     public List<IntersectionPoint> points;
     
+    private bool _looped = false;
+    public bool Looped => _looped; 
+    
     public bool Intersect()
     {
+        _looped = false;
         if (!_selfIntersection)
         {
             List<IntersectionPoint> intersectionPoints = new List<IntersectionPoint>();
@@ -58,19 +62,19 @@ public class Intersection : INotifyPropertyChanged
             //     });    
             // }
 
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-            {
-                posX = closestPoints.first.pos.X,
-                posY = closestPoints.first.pos.Y,
-                posZ = closestPoints.first.pos.Z,
-            });
-
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-            {
-                posX = closestPoints.second.pos.X,
-                posY = closestPoints.second.pos.Y,
-                posZ = closestPoints.second.pos.Z,
-            });
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+            // {
+            //     posX = closestPoints.first.pos.X,
+            //     posY = closestPoints.first.pos.Y,
+            //     posZ = closestPoints.first.pos.Z,
+            // });
+            //
+            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+            // {
+            //     posX = closestPoints.second.pos.X,
+            //     posY = closestPoints.second.pos.Y,
+            //     posZ = closestPoints.second.pos.Z,
+            // });
 
 
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
@@ -146,7 +150,6 @@ public class Intersection : INotifyPropertyChanged
         List<IntersectionPoint> rightPoints = new List<IntersectionPoint>();
 
 
-        bool finish = false;
         
         while (true)
         {
@@ -159,13 +162,13 @@ public class Intersection : INotifyPropertyChanged
                 break;
             if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
             {
-                finish = true;
+                _looped = true;
                 break;
             }
         }
 
         lastPoint = firstIntersectionPoint;
-        while (!finish)
+        while (!_looped)
         {
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
@@ -178,6 +181,12 @@ public class Intersection : INotifyPropertyChanged
                 break;
         }
 
+        // if (looped)
+        // {
+        //     leftPoints.Add(firstIntersectionPoint);
+        // }
+            
+        
         leftPoints.Reverse();
         leftPoints.Add(firstIntersectionPoint);
         foreach (var point in rightPoints)

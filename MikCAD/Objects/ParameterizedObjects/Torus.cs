@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -318,5 +319,7 @@ namespace MikCAD
         public bool IsVWrapped => true;
         public float USize => 2 * MathF.PI;
         public float VSize => 2 * MathF.PI;
+        
+        public Intersection Intersection { get; set; }
     }
 }

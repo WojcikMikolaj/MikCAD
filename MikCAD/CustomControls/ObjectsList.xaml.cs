@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace MikCAD;
+namespace MikCAD.CustomControls;
 
 public partial class ObjectsList : UserControl
 {

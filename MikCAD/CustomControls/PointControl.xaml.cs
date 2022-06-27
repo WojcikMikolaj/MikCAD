@@ -1,7 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
-namespace MikCAD
+namespace MikCAD.CustomControls
 {
     public partial class PointControl: UserControl
     {

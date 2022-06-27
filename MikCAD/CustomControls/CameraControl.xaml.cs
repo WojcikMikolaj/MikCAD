@@ -4,7 +4,7 @@ using System.Windows.Media;
 using OpenTK.Mathematics;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace MikCAD
+namespace MikCAD.CustomControls
 {
     public partial class CameraControl : UserControl
     {

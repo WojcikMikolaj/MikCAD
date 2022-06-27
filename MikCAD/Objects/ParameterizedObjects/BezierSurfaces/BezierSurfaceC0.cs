@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MikCAD.BezierCurves;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL;
@@ -941,4 +942,6 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
     public bool IsVWrapped => false;
     public float USize => UPatches;
     public float VSize => VPatches;
+    
+    public Intersection Intersection { get; set; }
 }

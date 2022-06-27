@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MikCAD.Objects;
 using OpenTK.Mathematics;
 
 namespace MikCAD;
@@ -26,4 +27,6 @@ public interface IIntersectable
     
     float USize { get; }
     float VSize { get; }
+
+    Intersection Intersection { get; set; }
 }

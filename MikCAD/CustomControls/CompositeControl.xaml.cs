@@ -1,8 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MikCAD.Objects;
 
-namespace MikCAD
+namespace MikCAD.CustomControls
 {
     public partial class CompositeControl: UserControl
     {
@@ -26,7 +25,7 @@ namespace MikCAD
         {
             var dialog = new Window()
             {
-                Content = new IntersectionControl()
+                Content = new IntersectionModalControl()
                 {
                     intersection = Scene.CurrentScene.ObjectsController.GetNewIntersectionObject()
                 },

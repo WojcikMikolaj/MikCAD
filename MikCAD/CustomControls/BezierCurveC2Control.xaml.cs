@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using MikCAD.BezierCurves;
 
-namespace MikCAD;
+namespace MikCAD.CustomControls;
 
 public partial class BezierCurveC2Control : UserControl
 {

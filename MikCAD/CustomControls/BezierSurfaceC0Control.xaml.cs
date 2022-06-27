@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 
-namespace MikCAD;
+namespace MikCAD.CustomControls;
 
 public partial class BezierSurfaceC0Control : UserControl
 {

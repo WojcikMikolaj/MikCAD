@@ -973,4 +973,5 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
     public bool IsVWrapped => false;
     public float USize => UPatches;
     public float VSize => VPatches;
+    public Intersection Intersection { get; set; }
 }

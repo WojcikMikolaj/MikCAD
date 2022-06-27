@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using MikCAD.BezierCurves;
 
-namespace MikCAD;
+namespace MikCAD.CustomControls;
 
 public partial class InterpolatingBezierCurveC2Control : UserControl
 {

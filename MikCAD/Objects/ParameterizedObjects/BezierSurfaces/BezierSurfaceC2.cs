@@ -994,9 +994,9 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
                 : _intersection.secondBmp;
 
             var texture = new List<byte>(4 * width * height);
-            for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
             {
-                for (int j = 0; j < height; j++)
+                for (int i = 0; i < width; i++)
                 {
                     var color = bmp.GetPixel(i, j);
                     texture.Add(color.R);

@@ -116,5 +116,5 @@ void main()
     float startU = unum/HorizontalPatchesCount;
     float startV = vnum/VerticalPatchesCount;
 
-    texCoord = vec2(startU + v*patchUSize, startV +u*patchVSize);
+    texCoord = vec2(startU + u*patchUSize, startV +v*patchVSize);
 }

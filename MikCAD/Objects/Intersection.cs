@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
+using MikCAD.Objects.ParameterizedObjects;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 
@@ -67,19 +68,19 @@ public class Intersection : INotifyPropertyChanged
             //     });    
             // }
 
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-            // {
-            //     posX = closestPoints.first.pos.X,
-            //     posY = closestPoints.first.pos.Y,
-            //     posZ = closestPoints.first.pos.Z,
-            // });
-            //
-            // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-            // {
-            //     posX = closestPoints.second.pos.X,
-            //     posY = closestPoints.second.pos.Y,
-            //     posZ = closestPoints.second.pos.Z,
-            // });
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+            {
+                posX = closestPoints.first.pos.X,
+                posY = closestPoints.first.pos.Y,
+                posZ = closestPoints.first.pos.Z,
+            });
+            
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+            {
+                posX = closestPoints.second.pos.X,
+                posY = closestPoints.second.pos.Y,
+                posZ = closestPoints.second.pos.Z,
+            });
 
 
             var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
@@ -129,7 +130,7 @@ public class Intersection : INotifyPropertyChanged
 
             if (HandleWrapping(lastPoint)) 
                 break;
-            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
+            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist *2/ 3)
             {
                 _looped = true;
                 break;
@@ -414,18 +415,52 @@ public class Intersection : INotifyPropertyChanged
         ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closest =
             (startingPointsFirst[0], startingPointsSecond[0]);
         var minDist = MathM.Distance(closest.first.pos, closest.second.pos);
-
-        for (int i = 0; i < startingPointsFirst.Count; i++)
+        
+        if (!UseCursor)
         {
-            for (int j = 0; j < startingPointsSecond.Count; j++)
+            for (int i = 0; i < startingPointsFirst.Count; i++)
             {
-                var currDist = MathM.DistanceSquared(startingPointsFirst[i].pos, startingPointsSecond[j].pos);
+                for (int j = 0; j < startingPointsSecond.Count; j++)
+                {
+                    var currDist = MathM.DistanceSquared(startingPointsFirst[i].pos, startingPointsSecond[j].pos);
+                    if (currDist < minDist)
+                    {
+                        minDist = currDist;
+                        closest = (startingPointsFirst[i], startingPointsSecond[j]);
+                    }
+                }
+            }
+        }
+        else
+        {
+            var pointerPos = Scene.CurrentScene.ObjectsController._pointer.pos;
+            minDist = MathM.Distance(pointerPos, startingPointsFirst[0].pos);
+            var first = startingPointsFirst[0];
+            
+            for (int i = 1; i < startingPointsFirst.Count; i++)
+            {
+                var currDist = MathM.DistanceSquared(pointerPos,startingPointsFirst[i].pos);
                 if (currDist < minDist)
                 {
                     minDist = currDist;
-                    closest = (startingPointsFirst[i], startingPointsSecond[j]);
+                    first = startingPointsFirst[i];
                 }
             }
+            
+            minDist = MathM.Distance(pointerPos, startingPointsSecond[0].pos);
+            var second = startingPointsSecond[0];
+            
+            for (int i = 1; i < startingPointsSecond.Count; i++)
+            {
+                var currDist = MathM.DistanceSquared(pointerPos,startingPointsSecond[i].pos);
+                if (currDist < minDist)
+                {
+                    minDist = currDist;
+                    second = startingPointsSecond[i];
+                }
+            }
+
+            closest = (first, second);
         }
 
         return closest;

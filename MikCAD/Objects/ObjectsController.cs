@@ -430,7 +430,8 @@ public class ObjectsController : INotifyPropertyChanged
     public void ClearScene()
     {
         ParameterizedObjects.Clear();
-        ParameterizedObjects.Add(new Pointer3D());
+        _pointer = new Pointer3D();
+        ParameterizedObjects.Add(_pointer);
         ParameterizedPoints.Clear();
         SelectedObject = null;
     }
@@ -439,6 +440,7 @@ public class ObjectsController : INotifyPropertyChanged
     {
         if (_selectedObject is CompositeObject compositeObject)
         {
+            
             if (compositeObject._objects.Count == 2
                 && compositeObject._objects[0] is ParameterizedPoint p1
                 && compositeObject._objects[1] is ParameterizedPoint p2)

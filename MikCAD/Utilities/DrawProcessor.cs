@@ -2,6 +2,7 @@
 using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
+using MikCAD.Objects.ParameterizedObjects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -16,6 +17,7 @@ public class DrawProcessor
     private int interpolatingCurveC2IBO = GL.GenBuffer();
     private int curveC2IBO = GL.GenBuffer();
     private int curveC0IBO = GL.GenBuffer();
+    private int intersectionCurveIBO = GL.GenBuffer();
     private int surfaceC0IBO = GL.GenBuffer();
     private int surfaceC2IBO = GL.GenBuffer();
     private int gregoryIBO = GL.GenBuffer();
@@ -178,6 +180,21 @@ public class DrawProcessor
         GL.EnableVertexAttribArray(1);
 
         GL.DrawElements(PrimitiveType.Patches, curveC0.patches.Length, DrawElementsType.UnsignedInt, 0);
+    }
+
+    public void ProcessObject(IntersectionCurve intersectionCurve, EyeEnum eye, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
+    {
+        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        Scene.CurrentScene._shader.SetVector4("color", intersectionCurve.CurveColor);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, intersectionCurveIBO);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, intersectionCurve._lines.Length * sizeof(uint),
+            intersectionCurve._lines, BufferUsageHint.StaticDraw);
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.DrawElements(PrimitiveType.Lines, intersectionCurve.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
     public void ProcessObject(BezierSurfaceC0 surfaceC0, EyeEnum eye, uint vertexAttributeLocation,

@@ -14,6 +14,7 @@
         <Label Height="40" Content="{Binding RelativeSource={RelativeSource AncestorType=Grid},
                              Path=DataContext.SecondObject.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <Button Height="50" Click="ShowC0">Show C0</Button>
+        <Button Height="50" Click="Flip">Flip</Button>
         <Button Height="50" Click="SetImages">Select</Button>
         <Button Height="50" Click="ConvertToInterpolating">Convert to interpolating</Button>
         <Button Height="50" Click="Delete">Delete</Button>

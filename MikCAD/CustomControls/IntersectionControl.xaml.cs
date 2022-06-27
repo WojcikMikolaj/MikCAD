@@ -34,4 +34,9 @@ public partial class IntersectionControl : UserControl
     {
         (DataContext as Intersection).ShowC0();
     }
+
+    private void Flip(object sender, RoutedEventArgs e)
+    {
+        (Scene.CurrentScene.ObjectsController.SelectedObject as IIntersectable).IgnoreBlack = !(Scene.CurrentScene.ObjectsController.SelectedObject as IIntersectable).IgnoreBlack;
+    }
 }

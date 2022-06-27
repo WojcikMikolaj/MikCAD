@@ -368,5 +368,6 @@ namespace MikCAD
         
         public int TexWidth { get; private set; }
         public int TexHeight { get; private set; }
+        public bool IgnoreBlack { get; set; }
     }
 }

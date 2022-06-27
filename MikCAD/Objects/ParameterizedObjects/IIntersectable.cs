@@ -29,4 +29,5 @@ public interface IIntersectable
     float VSize { get; }
 
     Intersection Intersection { get; set; }
+    bool IgnoreBlack { get; set; }
 }

@@ -980,7 +980,7 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
             OnPropertyChanged(nameof(Intersection));
         }
     }
-
+    
     public override void SetTexture()
     {
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
@@ -996,4 +996,5 @@ public class BezierSurfaceC0 : CompositeObject, ISurface, IIntersectable
 
     public int TexWidth { get; private set; }
     public int TexHeight { get; private set; }
+    public bool IgnoreBlack { get; set; }
 }

@@ -222,7 +222,7 @@ public class DrawProcessor
         if (surfaceC0.Intersection!=null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
-            Scene.CurrentScene._shader.SetFloat("ignoreBlack", 1);
+            Scene.CurrentScene._shader.SetFloat("ignoreBlack", surfaceC0.IgnoreBlack ? 1 : 0);
         }
         else
         {
@@ -236,7 +236,7 @@ public class DrawProcessor
             BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-        //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         GL.DrawElements(PrimitiveType.Patches, surfaceC0.patches.Length, DrawElementsType.UnsignedInt, 0);
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
@@ -267,7 +267,7 @@ public class DrawProcessor
         if (surfaceC2.Intersection!=null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
-            Scene.CurrentScene._shader.SetFloat("ignoreBlack", 1);
+            Scene.CurrentScene._shader.SetFloat("ignoreBlack", surfaceC2.IgnoreBlack ? 1 : 0);
         }
         else
         {
@@ -281,7 +281,7 @@ public class DrawProcessor
             BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-      //  GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
         GL.DrawElements(PrimitiveType.Patches, surfaceC2.patches.Length, DrawElementsType.UnsignedInt, 0);
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }

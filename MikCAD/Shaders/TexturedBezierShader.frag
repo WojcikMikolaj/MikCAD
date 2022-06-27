@@ -24,6 +24,7 @@ void main()
             {
                 discard;
             }
+            FragColor=vec4(1,1,1,1);
         }
         else
         {
@@ -31,6 +32,7 @@ void main()
             {
                 discard;
             }
+            FragColor=vec4(1,1,1,1);
         }
         
     }

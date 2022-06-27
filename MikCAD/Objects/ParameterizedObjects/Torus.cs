@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using MikCAD.Objects;
 using MikCAD.Utilities;
@@ -283,7 +284,7 @@ namespace MikCAD
             var X = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
             var Y = r * (float) MathHelper.Sin(theta);
             var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
-            return (new Vector4(X, Y, Z, 1)*GetModelMatrix()).Xyz;
+            return (new Vector4(X, Y, Z, 1) * GetModelMatrix()).Xyz;
         }
 
         public Vector3 GetUDerivativeAt(float u, float v)
@@ -295,7 +296,7 @@ namespace MikCAD
             var X = -(R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Sin(phi);
             var Y = 0;
             var Z = (R + r * (float) MathHelper.Cos(theta)) * (float) MathHelper.Cos(phi);
-            return (new Vector4(X, Y, Z, 0)*GetModelMatrix()).Xyz;
+            return (new Vector4(X, Y, Z, 0) * GetModelMatrix()).Xyz;
         }
 
         public Vector3 GetVDerivativeAt(float u, float v)
@@ -307,7 +308,7 @@ namespace MikCAD
             var X = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Cos(phi);
             var Y = r * (float) MathHelper.Cos(theta);
             var Z = -r * (float) MathHelper.Sin(theta) * (float) MathHelper.Sin(phi);
-            return (new Vector4(X, Y, Z,0)*GetModelMatrix()).Xyz;
+            return (new Vector4(X, Y, Z, 0) * GetModelMatrix()).Xyz;
         }
 
         public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
@@ -321,14 +322,51 @@ namespace MikCAD
         public float VSize => 2 * MathF.PI;
 
         private Intersection _intersection;
+
         public Intersection Intersection
         {
             get => _intersection;
             set
             {
                 _intersection = value;
+                var height = TexHeight = _intersection._firstObj == this
+                    ? _intersection.firstBmp.Height
+                    : _intersection.secondBmp.Height;
+                var width = TexWidth = _intersection._firstObj == this
+                    ? _intersection.firstBmp.Width
+                    : _intersection.secondBmp.Width;
+                
+                var texture = new List<byte>(4 * width * height);
+                for (int i = 0; i < height; i++)
+                {
+                    for (int j = 0; j < width; j++)
+                    {
+                        var color = _intersection.firstBmp.GetPixel(j, i);
+                        texture.Add(color.R);
+                        texture.Add(color.G);
+                        texture.Add(color.B);
+                        texture.Add(color.A);
+                    }
+                }
+
+                _texture = texture.ToArray();
                 OnPropertyChanged(nameof(Intersection));
             }
         }
+
+        public override void SetTexture()
+        {
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight,0, PixelFormat.Rgba, PixelType.UnsignedByte, Texture);
+        }
+        
+        private byte[] _texture;
+        public byte[] Texture => _texture;
+        
+        public int TexWidth { get; private set; }
+        public int TexHeight { get; private set; }
     }
 }

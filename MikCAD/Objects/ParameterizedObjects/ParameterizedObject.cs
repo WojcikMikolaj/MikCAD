@@ -237,5 +237,9 @@ namespace MikCAD
         }
 
         public abstract void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation);
+
+        public virtual void SetTexture()
+        {
+        }
     }
 }

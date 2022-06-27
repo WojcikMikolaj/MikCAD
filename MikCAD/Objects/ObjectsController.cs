@@ -336,6 +336,7 @@ public class ObjectsController : INotifyPropertyChanged
             }
 
             obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            obj.SetTexture();
             obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
         }
 

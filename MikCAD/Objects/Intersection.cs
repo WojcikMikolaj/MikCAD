@@ -30,8 +30,6 @@ public class Intersection : INotifyPropertyChanged
     public ParameterizedObject SecondObject => (ParameterizedObject) _secondObj;
     internal IIntersectable _secondObj;
 
-    public int NumberOfPoints { get; set; }
-    public float Steps { get; set; }
     public bool UseCursor { get; set; }
 
     public float StartingGradientStepLength { get; set; } = 0.1f;

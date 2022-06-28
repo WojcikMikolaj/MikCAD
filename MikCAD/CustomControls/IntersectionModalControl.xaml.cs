@@ -18,8 +18,6 @@ public partial class IntersectionModalControl : UserControl
 
     private void CalculateIntersection(object sender, RoutedEventArgs e)
     {
-        //intersection.NumberOfPoints = (int) PointsNum.Value;
-        intersection.Steps = StepSize.Value;
         intersection.UseCursor = UseCursor.IsChecked.Value;
         if (intersection.Intersect())
         {

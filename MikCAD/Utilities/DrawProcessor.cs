@@ -51,17 +51,18 @@ public class DrawProcessor
     public void ProcessObject(Torus torus, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._torusShader;
-        // if (torus.Intersection!=null)
-        // {
-        //     Scene.CurrentScene._shader.SetFloat("useTexture", 1);
-        //     Scene.CurrentScene._shader.SetFloat("ignoreBlack", torus.IgnoreBlack ? 1 : 0);
-        // }
-        // else
-        // {
-        //     Scene.CurrentScene._shader.SetFloat("useTexture", 0);
-        // }
+        if (torus.Intersection!=null)
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 1);
+            Scene.CurrentScene._shader.SetFloat("ignoreBlack", torus.IgnoreBlack ? 1 : 0);
+        }
+        else
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 0);
+        }
+        torus.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", torus.GetModelMatrix());
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        
         GL.DrawElements(PrimitiveType.Lines, torus.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 

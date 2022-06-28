@@ -15,28 +15,28 @@ in vec2 texCoord;
 void main()
 {
     FragColor = vec4(1, 1, 1, 1);
-//    if (useTexture>0)
-//    {
-//        FragColor = texture(texture0, texCoord);
-//        if(ignoreBlack>0)
-//        {
-//            if(FragColor==vec4(0,0,0,0))
-//            {
-//                discard;
-//            }
-//            FragColor=vec4(1,1,1,1);
-//        }
-//        else
-//        {
-//            if(FragColor!=vec4(0,0,0,0))
-//            {
-//                discard;
-//            }
-//            FragColor=vec4(1,1,1,1);
-//        }
-//        
-//    }
-//    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor * FragColor;
-//    FragColor = vec4(texCoord.xy, 0,1);
+    if (useTexture>0)
+    {
+        FragColor = texture(texture0, texCoord);
+        if(ignoreBlack>0)
+        {
+            if(FragColor==vec4(0,0,0,0))
+            {
+                discard;
+            }
+            FragColor=vec4(1,1,1,1);
+        }
+        else
+        {
+            if(FragColor!=vec4(0,0,0,0))
+            {
+                discard;
+            }
+            FragColor=vec4(1,1,1,1);
+        }
+
+    }
+    FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor * FragColor;
+    //FragColor = vec4(texCoord.xy, 0,1);
 //    FragColor = vec4(1,0,0,1);
 } 

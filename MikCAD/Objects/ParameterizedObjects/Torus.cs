@@ -84,13 +84,13 @@ namespace MikCAD
             _phiStep = MathHelper.DegreesToRadians(360.0f / _sectorsCount);
             _thetaStep = MathHelper.DegreesToRadians(360.0f / _circlesCount);
 
-            _vertices = new TexPoint[_sectorsCount * _circlesCount];
+            _vertices = new TexPoint[(_sectorsCount + 1) * (_circlesCount + 1)];
 
-            for (int i = 0; i < _sectorsCount; i++)
+            for (int i = 0; i < _sectorsCount + 1; i++)
             {
-                for (int j = 0; j < _circlesCount; j++)
+                for (int j = 0; j < _circlesCount + 1; j++)
                 {
-                    _vertices[i * _circlesCount + j] = new TexPoint()
+                    _vertices[i * (_circlesCount + 1) + j] = new TexPoint()
                     {
                         X = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Cos(i * _phiStep),
                         Y = r * (float) MathHelper.Sin(j * _thetaStep),
@@ -165,7 +165,7 @@ namespace MikCAD
             GL.EnableVertexAttribArray(0);
             
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float),
-                3 * sizeof(float));
+               3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
             
             
@@ -189,25 +189,25 @@ namespace MikCAD
                     //duże okręgi
                     if (i != _sectorsCount - 1)
                     {
-                        _lines[it++] = (uint) (i * _circlesCount + j);
-                        _lines[it++] = (uint) ((i + 1) * _circlesCount + j);
+                        _lines[it++] = (uint) (i * (_circlesCount+1) + j);
+                        _lines[it++] = (uint) ((i + 1) * (_circlesCount+1) + j);
                     }
                     else
                     {
-                        _lines[it++] = (uint) ((_sectorsCount - 1) * _circlesCount + j);
+                        _lines[it++] = (uint) ((_sectorsCount - 1) * (_circlesCount+1) + j);
                         _lines[it++] = (uint) j;
                     }
 
                     //małe okręgi
-                    if (j != _circlesCount - 1)
+                    if (j != _circlesCount)
                     {
-                        _lines[it++] = (uint) (i * _circlesCount + j);
-                        _lines[it++] = (uint) (i * _circlesCount + j + 1);
+                        _lines[it++] = (uint) (i * (_circlesCount+1) + j);
+                        _lines[it++] = (uint) (i * (_circlesCount+1) + j + 1);
                     }
-                    else
+                    else//niepotrzebne???
                     {
-                        _lines[it++] = (uint) (i * _circlesCount + _circlesCount - 1);
-                        _lines[it++] = (uint) (i * _circlesCount);
+                        _lines[it++] = (uint) (i * (_circlesCount+1) + _circlesCount +1 - 1);
+                        _lines[it++] = (uint) (i * (_circlesCount+1));
                     }
                 }
             }

@@ -60,16 +60,16 @@ namespace MikCAD
 
             _shader.SetMatrix4("projectionMatrix", _projectionMatrix);
             _shader.SetMatrix4("viewMatrix", _viewMatrix);
-            _shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
-            switch (eye)
-            {
-                case EyeEnum.Left:
-                    _shader.SetVector4("overrideColor", camera.leftColor);
-                    break;
-                case EyeEnum.Right:
-                    _shader.SetVector4("overrideColor", camera.rightColor);
-                    break;
-            }
+            // _shader.SetFloat("overrideEnabled", eye==EyeEnum.Both?0:1);
+            // switch (eye)
+            // {
+            //     case EyeEnum.Left:
+            //         _shader.SetVector4("overrideColor", camera.leftColor);
+            //         break;
+            //     case EyeEnum.Right:
+            //         _shader.SetVector4("overrideColor", camera.rightColor);
+            //         break;
+            // }
             _shader.Use();
         }
 

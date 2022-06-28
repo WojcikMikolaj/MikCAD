@@ -67,6 +67,9 @@ public class ObjectsController : INotifyPropertyChanged
     public Shader _selectionBoxShader = new Shader("Shaders/SelectionBox/SelectionBoxShader.vert",
         "Shaders/SelectionBox/SelectionBoxShader.frag");
 
+    public Shader _torusShader = new Shader("Shaders/Torus/Torus.vert",
+        "Shaders/Torus/Torus.frag");
+
     private DrawProcessor _drawProcessor;
     public readonly SelectionBox SelectionBox = new SelectionBox();
 

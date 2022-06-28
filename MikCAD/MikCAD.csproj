@@ -99,6 +99,12 @@
     <EmbeddedResource Include="Shaders\TexturedBezierShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\Torus\Torus.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\Torus\Torus.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Remove="Shaders\PickingShader.vert" />
     <EmbeddedResource Include="Shaders\PickingShader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -127,8 +133,5 @@
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
     <PackageReference Include="SharpSceneSerializer" Version="1.2.1" />
     <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shaders\Torus" />
   </ItemGroup>
 </Project>

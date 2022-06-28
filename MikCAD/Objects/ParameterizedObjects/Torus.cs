@@ -63,7 +63,7 @@ namespace MikCAD
         private int _sectorsCount;
         private int _circlesCount;
 
-        private Point[] _vertices;
+        private TexPoint[] _vertices;
         public int VerticesCount => _vertices.Length;
 
         public override uint[] lines => _lines;
@@ -84,27 +84,32 @@ namespace MikCAD
             _phiStep = MathHelper.DegreesToRadians(360.0f / _sectorsCount);
             _thetaStep = MathHelper.DegreesToRadians(360.0f / _circlesCount);
 
-            _vertices = new Point[_sectorsCount * _circlesCount];
+            _vertices = new TexPoint[_sectorsCount * _circlesCount];
 
             for (int i = 0; i < _sectorsCount; i++)
             {
                 for (int j = 0; j < _circlesCount; j++)
                 {
-                    _vertices[i * _circlesCount + j] = new Point()
+                    _vertices[i * _circlesCount + j] = new TexPoint()
                     {
                         X = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Cos(i * _phiStep),
                         Y = r * (float) MathHelper.Sin(j * _thetaStep),
                         Z = (R + r * (float) MathHelper.Cos(j * _thetaStep)) * (float) MathHelper.Sin(i * _phiStep),
+
+                        TexX = (float) i / SectorsCount,
+                        TexY = (float) j / CirclesCount
                     };
                 }
             }
 
-            _verticesDraw = new float[_vertices.Length * Point.Size];
+            _verticesDraw = new float[_vertices.Length * TexPoint.Size];
             for (int i = 0; i < _vertices.Length; i++)
             {
-                _verticesDraw[Point.Size * i] = _vertices[i].X;
-                _verticesDraw[Point.Size * i + 1] = _vertices[i].Y;
-                _verticesDraw[Point.Size * i + 2] = _vertices[i].Z;
+                _verticesDraw[TexPoint.Size * i] = _vertices[i].X;
+                _verticesDraw[TexPoint.Size * i + 1] = _vertices[i].Y;
+                _verticesDraw[TexPoint.Size * i + 2] = _vertices[i].Z;
+                _verticesDraw[TexPoint.Size * i + 3] = _vertices[i].TexX;
+                _verticesDraw[TexPoint.Size * i + 4] = _vertices[i].TexY;
             }
 
             GenerateLines();
@@ -152,21 +157,21 @@ namespace MikCAD
         public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _verticesDraw,
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * TexPoint.Size * sizeof(float), _verticesDraw,
                 BufferUsageHint.StaticDraw);
-
+            
             GL.BindVertexArray(_vao);
-
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-
+            
+            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float),
+                3 * sizeof(float));
+            GL.EnableVertexAttribArray(1);
+            
+            
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
-
             GL.BufferData(BufferTarget.ElementArrayBuffer, _lines.Length * sizeof(uint), _lines,
                 BufferUsageHint.StaticDraw);
-
-            GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
-            GL.EnableVertexAttribArray(1);
         }
 
         private void GenerateLines()
@@ -215,13 +220,15 @@ namespace MikCAD
 
             for (int i = 0; i < _vertices.Length; i++)
             {
-                vertices[i * Point.Size] = _vertices[i].X;
-                vertices[i * Point.Size + 1] = _vertices[i].Y;
-                vertices[i * Point.Size + 2] = _vertices[i].Z;
-
-                colors[i * Point.Size] = 1.0f;
-                colors[i * Point.Size + 1] = 0.0f;
-                colors[i * Point.Size + 2] = 0.0f;
+                vertices[i * TexPoint.Size] = _vertices[i].X;
+                vertices[i * TexPoint.Size + 1] = _vertices[i].Y;
+                vertices[i * TexPoint.Size + 2] = _vertices[i].Z;
+                vertices[i * TexPoint.Size + 3] = _vertices[i].Z;
+                vertices[i * TexPoint.Size + 4] = _vertices[i].Z;
+                //
+                // colors[i * Point.Size] = 1.0f;
+                // colors[i * Point.Size + 1] = 0.0f;
+                // colors[i * Point.Size + 2] = 0.0f;
             }
 
             return vertices;
@@ -335,13 +342,17 @@ namespace MikCAD
                 var width = TexWidth = _intersection._firstObj == this
                     ? _intersection.firstBmp.Width
                     : _intersection.secondBmp.Width;
-                
+
+                var bmp = _intersection._firstObj == this
+                    ? _intersection.firstBmp
+                    : _intersection.secondBmp;
+
                 var texture = new List<byte>(4 * width * height);
-                for (int i = 0; i < height; i++)
+                for (int j = 0; j < height; j++)
                 {
-                    for (int j = 0; j < width; j++)
+                    for (int i = 0; i < width; i++)
                     {
-                        var color = _intersection.firstBmp.GetPixel(j, i);
+                        var color = bmp.GetPixel(i, j);
                         texture.Add(color.R);
                         texture.Add(color.G);
                         texture.Add(color.B);
@@ -356,16 +367,20 @@ namespace MikCAD
 
         public override void SetTexture()
         {
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight,0, PixelFormat.Rgba, PixelType.UnsignedByte, Texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int) TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int) TextureMagFilter.Nearest);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight, 0,
+                PixelFormat.Rgba,
+                PixelType.UnsignedByte, Texture);
         }
-        
+
         private byte[] _texture;
         public byte[] Texture => _texture;
-        
+
         public int TexWidth { get; private set; }
         public int TexHeight { get; private set; }
         public bool IgnoreBlack { get; set; }

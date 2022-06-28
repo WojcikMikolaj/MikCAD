@@ -13,7 +13,8 @@ namespace MikCAD.CustomControls
         private void SpawnPoints(object sender, RoutedEventArgs e)
         {
             var obj = Scene.CurrentScene.ObjectsController.SelectedObject;
-            var startingPoints = (obj as IIntersectable)?.GetStartingPoints();
+            //var startingPoints = (obj as IIntersectable)?.GetStartingPoints();
+            var startingPoints = (obj as IIntersectable)?.GetRandomStartingPoints();
 
             foreach (var p in startingPoints)
             {

@@ -40,7 +40,7 @@ public class Intersection : INotifyPropertyChanged
     public float PointsDist { get; set; } = 0.05f;
     public float NewtonEps { get; set; } = 0.001f;
     public int NewtonMaxIterations { get; set; } = 5000;
-    public float MinDistParameterSpace { get; set; } = 0.01f;
+    public float MinDistParameterSpace { get; set; } = 0.1f;
 
     public List<IntersectionPoint> points;
 
@@ -53,8 +53,12 @@ public class Intersection : INotifyPropertyChanged
     {
         _looped = false;
 
-        var startingPointsFirst = _firstObj.GetStartingPoints();
-        var startingPointsSecond = _secondObj.GetStartingPoints();
+        // var startingPointsFirst = _firstObj.GetStartingPoints();
+        // var startingPointsSecond = _secondObj.GetStartingPoints();
+        
+        var startingPointsFirst = _firstObj.GetRandomStartingPoints();
+        var startingPointsSecond = _secondObj.GetRandomStartingPoints();
+        
         var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond, _selfIntersection);
 
         // foreach (var p in startingPointsSecond)

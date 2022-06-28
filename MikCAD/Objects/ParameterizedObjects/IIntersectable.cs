@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MikCAD.Objects;
 using OpenTK.Mathematics;
 
@@ -18,6 +19,21 @@ public interface IIntersectable
         }
         return result;
     }
+    
+    List<(Vector3 pos,float u, float v)> GetRandomStartingPoints(int count =400)
+    {
+        Random random = new Random(DateTime.Now.Millisecond);
+        var result = new List<(Vector3 pos,float u, float v)>();
+        for (int i = 0; i < count; i++)
+        {
+            var param= ((float)random.NextDouble()*USize, (float)random.NextDouble()*VSize);
+            result.Add((GetValueAt(param.Item1, param.Item2), param.Item1, param.Item2));
+        }
+
+
+        return result;
+    }
+    
     Vector3 GetValueAt(float u, float v);
     Vector3 GetUDerivativeAt(float u, float v);
     Vector3 GetVDerivativeAt(float u, float v);

@@ -228,7 +228,10 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     {
         if (CanIntersectObjects)
         {
-            return new Intersection(_objects[0] as IIntersectable, _objects[1] as IIntersectable);
+            if(objectsCount>1)
+                return new Intersection(_objects[0] as IIntersectable, _objects[1] as IIntersectable);
+            else
+                return new Intersection(_objects[0] as IIntersectable, _objects[0] as IIntersectable);
         }
 
         return null;

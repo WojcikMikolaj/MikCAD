@@ -28,7 +28,7 @@ public partial class IntersectionModalControl : UserControl
             if (intersection.points.Count > 2)
             {
                 var first = intersection.points[0];
-                var second = intersection.points[0];
+                var second = intersection.points[1];
 
                 var firstUSize = intersection._firstObj.USize;
                 var firstVSize = intersection._firstObj.VSize;

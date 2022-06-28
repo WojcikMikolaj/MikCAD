@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
@@ -25,7 +26,7 @@ public class Intersection : INotifyPropertyChanged
 
     public ParameterizedObject FirstObject => (ParameterizedObject) _firstObj;
     internal IIntersectable _firstObj;
-    
+
     public ParameterizedObject SecondObject => (ParameterizedObject) _secondObj;
     internal IIntersectable _secondObj;
 
@@ -39,66 +40,61 @@ public class Intersection : INotifyPropertyChanged
     public float PointsDist { get; set; } = 0.05f;
     public float NewtonEps { get; set; } = 0.001f;
     public int NewtonMaxIterations { get; set; } = 5000;
+    public float MinDistParameterSpace { get; set; } = 0.01f;
 
     public List<IntersectionPoint> points;
-    
+
     private bool _looped = false;
     public DirectBitmap secondBmp;
     public DirectBitmap firstBmp;
-    public bool Looped => _looped; 
-    
+    public bool Looped => _looped;
+
     public bool Intersect()
     {
         _looped = false;
-        if (!_selfIntersection)
+
+        var startingPointsFirst = _firstObj.GetStartingPoints();
+        var startingPointsSecond = _secondObj.GetStartingPoints();
+        var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond, _selfIntersection);
+
+        // foreach (var p in startingPointsSecond)
+        // {
+        //     Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("p")
+        //     {
+        //         posX = p.pos.X,
+        //         posY = p.pos.Y,
+        //         posZ = p.pos.Z,
+        //     });    
+        // }
+
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
         {
-            List<IntersectionPoint> intersectionPoints = new List<IntersectionPoint>();
+            posX = closestPoints.first.pos.X,
+            posY = closestPoints.first.pos.Y,
+            posZ = closestPoints.first.pos.Z,
+        });
 
-            var startingPointsFirst = _firstObj.GetStartingPoints();
-            var startingPointsSecond = _secondObj.GetStartingPoints();
-            var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond);
-
-            // foreach (var p in startingPointsSecond)
-            // {
-            //     Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("p")
-            //     {
-            //         posX = p.pos.X,
-            //         posY = p.pos.Y,
-            //         posZ = p.pos.Z,
-            //     });    
-            // }
-
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-            {
-                posX = closestPoints.first.pos.X,
-                posY = closestPoints.first.pos.Y,
-                posZ = closestPoints.first.pos.Z,
-            });
-            
-            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-            {
-                posX = closestPoints.second.pos.X,
-                posY = closestPoints.second.pos.Y,
-                posZ = closestPoints.second.pos.Z,
-            });
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+        {
+            posX = closestPoints.second.pos.X,
+            posY = closestPoints.second.pos.Y,
+            posZ = closestPoints.second.pos.Z,
+        });
 
 
-            var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
-            if (MathM.DistanceSquared(
-                    _firstObj.GetValueAt(firstIntersectionPoint.u, firstIntersectionPoint.v),
-                    _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps * 10)
-            {
-                return false;
-            }
-            
-            //Newton
-            intersectionPoints.Add(firstIntersectionPoint);
-            var points = FindOtherPoints(firstIntersectionPoint);
-
-            this.points = points;
-            return true;
+        var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
+        if (MathM.DistanceSquared(
+                _firstObj.GetValueAt(firstIntersectionPoint.u, firstIntersectionPoint.v),
+                _secondObj.GetValueAt(firstIntersectionPoint.s, firstIntersectionPoint.t)) > GradientEps * 10)
+        {
+            return false;
         }
-        return false;
+
+        //Newton
+        var points = FindOtherPoints(firstIntersectionPoint);
+
+        this.points = points;
+        return true;
     }
 
     public class IntersectionPoint
@@ -116,21 +112,20 @@ public class Intersection : INotifyPropertyChanged
     private List<IntersectionPoint> FindOtherPoints(IntersectionPoint firstIntersectionPoint)
     {
         var lastPoint = firstIntersectionPoint;
-        List<IntersectionPoint> leftPoints = new List<IntersectionPoint>();
-        List<IntersectionPoint> rightPoints = new List<IntersectionPoint>();
+        var finalPoints = new LinkedList<IntersectionPoint>();
 
+        //finalPoints.AddFirst(firstIntersectionPoint);
 
-        
         while (true)
         {
             lastPoint = FindNextPoint(lastPoint);
             if (lastPoint == null)
                 break;
-            rightPoints.Add(lastPoint);
+            finalPoints.AddLast(lastPoint);
 
-            if (HandleWrapping(lastPoint)) 
+            if (HandleWrapping(lastPoint))
                 break;
-            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist *2/ 3)
+            if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist * 2 / 3)
             {
                 _looped = true;
                 break;
@@ -143,54 +138,41 @@ public class Intersection : INotifyPropertyChanged
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
                 break;
-            leftPoints.Add(lastPoint);
+            finalPoints.AddFirst(lastPoint);
 
-            if (HandleWrapping(lastPoint)) 
+            if (HandleWrapping(lastPoint))
                 break;
             if (MathM.Distance(lastPoint.pos, firstIntersectionPoint.pos) < PointsDist / 2)
                 break;
         }
 
-        // if (looped)
-        // {
-        //     leftPoints.Add(firstIntersectionPoint);
-        // }
-            
-        
-        leftPoints.Reverse();
-        leftPoints.Add(firstIntersectionPoint);
-        foreach (var point in rightPoints)
-        {
-            leftPoints.Add(point);
-        }
-
-        return leftPoints;
+        if (_looped)
+            finalPoints.AddFirst(finalPoints.Last.Value);
+        return finalPoints.ToList();
     }
 
     private bool HandleWrapping(IntersectionPoint lastPoint)
     {
         if (lastPoint.u > _firstObj.USize && _firstObj.IsUWrapped)
             lastPoint.u -= MathF.Floor(lastPoint.u);
-        if( lastPoint.u < 0 && _firstObj.IsUWrapped)
+        if (lastPoint.u < 0 && _firstObj.IsUWrapped)
             lastPoint.u = _firstObj.USize + lastPoint.u;
-        
+
         if (lastPoint.v > _firstObj.VSize && _firstObj.IsVWrapped)
             lastPoint.v -= MathF.Floor(lastPoint.v);
-        if( lastPoint.v < 0 && _firstObj.IsVWrapped)
+        if (lastPoint.v < 0 && _firstObj.IsVWrapped)
             lastPoint.v = _firstObj.VSize + lastPoint.v;
 
-        
-        
+
         if (lastPoint.s > _secondObj.USize && _secondObj.IsUWrapped)
             lastPoint.s -= MathF.Floor(lastPoint.s);
         if (lastPoint.s < 0 && _secondObj.IsUWrapped)
             lastPoint.s = _secondObj.USize + lastPoint.s;
-        
+
         if (lastPoint.t > _secondObj.VSize && _secondObj.IsVWrapped)
             lastPoint.t -= MathF.Floor(lastPoint.t);
         if (lastPoint.t < 0 && _secondObj.IsVWrapped)
             lastPoint.t = _secondObj.VSize + lastPoint.t;
-                
 
 
         if (lastPoint.u > _firstObj.USize || lastPoint.u < 0)
@@ -287,14 +269,15 @@ public class Intersection : INotifyPropertyChanged
 
             // if (Math.Abs(dF(xk).Determinant) > 1e-6)
             //     Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("g"));
-            
+
             xk1 = xk - dF(xk).Inverted() * F(xk);
-            
+
             xk1 = Wrap(xk1);
 
             //Print(right, xk1, it);
 
-            if (xk1.X > _firstObj.USize || xk1.Y > _firstObj.VSize || xk1.Z > _secondObj.USize || xk1.W > _secondObj.VSize)
+            if (xk1.X > _firstObj.USize || xk1.Y > _firstObj.VSize || xk1.Z > _secondObj.USize ||
+                xk1.W > _secondObj.VSize)
                 break;
             if (xk1.X < 0 || xk1.Y < 0 || xk1.Z < 0 || xk1.W < 0)
                 break;
@@ -315,21 +298,20 @@ public class Intersection : INotifyPropertyChanged
     {
         if (xk1.X > _firstObj.USize && _firstObj.IsUWrapped)
             xk1.X -= MathF.Floor(xk1.X);
-        if( xk1.X < 0 && _firstObj.IsUWrapped)
+        if (xk1.X < 0 && _firstObj.IsUWrapped)
             xk1.X = _firstObj.USize + xk1.X;
-        
+
         if (xk1.Y > _firstObj.VSize && _firstObj.IsVWrapped)
             xk1.Y -= MathF.Floor(xk1.Y);
-        if( xk1.Y < 0 && _firstObj.IsVWrapped)
+        if (xk1.Y < 0 && _firstObj.IsVWrapped)
             xk1.Y = _firstObj.VSize + xk1.Y;
 
-        
-        
+
         if (xk1.Z > _secondObj.USize && _secondObj.IsUWrapped)
             xk1.Z -= MathF.Floor(xk1.Z);
         if (xk1.Z < 0 && _secondObj.IsUWrapped)
             xk1.Z = _secondObj.USize + xk1.Z;
-        
+
         if (xk1.W > _secondObj.VSize && _secondObj.IsVWrapped)
             xk1.W -= MathF.Floor(xk1.W);
         if (xk1.W < 0 && _secondObj.IsVWrapped)
@@ -410,12 +392,13 @@ public class Intersection : INotifyPropertyChanged
 
     private ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) FindClosestPoints(
         List<(Vector3 pos, float u, float v)> startingPointsFirst,
-        List<(Vector3 pos, float u, float v)> startingPointsSecond)
+        List<(Vector3 pos, float u, float v)> startingPointsSecond,
+        bool selfIntersection)
     {
         ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closest =
             (startingPointsFirst[0], startingPointsSecond[0]);
-        var minDist = MathM.Distance(closest.first.pos, closest.second.pos);
-        
+        var minDist = selfIntersection? float.MaxValue: MathM.Distance(closest.first.pos, closest.second.pos);
+
         if (!UseCursor)
         {
             for (int i = 0; i < startingPointsFirst.Count; i++)
@@ -423,6 +406,8 @@ public class Intersection : INotifyPropertyChanged
                 for (int j = 0; j < startingPointsSecond.Count; j++)
                 {
                     var currDist = MathM.DistanceSquared(startingPointsFirst[i].pos, startingPointsSecond[j].pos);
+                    if(selfIntersection && MathM.DistanceSquared((startingPointsFirst[i].u, startingPointsFirst[i].v),(startingPointsSecond[j].u, startingPointsSecond[j].v))< MinDistParameterSpace)
+                           continue;
                     if (currDist < minDist)
                     {
                         minDist = currDist;
@@ -436,23 +421,25 @@ public class Intersection : INotifyPropertyChanged
             var pointerPos = Scene.CurrentScene.ObjectsController._pointer.pos;
             minDist = MathM.Distance(pointerPos, startingPointsFirst[0].pos);
             var first = startingPointsFirst[0];
-            
+
             for (int i = 1; i < startingPointsFirst.Count; i++)
             {
-                var currDist = MathM.DistanceSquared(pointerPos,startingPointsFirst[i].pos);
+                var currDist = MathM.DistanceSquared(pointerPos, startingPointsFirst[i].pos);
                 if (currDist < minDist)
                 {
                     minDist = currDist;
                     first = startingPointsFirst[i];
                 }
             }
-            
+
             minDist = MathM.Distance(pointerPos, startingPointsSecond[0].pos);
             var second = startingPointsSecond[0];
-            
+
             for (int i = 1; i < startingPointsSecond.Count; i++)
             {
-                var currDist = MathM.DistanceSquared(pointerPos,startingPointsSecond[i].pos);
+                var currDist = MathM.DistanceSquared(pointerPos, startingPointsSecond[i].pos);
+                if(selfIntersection && MathM.DistanceSquared((first.u, first.v),(startingPointsSecond[i].u, startingPointsSecond[i].v))< MinDistParameterSpace)
+                    continue;
                 if (currDist < minDist)
                 {
                     minDist = currDist;
@@ -472,7 +459,7 @@ public class Intersection : INotifyPropertyChanged
         var interpolating = new InterpolatingBezierCurveC2();
         Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            
+
         foreach (var point in points)
         {
             var pos = _firstObj.GetValueAt(point.u, point.v);
@@ -504,7 +491,7 @@ public class Intersection : INotifyPropertyChanged
         //     interpolating2.ProcessObject(p);
         // }
     }
-    
+
     public void ShowC0()
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
@@ -512,7 +499,7 @@ public class Intersection : INotifyPropertyChanged
         intersectionC0.Name = "intersectionC0";
         Scene.CurrentScene.ObjectsController.AddObjectToScene(intersectionC0);
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
-            
+
         foreach (var point in points)
         {
             var pos = _firstObj.GetValueAt(point.u, point.v);

@@ -33,6 +33,7 @@ namespace MikCAD.CustomControls
                 ResizeMode = ResizeMode.NoResize,
                 Owner = MainWindow.current,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Title = "Wyznacz przecięcie"
             };
             
             dialog.ShowDialog();

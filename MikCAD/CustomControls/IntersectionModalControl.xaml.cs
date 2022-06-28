@@ -18,7 +18,19 @@ public partial class IntersectionModalControl : UserControl
 
     private void CalculateIntersection(object sender, RoutedEventArgs e)
     {
-        intersection.UseCursor = UseCursor.IsChecked.Value;
+        if (!UseDefault.IsChecked.Value)
+        {
+            intersection.StartingGradientStepLength = StartGradStep.Value;
+            intersection.GradientEps = GradEps.Value;
+            intersection.NewtonMaxIterations = (int)MaxIterationNum.Value;
+            intersection.PointsDist = PointsDist.Value;
+            intersection.NewtonEps = NewtonEps.Value;
+            intersection.MinDistParameterSpace = MinDistParams.Value;
+            intersection.StartingPointsNumber = (int)PointsNum.Value;
+            intersection.UseRandom = !UseEqualSpaced.IsChecked.Value;
+            intersection.UseCursor = UseCursor.IsChecked.Value;
+        }
+
         if (intersection.Intersect())
         {
             var firstBmp = new DirectBitmap(Constants.TextureWidth, Constants.TextureHeight);

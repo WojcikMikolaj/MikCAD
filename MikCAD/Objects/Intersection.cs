@@ -7,6 +7,7 @@ using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using MikCAD.Objects.ParameterizedObjects;
 using MikCAD.Utilities;
+using NumericUpDownLib;
 using OpenTK.Mathematics;
 
 namespace MikCAD.Objects;
@@ -39,6 +40,8 @@ public class Intersection : INotifyPropertyChanged
     public float NewtonEps { get; set; } = 0.001f;
     public int NewtonMaxIterations { get; set; } = 5000;
     public float MinDistParameterSpace { get; set; } = 0.1f;
+    public int StartingPointsNumber { get; set; } = 400;
+    public bool UseRandom { get; set; } = true;
 
     public List<IntersectionPoint> points;
 
@@ -47,16 +50,23 @@ public class Intersection : INotifyPropertyChanged
     public DirectBitmap firstBmp;
     public bool Looped => _looped;
 
+
     public bool Intersect()
     {
         _looped = false;
 
         // var startingPointsFirst = _firstObj.GetStartingPoints();
         // var startingPointsSecond = _secondObj.GetStartingPoints();
-        
-        var startingPointsFirst = _firstObj.GetRandomStartingPoints();
-        var startingPointsSecond = _secondObj.GetRandomStartingPoints();
-        
+
+        var startingPointsFirst = UseRandom
+            ? _firstObj.GetRandomStartingPoints(StartingPointsNumber)
+            : _firstObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
+                (int) MathF.Sqrt(StartingPointsNumber));
+        var startingPointsSecond = UseRandom
+            ? _secondObj.GetRandomStartingPoints(StartingPointsNumber)
+            : _secondObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
+                (int) MathF.Sqrt(StartingPointsNumber));
+
         var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond, _selfIntersection);
 
         // foreach (var p in startingPointsSecond)
@@ -399,7 +409,7 @@ public class Intersection : INotifyPropertyChanged
     {
         ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closest =
             (startingPointsFirst[0], startingPointsSecond[0]);
-        var minDist = selfIntersection? float.MaxValue: MathM.Distance(closest.first.pos, closest.second.pos);
+        var minDist = selfIntersection ? float.MaxValue : MathM.Distance(closest.first.pos, closest.second.pos);
 
         if (!UseCursor)
         {
@@ -408,8 +418,9 @@ public class Intersection : INotifyPropertyChanged
                 for (int j = 0; j < startingPointsSecond.Count; j++)
                 {
                     var currDist = MathM.DistanceSquared(startingPointsFirst[i].pos, startingPointsSecond[j].pos);
-                    if(selfIntersection && MathM.DistanceSquared((startingPointsFirst[i].u, startingPointsFirst[i].v),(startingPointsSecond[j].u, startingPointsSecond[j].v))< MinDistParameterSpace)
-                           continue;
+                    if (selfIntersection && MathM.DistanceSquared((startingPointsFirst[i].u, startingPointsFirst[i].v),
+                            (startingPointsSecond[j].u, startingPointsSecond[j].v)) < MinDistParameterSpace)
+                        continue;
                     if (currDist < minDist)
                     {
                         minDist = currDist;
@@ -440,7 +451,9 @@ public class Intersection : INotifyPropertyChanged
             for (int i = 1; i < startingPointsSecond.Count; i++)
             {
                 var currDist = MathM.DistanceSquared(pointerPos, startingPointsSecond[i].pos);
-                if(selfIntersection && MathM.DistanceSquared((first.u, first.v),(startingPointsSecond[i].u, startingPointsSecond[i].v))< MinDistParameterSpace)
+                if (selfIntersection &&
+                    MathM.DistanceSquared((first.u, first.v), (startingPointsSecond[i].u, startingPointsSecond[i].v)) <
+                    MinDistParameterSpace)
                     continue;
                 if (currDist < minDist)
                 {

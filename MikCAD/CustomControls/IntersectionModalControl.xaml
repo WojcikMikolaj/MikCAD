@@ -29,28 +29,30 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                 
                 <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Gradienty proste</Label>
                 <Label Grid.Row="1" Grid.Column="0">Startowa długość</Label>
-                <n:FloatUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.01" MaxValue="1" Value="0.1" x:Name="StartGradStep" StepSize="0.01" LargeStepSize="0.1" DisplayLength="10"/>
+                <n:FloatUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.01" MaxValue="1" Value="0.1" x:Name="StartGradStep" StepSize="0.01" LargeStepSize="0.01" DisplayLength="10"/>
                 <Label Grid.Row="2" Grid.Column="0">Gradient Eps</Label>
-                <n:FloatUpDown Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.001" MaxValue="0.1" Value="0.01" x:Name="GradEps" StepSize="0.001" DisplayLength="10" FormatString="0.###"/>
+                <n:FloatUpDown Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.001" MaxValue="0.1" Value="0.01" x:Name="GradEps" StepSize="0.001" LargeStepSize="0.001" DisplayLength="10" FormatString="0.###"/>
                 <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">Newton</Label>
                 <Label Grid.Row="4" Grid.Column="0" >Liczba iteracji</Label>
-                <n:UIntegerUpDown Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MinValue="10" MaxValue="20000" Value="5000" x:Name="MaxIterationNum" DisplayLength="10" IsReadOnly="False"/>
+                <n:UIntegerUpDown Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" MinValue="10" MaxValue="20000" Value="5000" x:Name="MaxIterationNum" StepSize="500" LargeStepSize="500" DisplayLength="10" IsReadOnly="False"/>
                 <Label Grid.Row="5" Grid.Column="0" >Points distance</Label>
-                <n:FloatUpDown Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MinValue="0.001" MaxValue="1" Value="0.05" x:Name="PointsDist" DisplayLength="10" IsReadOnly="False" FormatString="0.###"/>
+                <n:FloatUpDown Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" MinValue="0.001" MaxValue="1" Value="0.05" x:Name="PointsDist" StepSize="0.001" LargeStepSize="0.001" DisplayLength="10" IsReadOnly="False" FormatString="0.###"/>
                 <Label Grid.Row="6" Grid.Column="0" >Newton Eps</Label>
-                <n:FloatUpDown Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" MaxValue="0.01" Value="0.001" x:Name="NewtonEps" DisplayLength="10" IsReadOnly="False" FormatString="0.####"/>
+                <n:FloatUpDown Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" MinValue="0.0001" MaxValue="0.01" Value="0.001" x:Name="NewtonEps" StepSize="0.0001" LargeStepSize="0.0001" DisplayLength="10" IsReadOnly="False" FormatString="0.####"/>
                 <Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2">Samoprzecięcia</Label>
                 <Label Grid.Row="8" Grid.Column="0">Minimalna odległość</Label>
-                <n:FloatUpDown Grid.Row="8" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.01" MaxValue="1" Value="0.1" x:Name="MinDistParams" StepSize="0.00001" DisplayLength="10" FormatString="0.##"/>
+                <n:FloatUpDown Grid.Row="8" Grid.Column="1" VerticalAlignment="Center"  IsReadOnly="False" MinValue="0.01" MaxValue="1" Value="0.1" x:Name="MinDistParams" StepSize="0.01" LargeStepSize="0.01" DisplayLength="10" FormatString="0.##"/>
                 <Label Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2">Ogólne</Label>
                 <Label Grid.Row="10" Grid.Column="0">Liczba punktów</Label>
-                <n:UIntegerUpDown Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" MinValue="100" Value="400" MaxValue="1000" x:Name="PointsNum" DisplayLength="10" StepSize="10" LargeStepSize="100" IsReadOnly="False"/>
+                <n:UIntegerUpDown Grid.Row="10" Grid.Column="1" VerticalAlignment="Center" MinValue="100" Value="400" MaxValue="1000" x:Name="PointsNum" DisplayLength="10" StepSize="50" LargeStepSize="50" IsReadOnly="False"/>
                 <CheckBox Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2"  x:Name="UseCursor">Użyj kursora</CheckBox>
-                <CheckBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2"  x:Name="UseDefault">Użyj domyślnych</CheckBox>
+                <CheckBox Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2"  x:Name="UseEqualSpaced">Użyj równoodległych</CheckBox>
+                <CheckBox Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2"  x:Name="UseDefault">Użyj domyślnych</CheckBox>
                 </Grid>
                 <Button Height="30" Click="CalculateIntersection">Znajdź przecięcie</Button>
             </StackPanel>

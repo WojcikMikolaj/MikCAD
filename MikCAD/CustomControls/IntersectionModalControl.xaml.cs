@@ -23,8 +23,8 @@ public partial class IntersectionModalControl : UserControl
         intersection.UseCursor = UseCursor.IsChecked.Value;
         if (intersection.Intersect())
         {
-            var firstBmp = new DirectBitmap(400, 400);
-            var secondBmp = new DirectBitmap(400, 400);
+            var firstBmp = new DirectBitmap(Constants.TextureWidth, Constants.TextureHeight);
+            var secondBmp = new DirectBitmap(Constants.TextureWidth, Constants.TextureHeight);
             if (intersection.points.Count > 2)
             {
                 var first = intersection.points[0];

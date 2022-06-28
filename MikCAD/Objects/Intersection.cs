@@ -94,7 +94,7 @@ public class Intersection : INotifyPropertyChanged
             //Newton
             intersectionPoints.Add(firstIntersectionPoint);
             var points = FindOtherPoints(firstIntersectionPoint);
-            
+
             this.points = points;
             return true;
         }

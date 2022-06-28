@@ -187,15 +187,10 @@ namespace MikCAD
                 for (int j = 0; j < _circlesCount; j++)
                 {
                     //duże okręgi
-                    if (i != _sectorsCount - 1)
+                    if (i != _sectorsCount)
                     {
                         _lines[it++] = (uint) (i * (_circlesCount+1) + j);
                         _lines[it++] = (uint) ((i + 1) * (_circlesCount+1) + j);
-                    }
-                    else
-                    {
-                        _lines[it++] = (uint) ((_sectorsCount - 1) * (_circlesCount+1) + j);
-                        _lines[it++] = (uint) j;
                     }
 
                     //małe okręgi
@@ -203,11 +198,6 @@ namespace MikCAD
                     {
                         _lines[it++] = (uint) (i * (_circlesCount+1) + j);
                         _lines[it++] = (uint) (i * (_circlesCount+1) + j + 1);
-                    }
-                    else//niepotrzebne???
-                    {
-                        _lines[it++] = (uint) (i * (_circlesCount+1) + _circlesCount +1 - 1);
-                        _lines[it++] = (uint) (i * (_circlesCount+1));
                     }
                 }
             }

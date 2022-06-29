@@ -27,6 +27,7 @@ public partial class IntersectionModalControl : UserControl
             intersection.NewtonEps = NewtonEps.Value;
             intersection.MinDistParameterSpace = MinDistParams.Value;
             intersection.StartingPointsNumber = (int)PointsNum.Value;
+            intersection.MaxPointsNumber = (int) MaxPointsNum.Value;
             intersection.UseRandom = !UseEqualSpaced.IsChecked.Value;
             intersection.UseCursor = UseCursor.IsChecked.Value;
         }

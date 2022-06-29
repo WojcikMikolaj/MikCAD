@@ -41,6 +41,7 @@ public class Intersection : INotifyPropertyChanged
     public int NewtonMaxIterations { get; set; } = 5000;
     public float MinDistParameterSpace { get; set; } = 0.1f;
     public int StartingPointsNumber { get; set; } = 400;
+    public int MaxPointsNumber { get; set; } = 400;
     public bool UseRandom { get; set; } = true;
 
     public List<IntersectionPoint> points;
@@ -128,8 +129,15 @@ public class Intersection : INotifyPropertyChanged
 
         //finalPoints.AddFirst(firstIntersectionPoint);
 
+        int it = 0;
         while (true)
         {
+            if (it > MaxPointsNumber)
+            {
+                break;
+            }
+            it++;
+            
             lastPoint = FindNextPoint(lastPoint);
             if (lastPoint == null)
                 break;
@@ -147,6 +155,12 @@ public class Intersection : INotifyPropertyChanged
         lastPoint = firstIntersectionPoint;
         while (!_looped)
         {
+            if (it > MaxPointsNumber)
+            {
+                break;
+            }
+            it++;
+            
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
                 break;

@@ -99,7 +99,7 @@
                         <ComboBoxItem IsSelected="True">Frez kulisty</ComboBoxItem>
                         <ComboBoxItem>Frez płaski</ComboBoxItem>
                     </ComboBox>
-                    <Label Grid.Row="1" Grid.Column="0">Rozmiar narzędzia</Label>
+                    <Label Grid.Row="1" Grid.Column="0">Rozmiar narzędzia w mm</Label>
                     <n:UIntegerUpDown Grid.Row="1" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"

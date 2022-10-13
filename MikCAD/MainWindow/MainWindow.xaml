@@ -99,36 +99,47 @@
                                            SizeChanged="OpenTkControl_OnSizeChanged"
                                            MinWidth="400"
                                            MinHeight="400" />
-                <customControls:TorusControl Grid.Row="1" Grid.Column="2"
-                                    DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                    x:Name="torusControl" Visibility="Hidden" />
-                <customControls:PointControl Grid.Row="1" Grid.Column="2"
-                                    DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                    x:Name="pointControl" Visibility="Hidden" />
-                <customControls:PointerControl Grid.Row="1" Grid.Column="2"
-                                      DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                      x:Name="pointerControl" Visibility="Hidden" />
-                <customControls:BezierCurveC0Control Grid.Row="1" Grid.Column="2"
-                                            DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                            x:Name="bezierCurveC0Control" Visibility="Hidden" />
-                <customControls:BezierCurveC2Control Grid.Row="1" Grid.Column="2"
-                                            DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                            x:Name="bezierCurveC2Control" Visibility="Hidden" />
-                <customControls:InterpolatingBezierCurveC2Control Grid.Row="1" Grid.Column="2"
-                                                         DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                                         x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden" />
-                <customControls:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2"
-                                              DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                              x:Name="bezierSurfaceC0Control" Visibility="Hidden" />
-                <customControls:BezierSurfaceC0Control Grid.Row="1" Grid.Column="2"
-                                              DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                              x:Name="bezierSurfaceC2Control" Visibility="Hidden" />
-                <customControls:GregoryPatchControl Grid.Row="1" Grid.Column="2"
-                                           DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                           x:Name="gregoryPatchControl" Visibility="Hidden" />
-                <customControls:CompositeControl Grid.Row="1" Grid.Column="2"
-                                        DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
-                                        x:Name="compositeControl" Visibility="Hidden" />
+                <TabControl Grid.Row="1" Grid.Column="2">
+                    <TabItem Header="Obiekty sceny">
+                        <Grid>
+                            <customControls:TorusControl 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="torusControl" Visibility="Hidden" />
+                            <customControls:PointControl 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="pointControl" Visibility="Hidden" />
+                            <customControls:PointerControl 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="pointerControl" Visibility="Hidden" />
+                            <customControls:BezierCurveC0Control 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="bezierCurveC0Control" Visibility="Hidden" />
+                            <customControls:BezierCurveC2Control 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="bezierCurveC2Control" Visibility="Hidden" />
+                            <customControls:InterpolatingBezierCurveC2Control 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="interpolatingBezierCurveC2Control" Visibility="Hidden" />
+                            <customControls:BezierSurfaceC0Control 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="bezierSurfaceC0Control" Visibility="Hidden" />
+                            <customControls:BezierSurfaceC0Control 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="bezierSurfaceC2Control" Visibility="Hidden" />
+                            <customControls:GregoryPatchControl 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="gregoryPatchControl" Visibility="Hidden" />
+                            <customControls:CompositeControl 
+                                DataContext="{Binding scene.ObjectsController.SelectedObject, Mode=TwoWay}"
+                                x:Name="compositeControl" Visibility="Hidden" />
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Symulator 3C">
+                        <customControls:Simulator3CControl 
+                            x:Name="simulator3CControl"/>
+                    </TabItem>
+                </TabControl>
+                
             </Grid>
         </TabItem>
         <TabItem Header="Podgląd tekstury">

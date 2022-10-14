@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace MikCAD;
 
@@ -132,6 +133,8 @@ public class Simulator3C : INotifyPropertyChanged
         Simulator = this;
     }
 
+    private Regex _moveLineRegex = new Regex(@"N(\d+)G01(X-?\d{1,2}.\d{3})?(Y-?\d{1,2}.\d{3})?(Z-?\d{1,2}.\d{3})?");
+    
     public (bool, SimulatorErrorCode) ParsePathFile(string diagFileName, string[] lines)
     {
         var indexOfDot = diagFileName.IndexOf('.');
@@ -167,6 +170,23 @@ public class Simulator3C : INotifyPropertyChanged
             return (false, SimulatorErrorCode.WrongCutterSize);
         }
         OnPropertyChanged(nameof(CutterDiameterInMm));
+
+
+        int lineNumber = 0;
+        foreach (var line in lines)
+        {
+            var matchCollection = _moveLineRegex.Matches(line, 0);
+            if (matchCollection.Count == 1 && matchCollection[0].Length == line.Length)
+            {
+                
+            }
+            else
+            {
+                return (false, SimulatorErrorCode.UnsupportedCommand);
+            }
+            lineNumber++;
+        }
+        
         
         FileName = diagFileName.Substring(diagFileName.LastIndexOf("\\", StringComparison.Ordinal)+1);
         return (true, SimulatorErrorCode.None);

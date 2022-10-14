@@ -6,5 +6,6 @@ public enum SimulatorErrorCode
     WrongFileName = 0,
     WrongCutterType = 1,
     WrongCutterSize = 2,
-    UnsupportedCommand = 3
+    UnsupportedCommand = 3,
+    MissingInstructions = 4
 }

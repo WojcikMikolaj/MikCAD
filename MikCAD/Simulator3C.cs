@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace MikCAD;
@@ -114,6 +115,18 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
+    private String _fileName= "Brak pliku";
+
+    public String FileName
+    {
+        get => _fileName;
+        set
+        {
+            _fileName = value;
+            OnPropertyChanged(nameof(FileName));
+        }
+    } 
+    
     public Simulator3C()
     {
         Simulator = this;
@@ -154,7 +167,8 @@ public class Simulator3C : INotifyPropertyChanged
             return (false, SimulatorErrorCode.WrongCutterSize);
         }
         OnPropertyChanged(nameof(CutterDiameterInMm));
-
+        
+        FileName = diagFileName.Substring(diagFileName.LastIndexOf("\\", StringComparison.Ordinal)+1);
         return (true, SimulatorErrorCode.None);
     }
 

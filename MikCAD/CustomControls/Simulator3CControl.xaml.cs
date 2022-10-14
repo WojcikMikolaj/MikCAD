@@ -27,11 +27,13 @@ public partial class Simulator3CControl : UserControl
                 var result = Simulator3C.Simulator.ParsePathFile(diag.FileName, lines);
                 if (!result.Item1)
                 {
+                    Simulator3C.Simulator.FileName = "Brak pliku";
                     MessageBox.Show($"Błąd podczas wczytywania pliku\nKod błędu: {result.Item2}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
+                Simulator3C.Simulator.FileName = "Brak pliku";
                 MessageBox.Show("Brak pliku lub plik jest pusty", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

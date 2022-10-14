@@ -136,7 +136,8 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Grid.Column="0" Click="LoadFile">Wczytaj plik</Button>
-                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" />
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" Content="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                           Path=DataContext.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Grid.Row="2" Grid.Column="0">Start</Button>
                     <Button Grid.Row="2" Grid.Column="2">Przewiń</Button>
                 </Grid>

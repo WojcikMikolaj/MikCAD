@@ -10,8 +10,28 @@
              d:DesignWidth="250">
     <StackPanel>
         <GroupBox Header="Ustawienia ogólne">
-            <CheckBox Margin="5,5,5,5" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                             Path=DataContext.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="simulatorCheckBox">Symulator włączony</CheckBox>
+            <StackPanel>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="simulatorCheckBox">
+                    Symulator włączony
+                </CheckBox>
+                <CheckBox Margin="5,5,5,5" x:Name="simulatorLineZBufferCheckBox"
+                          IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+                    Ignoruj bufor głębokości
+                </CheckBox>
+                <Grid Margin="5,5,5,5" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">1 grid unit = </Label>
+                    <n:UIntegerUpDown Grid.Column="1" Value="1" IsEnabled="False" />
+                    <Label Grid.Column="2"> cm</Label>
+                </Grid>
+            </StackPanel>
         </GroupBox>
         <GroupBox Header="Ustawienia materiału" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
@@ -103,10 +123,16 @@
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Typ narzędzia</Label>
                     <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">
-                        <ComboBoxItem IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                                      Path=DataContext.SphericalSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Frez kulisty</ComboBoxItem>
-                        <ComboBoxItem IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                                      Path=DataContext.FlatSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Frez płaski</ComboBoxItem>
+                        <ComboBoxItem
+                            IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.SphericalSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            Frez kulisty
+                        </ComboBoxItem>
+                        <ComboBoxItem
+                            IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.FlatSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            Frez płaski
+                        </ComboBoxItem>
                     </ComboBox>
                     <Label Grid.Row="1" Grid.Column="0">Rozmiar narzędzia w mm</Label>
                     <n:UIntegerUpDown Grid.Row="1" Grid.Column="1"
@@ -126,25 +152,26 @@
             <StackPanel>
                 <Grid Margin="5,5,5,5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="5px"/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="5px" />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="5px"/>
-                        <RowDefinition/>
+                        <RowDefinition />
+                        <RowDefinition Height="5px" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Grid.Column="0" Click="LoadFile">Wczytaj plik</Button>
-                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" Content="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                           Path=DataContext.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center"
+                           Content="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                           Path=DataContext.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Button Grid.Row="2" Grid.Column="0">Start</Button>
                     <Button Grid.Row="2" Grid.Column="2">Przewiń</Button>
                 </Grid>
                 <Label Margin="5,5,5,0">Postęp symulacji</Label>
-                <ProgressBar Margin="5,0,5,5" Height="20"/>
+                <ProgressBar Margin="5,0,5,5" Height="20" />
                 <Label Margin="5,0,5,0">Prędkość symulacji</Label>
-                <Slider Margin="5,0,5,5" Minimum="1" Maximum="100"/>
+                <Slider Margin="5,0,5,5" Minimum="1" Maximum="100" />
                 <Button Margin="5,5,5,5">Resetuj materiał</Button>
             </StackPanel>
         </GroupBox>

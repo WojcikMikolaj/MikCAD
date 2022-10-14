@@ -136,6 +136,7 @@
                     </TabItem>
                     <TabItem Header="Symulator 3C">
                         <customControls:Simulator3CControl 
+                            DataContext="{Binding scene.Simulator3C, Mode=OneWay}"
                             x:Name="simulator3CControl"/>
                     </TabItem>
                 </TabControl>

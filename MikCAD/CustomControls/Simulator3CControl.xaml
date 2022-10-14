@@ -10,7 +10,8 @@
              d:DesignWidth="250">
     <StackPanel>
         <GroupBox Header="Ustawienia ogólne">
-            <CheckBox Margin="5,5,5,5" IsChecked="False" x:Name="simulatorCheckBox">Symulator włączony</CheckBox>
+            <CheckBox Margin="5,5,5,5" IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" x:Name="simulatorCheckBox">Symulator włączony</CheckBox>
         </GroupBox>
         <GroupBox Header="Ustawienia materiału" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
@@ -29,7 +30,8 @@
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"
                                       x:Name="xSize"
-                                      Value="10"
+                                      Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.XGridSizeInUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       MinValue="1"
                                       StepSize="1" LargeStepSize="1"
                                       DisplayLength="25" IsReadOnly="False" />
@@ -38,7 +40,8 @@
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"
                                       x:Name="ySize"
-                                      Value="10"
+                                      Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.YGridSizeInUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       MinValue="1"
                                       StepSize="1" LargeStepSize="1"
                                       DisplayLength="25" IsReadOnly="False" />
@@ -58,7 +61,8 @@
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"
                                       x:Name="xDivisions"
-                                      Value="8000"
+                                      Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.XGridDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       MinValue="100"
                                       StepSize="500" LargeStepSize="500"
                                       DisplayLength="25" IsReadOnly="False" />
@@ -67,17 +71,20 @@
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"
                                       x:Name="yDivisions"
-                                      Value="8000"
+                                      Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.YGridDivisions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       MinValue="100"
                                       StepSize="500" LargeStepSize="500"
                                       DisplayLength="25" IsReadOnly="False" />
                 </Grid>
-                <Label>Maksymalne zanużenie freza</Label>
+                <Label>Maksymalne zanużenie freza w mm</Label>
                 <n:FloatUpDown Grid.Row="0" Grid.Column="1"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right"
                                x:Name="maxCutterImmersion"
-                               MinValue="1"
+                               Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.MaxCutterImmersionInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               MinValue="20"
                                DisplayLength="25"
                                IsReadOnly="False"
                                FormatString="0.###" />
@@ -96,15 +103,18 @@
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Typ narzędzia</Label>
                     <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">
-                        <ComboBoxItem IsSelected="True">Frez kulisty</ComboBoxItem>
-                        <ComboBoxItem>Frez płaski</ComboBoxItem>
+                        <ComboBoxItem IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.SphericalSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Frez kulisty</ComboBoxItem>
+                        <ComboBoxItem IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.FlatSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Frez płaski</ComboBoxItem>
                     </ComboBox>
                     <Label Grid.Row="1" Grid.Column="0">Rozmiar narzędzia w mm</Label>
                     <n:UIntegerUpDown Grid.Row="1" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Right"
                                       x:Name="cutterSize"
-                                      Value="15"
+                                      Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                      Path=DataContext.CutterDiameterInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       MinValue="2"
                                       MaxValue="20"
                                       StepSize="1" LargeStepSize="1"
@@ -125,7 +135,7 @@
                         <RowDefinition Height="5px"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0">Wczytaj plik</Button>
+                    <Button Grid.Row="0" Grid.Column="0" Click="LoadFile">Wczytaj plik</Button>
                     <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center" />
                     <Button Grid.Row="2" Grid.Column="0">Start</Button>
                     <Button Grid.Row="2" Grid.Column="2">Przewiń</Button>

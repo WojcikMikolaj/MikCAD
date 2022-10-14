@@ -13,6 +13,7 @@ namespace MikCAD
     public class Scene
     {
         public static Scene CurrentScene;
+        public Simulator3C Simulator3C { get; private set; } = new Simulator3C();
         public ObjectsController ObjectsController { get; private set; } = new ObjectsController();
         public Camera camera { get; set; } = new Camera();
 

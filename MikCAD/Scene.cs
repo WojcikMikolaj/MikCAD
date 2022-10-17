@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using BepuPhysics;
+using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -39,6 +40,8 @@ namespace MikCAD
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
             ObjectsController.AddObjectToScene(ObjectsController._pointer = new Pointer3D());
+            ObjectsController.Paths = new Paths();
+            ObjectsController.Paths.rotX = -90;
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -9,6 +10,7 @@ using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
+using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -72,6 +74,8 @@ public class ObjectsController : INotifyPropertyChanged
 
     private DrawProcessor _drawProcessor;
     public readonly SelectionBox SelectionBox = new SelectionBox();
+
+    public Paths Paths;
 
     public ObjectsController()
     {
@@ -353,6 +357,12 @@ public class ObjectsController : INotifyPropertyChanged
         _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, eye, vertexAttributeLocation, normalAttributeLocation);
         if (SelectionBox.Draw)
             _drawProcessor.DrawSelectionBox(SelectionBox);
+
+        if (Simulator3C.Simulator.Enabled && Paths is {CuttingLines: {points.Length: > 0}})
+        {
+            Paths.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Paths, eye, vertexAttributeLocation, normalAttributeLocation);
+        }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

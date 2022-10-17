@@ -3,6 +3,7 @@ using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
 using MikCAD.Objects.ParameterizedObjects;
+using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -32,7 +33,9 @@ public class DrawProcessor
     private int selectionVBO = GL.GenBuffer();
     private int selectionVAO = GL.GenVertexArray();
     private int selectionIBO = GL.GenBuffer();
-
+    
+    
+    private int pathsIBO = GL.GenBuffer();
     public DrawProcessor(ObjectsController controller)
     {
         _controller = controller;
@@ -331,6 +334,22 @@ public class DrawProcessor
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
+    public void ProcessObject(Paths paths, EyeEnum eye, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
+    {
+        var _modelMatrix = paths.GetModelMatrix();
+        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0.5f, 0, 1));
+
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, pathsIBO);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, paths._lines.Length * sizeof(uint),
+            paths._lines, BufferUsageHint.StaticDraw);
+        GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        GL.EnableVertexAttribArray(1);
+        GL.DrawElements(PrimitiveType.Lines, paths.lines.Length, DrawElementsType.UnsignedInt, 0);
+    }
 
     public void ProcessObject(CompositeObject compositeObject, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)

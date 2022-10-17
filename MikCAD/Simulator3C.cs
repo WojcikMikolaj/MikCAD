@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using MikCAD.Objects.ParameterizedObjects.Milling;
 
 namespace MikCAD;
 
@@ -236,6 +237,10 @@ public class Simulator3C : INotifyPropertyChanged
 
 
         FileName = diagFileName.Substring(diagFileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
+        Scene.CurrentScene.ObjectsController.Paths.CuttingLines = new CuttingLines()
+        {
+            points = points.ToArray()
+        };
         return (true, SimulatorErrorCode.None);
     }
 

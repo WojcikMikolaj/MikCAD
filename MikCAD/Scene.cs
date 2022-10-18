@@ -42,6 +42,8 @@ namespace MikCAD
             ObjectsController.AddObjectToScene(ObjectsController._pointer = new Pointer3D());
             ObjectsController.Paths = new Paths();
             ObjectsController.Paths.rotX = -90;
+            ObjectsController.Block = new Block();
+            ObjectsController.Block.rotX = -90;
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

@@ -25,6 +25,7 @@ public class Simulator3C : INotifyPropertyChanged
             if (value > 0)
             {
                 _xGridSizeInUnits = value;
+                Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
             }
         }
     }
@@ -39,10 +40,26 @@ public class Simulator3C : INotifyPropertyChanged
             if (value > 0)
             {
                 _yGridSizeInUnits = value;
+                Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
             }
         }
     }
 
+    private uint _zGridSizeInUnits = 4;
+
+    public uint ZGridSizeInUnits
+    {
+        get => _zGridSizeInUnits;
+        set
+        {
+            if (value > 0)
+            {
+                _zGridSizeInUnits = value;
+                Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
+            }
+        }
+    }
+    
     private uint _xGridDivisions = 8000;
 
     public uint XGridDivisions
@@ -53,6 +70,7 @@ public class Simulator3C : INotifyPropertyChanged
             if (value > 0)
             {
                 _xGridDivisions = value;
+                Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
             }
         }
     }
@@ -67,6 +85,7 @@ public class Simulator3C : INotifyPropertyChanged
             if (value > 0)
             {
                 _yGridDivisions = value;
+                Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
             }
         }
     }

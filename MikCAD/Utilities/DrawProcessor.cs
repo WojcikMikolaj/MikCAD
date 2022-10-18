@@ -36,6 +36,8 @@ public class DrawProcessor
     
     
     private int pathsIBO = GL.GenBuffer();
+    
+    private int blockIBO = GL.GenBuffer();
     public DrawProcessor(ObjectsController controller)
     {
         _controller = controller;
@@ -349,6 +351,23 @@ public class DrawProcessor
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Lines, paths.lines.Length, DrawElementsType.UnsignedInt, 0);
+    }
+    
+    public void ProcessObject(Block block, EyeEnum eye, uint vertexAttributeLocation,
+        uint normalAttributeLocation)
+    {
+        var _modelMatrix = block.GetModelMatrix();
+        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
+
+        // GL.BindBuffer(BufferTarget.ElementArrayBuffer, blockIBO);
+        // GL.BufferData(BufferTarget.ElementArrayBuffer, block._lines.Length * sizeof(uint),
+        //     block._lines, BufferUsageHint.StaticDraw);
+        // GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
+        // GL.EnableVertexAttribArray(1);
+        GL.DrawElements(PrimitiveType.Triangles, block.TrianglesIndices.Length, DrawElementsType.UnsignedInt, 0);
     }
 
     public void ProcessObject(CompositeObject compositeObject, EyeEnum eye, uint vertexAttributeLocation,

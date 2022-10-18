@@ -76,6 +76,7 @@ public class ObjectsController : INotifyPropertyChanged
     public readonly SelectionBox SelectionBox = new SelectionBox();
 
     public Paths Paths;
+    public Block Block;
 
     public ObjectsController()
     {
@@ -363,6 +364,12 @@ public class ObjectsController : INotifyPropertyChanged
             Paths.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             _drawProcessor.ProcessObject(Paths, eye, vertexAttributeLocation, normalAttributeLocation);
         }
+        
+        if (Simulator3C.Simulator.Enabled && Block is { })
+        {
+            Block.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Block, eye, vertexAttributeLocation, normalAttributeLocation);
+        }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -524,7 +531,8 @@ public class ObjectsController : INotifyPropertyChanged
             }
         }
     }
-
+    
+    #region Gregoriusz
     public bool PatchHole()
     {
         if (_selectedObject is CompositeObject compositeObject)
@@ -885,6 +893,8 @@ public class ObjectsController : INotifyPropertyChanged
         outerRing.RemoveAt(outerRing.Count - 1);
     }
 
+    #endregion
+    
     public Intersection GetNewIntersectionObject()
     {
         if (_selectedObject is CompositeObject {CanIntersectObjects: true} c)

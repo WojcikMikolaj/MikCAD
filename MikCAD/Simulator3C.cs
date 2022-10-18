@@ -15,7 +15,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     public bool Enabled { get; set; }
 
-    private uint _xGridSizeInUnits = 10;
+    private uint _xGridSizeInUnits = 20;
 
     public uint XGridSizeInUnits
     {
@@ -30,7 +30,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _yGridSizeInUnits = 10;
+    private uint _yGridSizeInUnits = 20;
 
     public uint YGridSizeInUnits
     {

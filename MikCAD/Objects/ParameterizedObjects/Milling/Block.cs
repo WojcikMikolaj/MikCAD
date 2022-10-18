@@ -122,28 +122,60 @@ public class Block : ParameterizedObject
 
     public void GenerateTriangles()
     {
-        var trianglesCount = _vertices.Length;
-        _trianglesIndices = new uint[3 * trianglesCount];
+        var triangleList = new List<uint>();
 
-        int it = 0;
         uint triangleStart = XVerticesCount * YVerticesCount;
 
+        //Górna krawędź
         for (int i = 0; i < XVerticesCount - 1; i++)
         {
             for (int j = 0; j < YVerticesCount - 1; j++)
             {
-                _trianglesIndices[it++] = triangleStart;
-                _trianglesIndices[it++] = triangleStart + 1;
-                _trianglesIndices[it++] = triangleStart + YVerticesCount;
-                
-                _trianglesIndices[it++] = triangleStart + 1;
-                _trianglesIndices[it++] = triangleStart + YVerticesCount;
-                _trianglesIndices[it++] = triangleStart + YVerticesCount + 1;
-                
+                triangleList.Add(triangleStart);
+                triangleList.Add(triangleStart + 1);
+                triangleList.Add(triangleStart + YVerticesCount);
+
+                triangleList.Add(triangleStart + 1);
+                triangleList.Add(triangleStart + YVerticesCount);
+                triangleList.Add(triangleStart + YVerticesCount + 1);
+
                 triangleStart++;
             }
+
             triangleStart++;
         }
+
+        //Ściana x==0
+        triangleStart = 0;
+        for (int j = 0; j < YVerticesCount - 1; j++)
+        {
+            triangleList.Add(triangleStart);
+            triangleList.Add(triangleStart + 1);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+
+            triangleList.Add(triangleStart + 1);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
+
+            triangleStart++;
+        }
+        
+        //Ściana x==max
+        triangleStart = (XVerticesCount-1)*YVerticesCount;
+        for (int j = 0; j < YVerticesCount - 1; j++)
+        {
+            triangleList.Add(triangleStart);
+            triangleList.Add(triangleStart + 1);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+
+            triangleList.Add(triangleStart + 1);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
+
+            triangleStart++;
+        }
+
+        _trianglesIndices = triangleList.ToArray();
     }
 
     private float[] _verticesDraw;

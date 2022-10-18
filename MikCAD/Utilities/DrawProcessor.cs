@@ -356,11 +356,13 @@ public class DrawProcessor
     public void ProcessObject(Block block, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         var _modelMatrix = block.GetModelMatrix();
         Scene.CurrentScene._shader = _controller._colorShader;
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 0.3f));
 
         // GL.BindBuffer(BufferTarget.ElementArrayBuffer, blockIBO);
         // GL.BufferData(BufferTarget.ElementArrayBuffer, block._lines.Length * sizeof(uint),

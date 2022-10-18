@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using BepuPhysics;
 using MikCAD.Objects.ParameterizedObjects.Milling;
@@ -34,7 +35,9 @@ namespace MikCAD
 
         public void Initialise(float width, float height)
         {
-            GL.DepthRange(1.0f, 0.0f);
+            //GL.DepthRange(1.0f, 0.0f);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
             camera.InitializeCamera();
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Enable(EnableCap.ProgramPointSize);
@@ -42,8 +45,28 @@ namespace MikCAD
             ObjectsController.AddObjectToScene(ObjectsController._pointer = new Pointer3D());
             ObjectsController.Paths = new Paths();
             ObjectsController.Paths.rotX = -90;
+            
+            
             ObjectsController.Block = new Block();
             ObjectsController.Block.rotX = -90;
+
+            var woodBmp = Bitmap.FromFile("./Textures/wood.jpg") as Bitmap;
+            var texture = new List<byte>(4 * woodBmp.Width * woodBmp.Height);
+
+            for (int j = 0; j < woodBmp.Height; j++)
+            {
+                for (int i = 0; i < woodBmp.Width; i++)
+                {
+                    var color = woodBmp.GetPixel(i, j);
+                    texture.Add(color.R);
+                    texture.Add(color.G);
+                    texture.Add(color.B);
+                    texture.Add(color.A);
+                }
+            }
+            ObjectsController.Block.Texture = texture.ToArray();
+            ObjectsController.Block.TexWidth = woodBmp.Width;
+            ObjectsController.Block.TexHeight = woodBmp.Height;
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

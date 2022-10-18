@@ -14,6 +14,7 @@ public class Simulator3C : INotifyPropertyChanged
     public static Simulator3C Simulator;
 
     public bool Enabled { get; set; }
+    public bool IgnoreDepth { get; set; }
 
     private uint _xGridSizeInUnits = 20;
 
@@ -45,7 +46,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _zGridSizeInUnits = 4;
+    private uint _zGridSizeInUnits = 5;
 
     public uint ZGridSizeInUnits
     {

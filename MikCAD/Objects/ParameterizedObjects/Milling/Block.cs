@@ -124,8 +124,9 @@ public class Block : ParameterizedObject
     {
         var triangleList = new List<uint>();
 
+        uint triangleStart = 0;
         //Górna ściana
-        uint triangleStart = XVerticesCount * YVerticesCount;
+        triangleStart = XVerticesCount * YVerticesCount;
         for (int i = 0; i < XVerticesCount - 1; i++)
         {
             for (int j = 0; j < YVerticesCount - 1; j++)
@@ -151,11 +152,11 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-
+        
             triangleStart++;
         }
         
@@ -166,14 +167,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-
+        
             triangleStart++;
         }
-
+        
         //Ściana y==0
         triangleStart = 0;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -181,11 +182,11 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-
+        
             triangleStart+= YVerticesCount;
         }
         
@@ -196,11 +197,11 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-
+        
             triangleStart+= YVerticesCount;
         }
         
@@ -213,14 +214,14 @@ public class Block : ParameterizedObject
                 triangleList.Add(triangleStart);
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
-
+        
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
                 triangleList.Add(triangleStart + YVerticesCount + 1);
-
+        
                 triangleStart++;
             }
-
+        
             triangleStart++;
         }
         
@@ -326,14 +327,18 @@ public class Block : ParameterizedObject
             (int) TextureMinFilter.Nearest);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
             (int) TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, TexWidth, TexHeight, 0,
-            PixelFormat.Red,
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight, 0,
+            PixelFormat.Rgba,
             PixelType.UnsignedByte, Texture);
     }
 
     private byte[] _texture;
-    public byte[] Texture => _texture;
+    public byte[] Texture
+    {
+        get => _texture;
+        set {_texture = value; }
+    }
 
-    public int TexWidth { get; private set; }
-    public int TexHeight { get; private set; }
+    public int TexWidth { get; set; }
+    public int TexHeight { get; set; }
 }

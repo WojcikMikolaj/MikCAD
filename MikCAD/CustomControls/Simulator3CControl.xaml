@@ -18,7 +18,9 @@
                     Symulator włączony
                 </CheckBox>
                 <CheckBox Margin="5,5,5,5" x:Name="simulatorLineZBufferCheckBox"
-                          IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+                          IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.IgnoreDepth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     Ignoruj bufor głębokości
                 </CheckBox>
                 <Grid Margin="5,5,5,5" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">

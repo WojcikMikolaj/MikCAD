@@ -22,22 +22,23 @@ public class DrawProcessor
     private int surfaceC0IBO = GL.GenBuffer();
     private int surfaceC2IBO = GL.GenBuffer();
     private int gregoryIBO = GL.GenBuffer();
-    
+
     private int pointerVAO = GL.GenVertexArray();
     private int pointerIBO = GL.GenBuffer();
-    
+
     private int gridVBO = GL.GenBuffer();
     private int gridVAO = GL.GenVertexArray();
     private int gridIBO = GL.GenBuffer();
-    
+
     private int selectionVBO = GL.GenBuffer();
     private int selectionVAO = GL.GenVertexArray();
     private int selectionIBO = GL.GenBuffer();
-    
-    
+
+
     private int pathsIBO = GL.GenBuffer();
-    
+
     private int blockIBO = GL.GenBuffer();
+
     public DrawProcessor(ObjectsController controller)
     {
         _controller = controller;
@@ -56,7 +57,7 @@ public class DrawProcessor
     public void ProcessObject(Torus torus, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
     {
         Scene.CurrentScene._shader = _controller._torusShader;
-        if (torus.Intersection!=null)
+        if (torus.Intersection != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
             Scene.CurrentScene._shader.SetFloat("ignoreBlack", torus.IgnoreBlack ? 1 : 0);
@@ -65,6 +66,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 0);
         }
+
         torus.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", torus.GetModelMatrix());
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
@@ -236,7 +238,7 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetInt("VTessLevels", (int) surfaceC0.VDivisions);
         Scene.CurrentScene._shader.SetInt("HorizontalPatchesCount", (int) surfaceC0.UPatches);
         Scene.CurrentScene._shader.SetInt("VerticalPatchesCount", (int) surfaceC0.VPatches);
-        if (surfaceC0.Intersection!=null)
+        if (surfaceC0.Intersection != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
             Scene.CurrentScene._shader.SetFloat("ignoreBlack", surfaceC0.IgnoreBlack ? 1 : 0);
@@ -245,6 +247,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 0);
         }
+
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
 
@@ -281,7 +284,7 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetInt("VTessLevels", (int) surfaceC2.VDivisions);
         Scene.CurrentScene._shader.SetInt("HorizontalPatchesCount", (int) surfaceC2.UPatches);
         Scene.CurrentScene._shader.SetInt("VerticalPatchesCount", (int) surfaceC2.VPatches);
-        if (surfaceC2.Intersection!=null)
+        if (surfaceC2.Intersection != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
             Scene.CurrentScene._shader.SetFloat("ignoreBlack", surfaceC2.IgnoreBlack ? 1 : 0);
@@ -290,6 +293,7 @@ public class DrawProcessor
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 0);
         }
+
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         GL.PatchParameter(PatchParameterInt.PatchVertices, 16);
 
@@ -352,17 +356,21 @@ public class DrawProcessor
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Lines, paths.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
-    
+
     public void ProcessObject(Block block, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
-        GL.Enable(EnableCap.Blend);
-        GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        GL.Disable(EnableCap.CullFace);
         var _modelMatrix = block.GetModelMatrix();
-        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene._shader = _controller._blockShader;
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 0.3f));
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
+
+        if (block.Texture != null)
+        {
+            Scene.CurrentScene._shader.SetFloat("useTexture", 1);
+        }
 
         // GL.BindBuffer(BufferTarget.ElementArrayBuffer, blockIBO);
         // GL.BufferData(BufferTarget.ElementArrayBuffer, block._lines.Length * sizeof(uint),

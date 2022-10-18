@@ -48,6 +48,12 @@
     <EmbeddedResource Include="Shaders\BezierSurfaceC2\BezierSurfaceC2TessEvaluationShader.tese">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\Block\BlockShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Shaders\Block\BlockShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Shaders\CenterObjectShader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -135,6 +141,12 @@
     <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Shaders\Block" />
+    <Folder Include="Textures" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Textures\wood.jpg" />
+    <Content Include="Textures\wood.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

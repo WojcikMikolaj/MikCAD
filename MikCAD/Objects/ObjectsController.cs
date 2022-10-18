@@ -26,6 +26,7 @@ public class ObjectsController : INotifyPropertyChanged
     internal Shader _pointerShader = new Shader("Shaders/PointerShader.vert", "Shaders/PointerShader.frag");
     internal Shader _pickingShader = new Shader("Shaders/PickingShader.vert", "Shaders/PickingShader.frag");
     internal Shader _colorShader = new Shader("Shaders/ColorShader.vert", "Shaders/ColorShader.frag");
+    internal Shader _blockShader = new Shader("Shaders/Block/BlockShader.vert", "Shaders/Block/BlockShader.frag");
 
     internal Shader _centerObjectShader =
         new Shader("Shaders/CenterObjectShader.vert", "Shaders/CenterObjectShader.frag");
@@ -301,7 +302,7 @@ public class ObjectsController : INotifyPropertyChanged
                 {
                     IsPointComposite = false
                 };
-                cmp.ProcessObject((ParameterizedObject)intersectable);
+                cmp.ProcessObject((ParameterizedObject) intersectable);
                 cmp.ProcessObject(o);
                 SelectedObject = cmp;
                 o.Selected = true;
@@ -359,16 +360,29 @@ public class ObjectsController : INotifyPropertyChanged
         if (SelectionBox.Draw)
             _drawProcessor.DrawSelectionBox(SelectionBox);
 
-        if (Simulator3C.Simulator.Enabled && Paths is {CuttingLines: {points.Length: > 0}})
-        {
-            Paths.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            _drawProcessor.ProcessObject(Paths, eye, vertexAttributeLocation, normalAttributeLocation);
-        }
         
+
         if (Simulator3C.Simulator.Enabled && Block is { })
         {
             Block.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            Block.SetTexture();
             _drawProcessor.ProcessObject(Block, eye, vertexAttributeLocation, normalAttributeLocation);
+        }
+        
+        if (Simulator3C.Simulator.Enabled && Paths is {CuttingLines: {points.Length: > 0}})
+        {
+            if (Simulator3C.Simulator.IgnoreDepth)
+            {
+                GL.Disable(EnableCap.DepthTest);
+            }
+
+            Paths.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Paths, eye, vertexAttributeLocation, normalAttributeLocation);
+            
+            if (Simulator3C.Simulator.IgnoreDepth)
+            {
+                GL.Enable(EnableCap.DepthTest);
+            }
         }
     }
 
@@ -461,7 +475,6 @@ public class ObjectsController : INotifyPropertyChanged
     {
         if (_selectedObject is CompositeObject compositeObject)
         {
-            
             if (compositeObject._objects.Count == 2
                 && compositeObject._objects[0] is ParameterizedPoint p1
                 && compositeObject._objects[1] is ParameterizedPoint p2)
@@ -477,13 +490,13 @@ public class ObjectsController : INotifyPropertyChanged
                 var set = new HashSet<CompositeObject>();
                 foreach (var parent in p1.parents)
                 {
-                    if(parent is CompositeObject comp)
+                    if (parent is CompositeObject comp)
                         set.Add(comp);
                 }
 
                 foreach (var parent in p2.parents)
                 {
-                    if(parent is CompositeObject comp)
+                    if (parent is CompositeObject comp)
                         set.Add(comp);
                 }
 
@@ -531,8 +544,9 @@ public class ObjectsController : INotifyPropertyChanged
             }
         }
     }
-    
+
     #region Gregoriusz
+
     public bool PatchHole()
     {
         if (_selectedObject is CompositeObject compositeObject)
@@ -649,16 +663,17 @@ public class ObjectsController : INotifyPropertyChanged
                 {
                     var gregory = new GregoryPatch(innerRing, outerRing);
                     AddObjectToScene(gregory);
-                    
+
                     foreach (var point in innerRing)
                     {
-                        point.parents.Add(gregory);            
+                        point.parents.Add(gregory);
                     }
-                    
+
                     foreach (var point in outerRing)
                     {
-                        point.parents.Add(gregory);  
+                        point.parents.Add(gregory);
                     }
+
                     return true;
                 }
             }
@@ -894,7 +909,7 @@ public class ObjectsController : INotifyPropertyChanged
     }
 
     #endregion
-    
+
     public Intersection GetNewIntersectionObject()
     {
         if (_selectedObject is CompositeObject {CanIntersectObjects: true} c)

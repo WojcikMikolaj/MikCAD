@@ -64,9 +64,27 @@ namespace MikCAD
                     texture.Add(color.A);
                 }
             }
-            ObjectsController.Block.Texture = texture.ToArray();
-            ObjectsController.Block.TexWidth = woodBmp.Width;
-            ObjectsController.Block.TexHeight = woodBmp.Height;
+            ObjectsController.Block.Texture0 = texture.ToArray();
+            ObjectsController.Block.Tex0Width = woodBmp.Width;
+            ObjectsController.Block.Tex0Height = woodBmp.Height;
+            
+            var pdBmp = Bitmap.FromFile("./Textures/pd_v2.jpg") as Bitmap;
+            var texture1 = new List<byte>(4 * pdBmp.Width * pdBmp.Height);
+
+            for (int j = 0; j < pdBmp.Height; j++)
+            {
+                for (int i = 0; i < pdBmp.Width; i++)
+                {
+                    var color = pdBmp.GetPixel(i, j);
+                    texture1.Add(color.R);
+                    texture1.Add(color.G);
+                    texture1.Add(color.B);
+                    texture1.Add(color.A);
+                }
+            }
+            ObjectsController.Block.Texture1 = texture1.ToArray();
+            ObjectsController.Block.Tex1Width = pdBmp.Width;
+            ObjectsController.Block.Tex1Height = pdBmp.Height;
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

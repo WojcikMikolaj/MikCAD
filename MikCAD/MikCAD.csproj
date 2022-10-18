@@ -125,6 +125,10 @@
     <Resource Include="libs\schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <None Remove="Textures\pd_v2.jpg" />
+    <Content Include="Textures\pd_v2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepuPhysics" Version="2.4.0" />
@@ -139,9 +143,6 @@
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
     <PackageReference Include="SharpSceneSerializer" Version="1.2.1" />
     <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Textures" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Textures\wood.jpg" />

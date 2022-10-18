@@ -64,6 +64,8 @@ public class Block : ParameterizedObject
     public uint[] TrianglesIndices => _trianglesIndices;
     private uint[] _trianglesIndices;
 
+    private readonly int _textureHandle0 = GL.GenTexture();
+    private readonly int _textureHandle1 = GL.GenTexture();
     public Block() : base("Block")
     {
         CalculateVertices();
@@ -321,24 +323,50 @@ public class Block : ParameterizedObject
 
     public override void SetTexture()
     {
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, _textureHandle0);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
             (int) TextureMinFilter.Nearest);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
             (int) TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, TexWidth, TexHeight, 0,
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex0Width, Tex0Height, 0,
             PixelFormat.Rgba,
-            PixelType.UnsignedByte, Texture);
+            PixelType.UnsignedByte, Texture0);
+        
+        
+        
+        GL.ActiveTexture(TextureUnit.Texture1);
+        GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+            (int) TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+            (int) TextureMagFilter.Nearest);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex1Width, Tex1Height, 0,
+            PixelFormat.Rgba,
+            PixelType.UnsignedByte, Texture1);
     }
 
-    private byte[] _texture;
-    public byte[] Texture
+    private byte[] _texture0;
+    public byte[] Texture0
     {
-        get => _texture;
-        set {_texture = value; }
+        get => _texture0;
+        set {_texture0 = value; }
     }
-
-    public int TexWidth { get; set; }
-    public int TexHeight { get; set; }
+    public int Tex0Width { get; set; }
+    public int Tex0Height { get; set; }
+    
+    
+    private byte[] _texture1;
+    public byte[] Texture1
+    {
+        get => _texture1;
+        set {_texture1 = value; }
+    }
+    public int Tex1Width { get; set; }
+    public int Tex1Height { get; set; }
+    
 }

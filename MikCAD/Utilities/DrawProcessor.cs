@@ -367,7 +367,9 @@ public class DrawProcessor
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
 
-        if (block.Texture != null)
+        Scene.CurrentScene._shader.SetInt("texture0", 0);
+        Scene.CurrentScene._shader.SetInt("texture1", 1);
+        if (block.Texture0 != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);
         }

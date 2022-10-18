@@ -97,8 +97,8 @@ public class Block : ParameterizedObject
                         Y = startY + k * stepY,
                         Z = i * stepZ,
 
-                        TexX = 0,
-                        TexY = 0
+                        TexX = (float)j/XVerticesCount,
+                        TexY = (float)k/YVerticesCount
                     };
                     _vertIndices[it] = it;
                     it++;
@@ -124,9 +124,8 @@ public class Block : ParameterizedObject
     {
         var triangleList = new List<uint>();
 
+        //Górna ściana
         uint triangleStart = XVerticesCount * YVerticesCount;
-
-        //Górna krawędź
         for (int i = 0; i < XVerticesCount - 1; i++)
         {
             for (int j = 0; j < YVerticesCount - 1; j++)
@@ -175,6 +174,56 @@ public class Block : ParameterizedObject
             triangleStart++;
         }
 
+        //Ściana y==0
+        triangleStart = 0;
+        for (int j = 0; j < XVerticesCount - 1; j++)
+        {
+            triangleList.Add(triangleStart);
+            triangleList.Add(triangleStart + YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+
+            triangleList.Add(triangleStart + YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+            triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
+
+            triangleStart+= YVerticesCount;
+        }
+        
+        //Ściana y==max
+        triangleStart = YVerticesCount -1;
+        for (int j = 0; j < XVerticesCount - 1; j++)
+        {
+            triangleList.Add(triangleStart);
+            triangleList.Add(triangleStart + YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+
+            triangleList.Add(triangleStart + YVerticesCount);
+            triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
+            triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
+
+            triangleStart+= YVerticesCount;
+        }
+        
+        //Dolna ściana
+        triangleStart = 0;
+        for (int i = 0; i < XVerticesCount - 1; i++)
+        {
+            for (int j = 0; j < YVerticesCount - 1; j++)
+            {
+                triangleList.Add(triangleStart);
+                triangleList.Add(triangleStart + 1);
+                triangleList.Add(triangleStart + YVerticesCount);
+
+                triangleList.Add(triangleStart + 1);
+                triangleList.Add(triangleStart + YVerticesCount);
+                triangleList.Add(triangleStart + YVerticesCount + 1);
+
+                triangleStart++;
+            }
+
+            triangleStart++;
+        }
+        
         _trianglesIndices = triangleList.ToArray();
     }
 

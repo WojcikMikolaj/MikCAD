@@ -87,6 +87,17 @@ namespace MikCAD
             ObjectsController.Block.Texture1 = texture1.ToArray();
             ObjectsController.Block.Tex1Width = (int)Simulator3C.XGridDivisions;
             ObjectsController.Block.Tex1Height = (int)Simulator3C.YGridDivisions;
+            ObjectsController.Block.Tex1Width = pdBmp.Width;
+            ObjectsController.Block.Tex1Height = pdBmp.Height;
+
+            ObjectsController.Cutter = new Torus()
+            {
+                scaleY = 3,
+                R = 0.1f,
+                r = 0.1f,
+                CirclesCount = 6,
+                SectorsCount = 90
+            };
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

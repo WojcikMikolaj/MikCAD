@@ -78,6 +78,7 @@ public class ObjectsController : INotifyPropertyChanged
 
     public Paths Paths;
     public Block Block;
+    public Torus Cutter;
 
     public ObjectsController()
     {
@@ -360,7 +361,12 @@ public class ObjectsController : INotifyPropertyChanged
         if (SelectionBox.Draw)
             _drawProcessor.DrawSelectionBox(SelectionBox);
 
-        
+        if (Simulator3C.Simulator.Enabled && Cutter is { })
+        {
+            Cutter.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            //Cutter.SetTexture();
+            _drawProcessor.ProcessObject(Cutter, eye, vertexAttributeLocation, normalAttributeLocation);
+        }
 
         if (Simulator3C.Simulator.Enabled && Block is { })
         {

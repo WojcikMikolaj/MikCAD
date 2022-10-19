@@ -38,4 +38,9 @@ public partial class Simulator3CControl : UserControl
             }
         }
     }
+
+    private void StartMilling(object sender, RoutedEventArgs e)
+    {
+        Simulator3C.Simulator.StartMilling();
+    }
 }

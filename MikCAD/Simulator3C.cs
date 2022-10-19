@@ -278,4 +278,9 @@ public class Simulator3C : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+
+    public void StartMilling()
+    {
+        Scene.CurrentScene.ObjectsController.Cuttet
+    }
 }

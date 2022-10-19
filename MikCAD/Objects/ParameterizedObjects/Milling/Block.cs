@@ -51,8 +51,8 @@ public class Block : ParameterizedObject
         }
     }
 
-    public uint XVerticesCount => 20;
-    public uint YVerticesCount => 20;
+    public uint XVerticesCount => 512;
+    public uint YVerticesCount => 512;
 
     private TexPoint[] _vertices;
     private uint[] _vertIndices;

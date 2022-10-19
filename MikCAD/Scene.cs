@@ -68,16 +68,14 @@ namespace MikCAD
             ObjectsController.Block.Tex0Width = woodBmp.Width;
             ObjectsController.Block.Tex0Height = woodBmp.Height;
             
-            var pdBmp = Bitmap.FromFile("./Textures/Heightmap.jpg") as Bitmap;
-            var texture1 = new List<float>(pdBmp.Width * pdBmp.Height);
+            var texture1 = new List<float>((int)Simulator3C.XGridDivisions * (int)Simulator3C.YGridDivisions);
 
-            for (int j = 0; j < pdBmp.Height; j++)
+            for (int j = 0; j < Simulator3C.YGridDivisions; j++)
             {
-                for (int i = 0; i < pdBmp.Width; i++)
+                for (int i = 0; i < Simulator3C.XGridDivisions; i++)
                 {
-                    //var color = (float)pdBmp.GetPixel(i, j).R;
                     var color = 2.0f;
-                    if (i > pdBmp.Width / 3.0f && i < 2.0f / 3 * pdBmp.Width)
+                    if (i > Simulator3C.XGridDivisions / 3.0f && i < 2.0f / 3 * Simulator3C.XGridDivisions)
                     {
                         color = 0.5f;
                     }
@@ -87,8 +85,8 @@ namespace MikCAD
                 }
             }
             ObjectsController.Block.Texture1 = texture1.ToArray();
-            ObjectsController.Block.Tex1Width = pdBmp.Width;
-            ObjectsController.Block.Tex1Height = pdBmp.Height;
+            ObjectsController.Block.Tex1Width = (int)Simulator3C.XGridDivisions;
+            ObjectsController.Block.Tex1Height = (int)Simulator3C.YGridDivisions;
         }
 
         public void UpdatePVMAndStereoscopics(EyeEnum eye)

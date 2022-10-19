@@ -274,7 +274,7 @@ public class Simulator3C : INotifyPropertyChanged
         var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
         Scene.CurrentScene.ObjectsController.Cutter.posX = pathPoints[0].XPosInUnits;
         Scene.CurrentScene.ObjectsController.Cutter.posY = pathPoints[0].ZPosInUnits;
-        Scene.CurrentScene.ObjectsController.Cutter.posZ = pathPoints[0].YPosInUnits;
+        Scene.CurrentScene.ObjectsController.Cutter.posZ = -pathPoints[0].YPosInUnits;
         
         return (true, SimulatorErrorCode.None);
     }
@@ -295,7 +295,7 @@ public class Simulator3C : INotifyPropertyChanged
     }
 
 
-    private float maxSpeedInMm = 0.03f;
+    private float maxSpeedInMm = 0.3f;
     private float MmToUnits = 0.1f;
     private float dt = 1/240.0f;
     private float speedInUnitsPerSecond = 0;
@@ -365,7 +365,7 @@ public class Simulator3C : INotifyPropertyChanged
                     {
                         cutter.posX = points[^1].XPosInUnits;
                         cutter.posY = points[^1].ZPosInUnits;
-                        cutter.posZ = points[^1].YPosInUnits;
+                        cutter.posZ = -points[^1].YPosInUnits;
                         return;
                     }
 

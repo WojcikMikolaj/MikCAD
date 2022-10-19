@@ -323,38 +323,46 @@ public class Block : ParameterizedObject
 
     public override void SetTexture()
     {
-        GL.ActiveTexture(TextureUnit.Texture0);
-        GL.BindTexture(TextureTarget.Texture2D, _textureHandle0);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-            (int) TextureMinFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-            (int) TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex0Width, Tex0Height, 0,
-            PixelFormat.Rgba,
-            PixelType.UnsignedByte, Texture0);
-        
-        
-        
-        GL.ActiveTexture(TextureUnit.Texture1);
-        GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-            (int) TextureMinFilter.Nearest);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-            (int) TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, Tex1Width, Tex1Height, 0,
-            PixelFormat.Red,
-            PixelType.Float, Texture1);
+        if (updated)
+        {
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, _textureHandle0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int) TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int) TextureMagFilter.Nearest);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex0Width, Tex0Height, 0,
+                PixelFormat.Rgba,
+                PixelType.UnsignedByte, Texture0);
+
+
+
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+                (int) TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+                (int) TextureMagFilter.Nearest);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, Tex1Width, Tex1Height, 0,
+                PixelFormat.Red,
+                PixelType.Float, Texture1);
+            updated = false;
+        }
     }
+
+    private bool updated = false;
 
     private byte[] _texture0;
     public byte[] Texture0
     {
         get => _texture0;
-        set {_texture0 = value; }
+        set {_texture0 = value;
+            updated = true;
+        }
     }
     public int Tex0Width { get; set; }
     public int Tex0Height { get; set; }
@@ -364,7 +372,9 @@ public class Block : ParameterizedObject
     public float[] Texture1
     {
         get => _texture1;
-        set {_texture1 = value; }
+        set {_texture1 = value;
+            updated = true;
+        }
     }
     public int Tex1Width { get; set; }
     public int Tex1Height { get; set; }

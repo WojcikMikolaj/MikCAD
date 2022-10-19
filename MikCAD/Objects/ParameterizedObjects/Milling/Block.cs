@@ -51,8 +51,8 @@ public class Block : ParameterizedObject
         }
     }
 
-    public uint XVerticesCount => 512;
-    public uint YVerticesCount => 512;
+    public uint XVerticesCount => 20;
+    public uint YVerticesCount => 20;
 
     private TexPoint[] _vertices;
     private uint[] _vertIndices;
@@ -345,9 +345,9 @@ public class Block : ParameterizedObject
             (int) TextureMinFilter.Nearest);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
             (int) TextureMagFilter.Nearest);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex1Width, Tex1Height, 0,
-            PixelFormat.Rgba,
-            PixelType.UnsignedByte, Texture1);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, Tex1Width, Tex1Height, 0,
+            PixelFormat.Red,
+            PixelType.Float, Texture1);
     }
 
     private byte[] _texture0;
@@ -360,8 +360,8 @@ public class Block : ParameterizedObject
     public int Tex0Height { get; set; }
     
     
-    private byte[] _texture1;
-    public byte[] Texture1
+    private float[] _texture1;
+    public float[] Texture1
     {
         get => _texture1;
         set {_texture1 = value; }

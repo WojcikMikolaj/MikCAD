@@ -66,6 +66,7 @@ public class Block : ParameterizedObject
 
     private readonly int _textureHandle0 = GL.GenTexture();
     private readonly int _textureHandle1 = GL.GenTexture();
+
     public Block() : base("Block")
     {
         CalculateVertices();
@@ -99,8 +100,8 @@ public class Block : ParameterizedObject
                         Y = startY + k * stepY,
                         Z = i * stepZ,
 
-                        TexX = (float)j/XVerticesCount,
-                        TexY = (float)k/YVerticesCount
+                        TexX = (float) j / XVerticesCount,
+                        TexY = (float) k / YVerticesCount
                     };
                     _vertIndices[it] = it;
                     it++;
@@ -154,29 +155,29 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-        
+
             triangleStart++;
         }
-        
+
         //Ściana x==max
-        triangleStart = (XVerticesCount-1)*YVerticesCount;
+        triangleStart = (XVerticesCount - 1) * YVerticesCount;
         for (int j = 0; j < YVerticesCount - 1; j++)
         {
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-        
+
             triangleStart++;
         }
-        
+
         //Ściana y==0
         triangleStart = 0;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -184,29 +185,29 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-        
-            triangleStart+= YVerticesCount;
+
+            triangleStart += YVerticesCount;
         }
-        
+
         //Ściana y==max
-        triangleStart = YVerticesCount -1;
+        triangleStart = YVerticesCount - 1;
         for (int j = 0; j < XVerticesCount - 1; j++)
         {
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-        
-            triangleStart+= YVerticesCount;
+
+            triangleStart += YVerticesCount;
         }
-        
+
         //Dolna ściana
         triangleStart = 0;
         for (int i = 0; i < XVerticesCount - 1; i++)
@@ -216,17 +217,17 @@ public class Block : ParameterizedObject
                 triangleList.Add(triangleStart);
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
-        
+
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
                 triangleList.Add(triangleStart + YVerticesCount + 1);
-        
+
                 triangleStart++;
             }
-        
+
             triangleStart++;
         }
-        
+
         _trianglesIndices = triangleList.ToArray();
     }
 
@@ -323,10 +324,10 @@ public class Block : ParameterizedObject
 
     public override void SetTexture()
     {
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, _textureHandle0);
         if (updated)
         {
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, _textureHandle0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
@@ -336,11 +337,13 @@ public class Block : ParameterizedObject
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex0Width, Tex0Height, 0,
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte, Texture0);
+        }
 
 
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
+        GL.ActiveTexture(TextureUnit.Texture1);
+        GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
+        if (updated)
+        {
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
@@ -357,26 +360,33 @@ public class Block : ParameterizedObject
     private bool updated = false;
 
     private byte[] _texture0;
+
     public byte[] Texture0
     {
         get => _texture0;
-        set {_texture0 = value;
+        set
+        {
+            _texture0 = value;
             updated = true;
         }
     }
+
     public int Tex0Width { get; set; }
     public int Tex0Height { get; set; }
-    
-    
+
+
     private float[] _texture1;
+
     public float[] Texture1
     {
         get => _texture1;
-        set {_texture1 = value;
+        set
+        {
+            _texture1 = value;
             updated = true;
         }
     }
+
     public int Tex1Width { get; set; }
     public int Tex1Height { get; set; }
-    
 }

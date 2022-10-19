@@ -340,21 +340,21 @@ public class DrawProcessor
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
     }
 
-    public void ProcessObject(Paths paths, EyeEnum eye, uint vertexAttributeLocation,
+    public void ProcessObject(Path path, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
-        var _modelMatrix = paths.GetModelMatrix();
+        var _modelMatrix = path.GetModelMatrix();
         Scene.CurrentScene._shader = _controller._colorShader;
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0.5f, 0, 1));
 
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, pathsIBO);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, paths._lines.Length * sizeof(uint),
-            paths._lines, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, path._lines.Length * sizeof(uint),
+            path._lines, BufferUsageHint.StaticDraw);
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
-        GL.DrawElements(PrimitiveType.Lines, paths.lines.Length, DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(PrimitiveType.Lines, path.lines.Length, DrawElementsType.UnsignedInt, 0);
     }
 
     public void ProcessObject(Block block, EyeEnum eye, uint vertexAttributeLocation,

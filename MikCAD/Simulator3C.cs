@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using MikCAD.Objects.ParameterizedObjects.Milling;
+using MikCAD.Utilities;
+using OpenTK.Mathematics;
 
 namespace MikCAD;
 
@@ -13,6 +18,8 @@ public class Simulator3C : INotifyPropertyChanged
 {
     public static Simulator3C Simulator;
 
+    public bool IsAnimationRunning { get; private set; } = false;
+    
     public bool Enabled { get; set; }
     public bool IgnoreDepth { get; set; }
 
@@ -60,7 +67,7 @@ public class Simulator3C : INotifyPropertyChanged
             }
         }
     }
-    
+
     private uint _xGridDivisions = 8000;
 
     public uint XGridDivisions
@@ -128,7 +135,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _simulationSpeed;
         set
         {
-            if (value > 0 && value <= 100)
+            if (value > 0 && value <= 10)
             {
                 _simulationSpeed = value;
             }
@@ -199,7 +206,7 @@ public class Simulator3C : INotifyPropertyChanged
         float YLastPosInMm = 0;
         float ZLastPosInMm = 0;
         int LastInstructionNum = -1;
-        
+
         foreach (var line in lines)
         {
             var matchCollection = _moveLineRegex.Matches(line, 0);
@@ -209,12 +216,13 @@ public class Simulator3C : INotifyPropertyChanged
                 {
                     var groupStr = group.ToString();
                     float posValue;
-                    
-                    if (groupStr.Length<1 || !float.TryParse(groupStr.Substring(1),  NumberStyles.Float, CultureInfo.InvariantCulture, out posValue))
+
+                    if (groupStr.Length < 1 || !float.TryParse(groupStr.Substring(1), NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out posValue))
                     {
                         continue;
                     }
-                    
+
                     switch (groupStr[0])
                     {
                         case 'N':
@@ -226,6 +234,7 @@ public class Simulator3C : INotifyPropertyChanged
                                     return (false, SimulatorErrorCode.MissingInstructions);
                                 }
                             }
+
                             LastInstructionNum = instructionNumber;
                             break;
                         case 'X':
@@ -239,6 +248,7 @@ public class Simulator3C : INotifyPropertyChanged
                             break;
                     }
                 }
+
                 points.Add(new CuttingLinePoint()
                 {
                     InstructionNumber = LastInstructionNum,
@@ -257,10 +267,15 @@ public class Simulator3C : INotifyPropertyChanged
 
 
         FileName = diagFileName.Substring(diagFileName.LastIndexOf("\\", StringComparison.Ordinal) + 1);
-        Scene.CurrentScene.ObjectsController.Paths.CuttingLines = new CuttingLines()
+        Scene.CurrentScene.ObjectsController.Path.CuttingLines = new CuttingLines()
         {
             points = points.ToArray()
         };
+        var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
+        Scene.CurrentScene.ObjectsController.Cutter.posX = pathPoints[0].XPosInUnits;
+        Scene.CurrentScene.ObjectsController.Cutter.posY = pathPoints[0].ZPosInUnits;
+        Scene.CurrentScene.ObjectsController.Cutter.posZ = pathPoints[0].YPosInUnits;
+        
         return (true, SimulatorErrorCode.None);
     }
 
@@ -279,8 +294,96 @@ public class Simulator3C : INotifyPropertyChanged
         return true;
     }
 
+
+    private float maxSpeedInMm = 0.03f;
+    private float MmToUnits = 0.1f;
+    private float dt = 1/240.0f;
+    private float speedInUnitsPerSecond = 0;
+    private Torus cutter;
+
+    private Thread cutterThread;
     public void StartMilling()
     {
-        Scene.CurrentScene.ObjectsController.Cuttet
+        IsAnimationRunning = true;
+        
+        cutter = Scene.CurrentScene.ObjectsController.Cutter;
+        var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
+        cutter.posX = pathPoints[0].XPosInUnits;
+        cutter.posY = pathPoints[0].ZPosInUnits;
+        cutter.posZ = pathPoints[0].YPosInUnits;
+        
+        speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
+
+        cutterThread = new Thread(_=>MoveCutter(pathPoints));
+        cutterThread.Start();
+    }
+    
+    private void MoveCutter(CuttingLinePoint[] points)
+    {
+        int i = 1;
+        var startPos = new Vector3(points[0].GetPosInUnitsYZSwitched());
+        var currPos = cutter.pos;
+        currPos.Z = -currPos.Z;
+        var endPos = new Vector3(points[1].GetPosInUnitsYZSwitched());
+        var dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
+
+        var lastXDiffSign = endPos.X - startPos.X > 0;
+        var lastYDiffSign = endPos.Y - startPos.Y > 0;
+        var lastZDiffSign = endPos.Z - startPos.Z > 0;
+        
+        while (i < points.Length)
+        {
+            var lenToNextPoint = MathM.Distance(currPos, endPos);
+            var distLeft = speedInUnitsPerSecond * dt;
+            
+            
+            
+            while (distLeft > Single.Epsilon )
+            {
+                var currXDiffSign = endPos.X - currPos.X > 0;
+                var currYDiffSign = endPos.Y - currPos.Y > 0;
+                var currZDiffSign = endPos.Z - currPos.Z > 0;
+                
+                if (lenToNextPoint > distLeft 
+                    && lenToNextPoint > 0.01f 
+                    && currXDiffSign == lastXDiffSign
+                    && currYDiffSign == lastYDiffSign
+                    && currZDiffSign == lastZDiffSign)
+                {
+                    cutter.posX += dir.X * distLeft;
+                    cutter.posY += dir.Y * distLeft;
+                    cutter.posZ -= dir.Z * distLeft;
+                    currPos = cutter.pos;
+                    currPos.Z = -currPos.Z;
+                    //Trace.WriteLine(currPos);
+                    break;
+                }
+                else
+                {
+                    i++;
+                    if (i >= points.Length)
+                    {
+                        cutter.posX = points[^1].XPosInUnits;
+                        cutter.posY = points[^1].ZPosInUnits;
+                        cutter.posZ = points[^1].YPosInUnits;
+                        return;
+                    }
+
+                    distLeft -= MathM.Distance(currPos, endPos);
+                    currPos = startPos = endPos;
+                    cutter.posX = currPos.X;
+                    cutter.posY = currPos.Y;
+                    cutter.posZ = -currPos.Z;
+                    //currPos.Z = -currPos.Z;
+                    endPos = points[i].GetPosInUnitsYZSwitched();
+                    dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
+                    lenToNextPoint = MathM.Distance(currPos, endPos);
+                    lastXDiffSign = endPos.X - currPos.X > 0;
+                    lastYDiffSign = endPos.Y - currPos.Y > 0;
+                    lastZDiffSign = endPos.Z - currPos.Z > 0;
+                }
+            }
+            Task.Delay(TimeSpan.FromSeconds(dt));
+        }
     }
 }

@@ -43,8 +43,8 @@ namespace MikCAD
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Enable(EnableCap.PointSmooth);
             ObjectsController.AddObjectToScene(ObjectsController._pointer = new Pointer3D());
-            ObjectsController.Paths = new Paths();
-            ObjectsController.Paths.rotX = -90;
+            ObjectsController.Path = new Path();
+            ObjectsController.Path.rotX = -90;
             
             
             ObjectsController.Block = new Block();
@@ -87,8 +87,6 @@ namespace MikCAD
             ObjectsController.Block.Texture1 = texture1.ToArray();
             ObjectsController.Block.Tex1Width = (int)Simulator3C.XGridDivisions;
             ObjectsController.Block.Tex1Height = (int)Simulator3C.YGridDivisions;
-            ObjectsController.Block.Tex1Width = pdBmp.Width;
-            ObjectsController.Block.Tex1Height = pdBmp.Height;
 
             ObjectsController.Cutter = new Torus()
             {
@@ -96,7 +94,7 @@ namespace MikCAD
                 R = 0.1f,
                 r = 0.1f,
                 CirclesCount = 6,
-                SectorsCount = 90
+                SectorsCount = 90,
             };
         }
 

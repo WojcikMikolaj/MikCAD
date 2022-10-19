@@ -10,7 +10,7 @@ using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD.Objects.ParameterizedObjects.Milling;
 
-public class Paths : ParameterizedObject
+public class Path : ParameterizedObject
 {
     private int _xUnitSize=1;
     public int XUnitSize
@@ -74,7 +74,7 @@ public class Paths : ParameterizedObject
         }
     }
 
-    public Paths() : base("Paths")
+    public Path() : base("Path")
     {
         CalculateVertices();
         UpdateTranslationMatrix();
@@ -102,6 +102,10 @@ public class Paths : ParameterizedObject
                 TexX = 0,
                 TexY = 0
             };
+
+            _cuttingLines.points[i].XPosInUnits = _vertices[i].X;
+            _cuttingLines.points[i].YPosInUnits = _vertices[i].Y;
+            _cuttingLines.points[i].ZPosInUnits = _vertices[i].Z;
         }
 
         _verticesDraw = new float[_vertices.Length * 3];

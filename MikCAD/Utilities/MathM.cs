@@ -40,4 +40,9 @@ public static class MathM
     {
         return (b - a).LengthSquared;
     }
+
+    public static float Length((float x, float y, float z) A, (float x, float y, float z) B)
+    {
+        return MathF.Sqrt((A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y) + (A.z - B.z) * (A.z - B.z));
+    }
 }

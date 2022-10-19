@@ -14,6 +14,7 @@ using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using Path = MikCAD.Objects.ParameterizedObjects.Milling.Path;
 
 namespace MikCAD;
 
@@ -76,7 +77,7 @@ public class ObjectsController : INotifyPropertyChanged
     private DrawProcessor _drawProcessor;
     public readonly SelectionBox SelectionBox = new SelectionBox();
 
-    public Paths Paths;
+    public Path Path;
     public Block Block;
     public Torus Cutter;
 
@@ -361,13 +362,6 @@ public class ObjectsController : INotifyPropertyChanged
         if (SelectionBox.Draw)
             _drawProcessor.DrawSelectionBox(SelectionBox);
 
-        if (Simulator3C.Simulator.Enabled && Cutter is { })
-        {
-            Cutter.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            //Cutter.SetTexture();
-            _drawProcessor.ProcessObject(Cutter, eye, vertexAttributeLocation, normalAttributeLocation);
-        }
-
         if (Simulator3C.Simulator.Enabled && Block is { })
         {
             Block.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
@@ -375,15 +369,30 @@ public class ObjectsController : INotifyPropertyChanged
             _drawProcessor.ProcessObject(Block, eye, vertexAttributeLocation, normalAttributeLocation);
         }
         
-        if (Simulator3C.Simulator.Enabled && Paths is {CuttingLines: {points.Length: > 0}})
+        if (Simulator3C.Simulator.Enabled && Cutter is { })
+        {
+            if (Simulator3C.Simulator.IgnoreDepth)
+            {
+                GL.Disable(EnableCap.DepthTest);
+            }
+            Cutter.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            //Cutter.SetTexture();
+            _drawProcessor.ProcessObject(Cutter, eye, vertexAttributeLocation, normalAttributeLocation);
+            if (Simulator3C.Simulator.IgnoreDepth)
+            {
+                GL.Enable(EnableCap.DepthTest);
+            }
+        }
+        
+        if (Simulator3C.Simulator.Enabled && Path is {CuttingLines: {points.Length: > 0}})
         {
             if (Simulator3C.Simulator.IgnoreDepth)
             {
                 GL.Disable(EnableCap.DepthTest);
             }
 
-            Paths.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            _drawProcessor.ProcessObject(Paths, eye, vertexAttributeLocation, normalAttributeLocation);
+            Path.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Path, eye, vertexAttributeLocation, normalAttributeLocation);
             
             if (Simulator3C.Simulator.IgnoreDepth)
             {

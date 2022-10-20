@@ -30,7 +30,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _xGridSizeInUnits;
         set
         {
-            if (value > 0)
+            if (value > 0 && !IsAnimationRunning)
             {
                 _xGridSizeInUnits = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
@@ -45,7 +45,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _yGridSizeInUnits;
         set
         {
-            if (value > 0)
+            if (value > 0 && !IsAnimationRunning)
             {
                 _yGridSizeInUnits = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
@@ -60,7 +60,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _zGridSizeInUnits;
         set
         {
-            if (value > 0)
+            if (value > 0 && !IsAnimationRunning)
             {
                 _zGridSizeInUnits = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
@@ -75,7 +75,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _xGridDivisions;
         set
         {
-            if (value > 0)
+            if (value > 0 && !IsAnimationRunning)
             {
                 _xGridDivisions = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
@@ -90,7 +90,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _yGridDivisions;
         set
         {
-            if (value > 0)
+            if (value > 0 && !IsAnimationRunning)
             {
                 _yGridDivisions = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
@@ -111,13 +111,25 @@ public class Simulator3C : INotifyPropertyChanged
     public bool SphericalSelected
     {
         get => CutterType == CutterType.Spherical;
-        set => CutterType = value ? CutterType.Spherical : CutterType.Flat;
+        set
+        {
+            if (!IsAnimationRunning)
+            {
+                CutterType = value ? CutterType.Spherical : CutterType.Flat;
+            }
+        } 
     }
 
     public bool FlatSelected
     {
         get => CutterType == CutterType.Flat;
-        set => CutterType = value ? CutterType.Flat : CutterType.Spherical;
+        set
+        {
+            if (!IsAnimationRunning)
+            {
+                CutterType = value ? CutterType.Flat : CutterType.Spherical;
+            }
+        } 
     }
 
     private uint _cutterDiameterInMm = 15;
@@ -125,7 +137,13 @@ public class Simulator3C : INotifyPropertyChanged
     public uint CutterDiameterInMm
     {
         get => _cutterDiameterInMm;
-        set { _cutterDiameterInMm = value; }
+        set
+        {
+            if (!IsAnimationRunning)
+            {
+                _cutterDiameterInMm = value;
+            }
+        }
     }
 
     private uint _simulationSpeed = 1;
@@ -135,7 +153,7 @@ public class Simulator3C : INotifyPropertyChanged
         get => _simulationSpeed;
         set
         {
-            if (value > 0 && value <= 10)
+            if (value > 0 && value <= 10 && !IsAnimationRunning)
             {
                 _simulationSpeed = value;
             }
@@ -149,8 +167,11 @@ public class Simulator3C : INotifyPropertyChanged
         get => _fileName;
         set
         {
-            _fileName = value;
-            OnPropertyChanged(nameof(FileName));
+            if (!IsAnimationRunning)
+            {
+                _fileName = value;
+                OnPropertyChanged(nameof(FileName));
+            }
         }
     }
 
@@ -295,7 +316,7 @@ public class Simulator3C : INotifyPropertyChanged
     }
 
 
-    private float maxSpeedInMm = 0.3f;
+    private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
     private float dt = 1/240.0f;
     private float speedInUnitsPerSecond = 0;
@@ -366,6 +387,7 @@ public class Simulator3C : INotifyPropertyChanged
                         cutter.posX = points[^1].XPosInUnits;
                         cutter.posY = points[^1].ZPosInUnits;
                         cutter.posZ = -points[^1].YPosInUnits;
+                        IsAnimationRunning = false;
                         return;
                     }
 
@@ -385,5 +407,6 @@ public class Simulator3C : INotifyPropertyChanged
             }
             Task.Delay(TimeSpan.FromSeconds(dt));
         }
+        IsAnimationRunning = false;
     }
 }

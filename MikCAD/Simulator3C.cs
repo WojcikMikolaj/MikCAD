@@ -310,7 +310,7 @@ public class Simulator3C : INotifyPropertyChanged
         var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
         cutter.posX = pathPoints[0].XPosInUnits;
         cutter.posY = pathPoints[0].ZPosInUnits;
-        cutter.posZ = pathPoints[0].YPosInUnits;
+        cutter.posZ = -pathPoints[0].YPosInUnits;
         
         speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
 

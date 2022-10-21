@@ -79,6 +79,7 @@ public class Simulator3C : INotifyPropertyChanged
             {
                 _xGridDivisions = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
+                UpdateBlockHeightMap();
             }
         }
     }
@@ -94,6 +95,7 @@ public class Simulator3C : INotifyPropertyChanged
             {
                 _yGridDivisions = value;
                 Scene.CurrentScene.ObjectsController.Block.UpdateVertices();
+                UpdateBlockHeightMap();
             }
         }
     }
@@ -318,10 +320,10 @@ public class Simulator3C : INotifyPropertyChanged
 
     private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
-    private float dt = 1/240.0f;
+    private float dt = 1/30.0f;
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
-
+    private Block block;
     private Thread cutterThread;
     public void StartMilling()
     {
@@ -332,6 +334,8 @@ public class Simulator3C : INotifyPropertyChanged
         cutter.posX = pathPoints[0].XPosInUnits;
         cutter.posY = pathPoints[0].ZPosInUnits;
         cutter.posZ = -pathPoints[0].YPosInUnits;
+
+        block = Scene.CurrentScene.ObjectsController.Block;
         
         speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
 
@@ -371,6 +375,7 @@ public class Simulator3C : INotifyPropertyChanged
                     && currYDiffSign == lastYDiffSign
                     && currZDiffSign == lastZDiffSign)
                 {
+                    block.UpdateHeightMap(Unswap(currPos), dir, distLeft);
                     cutter.posX += dir.X * distLeft;
                     cutter.posY += dir.Y * distLeft;
                     cutter.posZ -= dir.Z * distLeft;
@@ -391,6 +396,7 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
+                    block.UpdateHeightMap(Unswap(currPos), endPos);
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;
@@ -408,5 +414,34 @@ public class Simulator3C : INotifyPropertyChanged
             Task.Delay(TimeSpan.FromSeconds(dt));
         }
         IsAnimationRunning = false;
+    }
+
+    private Vector3 Unswap(Vector3 currPos)
+    {
+        (currPos.Y, currPos.Z) = (currPos.Z, currPos.Y);
+        return currPos;
+    }
+
+    public void UpdateBlockHeightMap()
+    {
+        var texture1 = new List<float>((int)XGridDivisions * (int)YGridDivisions);
+
+        for (int j = 0; j < YGridDivisions; j++)
+        {
+            for (int i = 0; i < XGridDivisions; i++)
+            {
+                var color = 5.0f;
+                // if (i > Simulator3C.XGridDivisions / 3.0f && i < 2.0f / 3 * Simulator3C.XGridDivisions)
+                // {
+                //     color = 0.5f;
+                // }
+            
+                    
+                texture1.Add(color);
+            }
+        }
+        Scene.CurrentScene.ObjectsController.Block.HeightMap = texture1.ToArray();
+        Scene.CurrentScene.ObjectsController.Block.HeightMapWidth = (int)XGridDivisions;
+        Scene.CurrentScene.ObjectsController.Block.HeightMapHeight = (int)YGridDivisions;
     }
 }

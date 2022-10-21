@@ -67,26 +67,8 @@ namespace MikCAD
             ObjectsController.Block.Texture0 = texture.ToArray();
             ObjectsController.Block.Tex0Width = woodBmp.Width;
             ObjectsController.Block.Tex0Height = woodBmp.Height;
-            
-            var texture1 = new List<float>((int)Simulator3C.XGridDivisions * (int)Simulator3C.YGridDivisions);
 
-            for (int j = 0; j < Simulator3C.YGridDivisions; j++)
-            {
-                for (int i = 0; i < Simulator3C.XGridDivisions; i++)
-                {
-                    var color = 2.0f;
-                    if (i > Simulator3C.XGridDivisions / 3.0f && i < 2.0f / 3 * Simulator3C.XGridDivisions)
-                    {
-                        color = 0.5f;
-                    }
-
-                    
-                    texture1.Add(color);
-                }
-            }
-            ObjectsController.Block.Texture1 = texture1.ToArray();
-            ObjectsController.Block.Tex1Width = (int)Simulator3C.XGridDivisions;
-            ObjectsController.Block.Tex1Height = (int)Simulator3C.YGridDivisions;
+            Simulator3C.UpdateBlockHeightMap();
 
             ObjectsController.Cutter = new Torus()
             {

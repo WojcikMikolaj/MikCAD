@@ -15,7 +15,7 @@ void main()
 {
     vec4 interPos = vec4(in_Position, 1.0);
     if (interPos.z>2)
-    	interPos.z = texture(texture1, in_Tex).r;
+       	interPos.z = texture(texture1, in_Tex).r;
     gl_Position = interPos* modelMatrix * viewMatrix * projectionMatrix;
     gl_PointSize = 5;
 

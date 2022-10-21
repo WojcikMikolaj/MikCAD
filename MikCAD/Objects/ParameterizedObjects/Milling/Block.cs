@@ -337,12 +337,13 @@ public class Block : ParameterizedObject
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Tex0Width, Tex0Height, 0,
                 PixelFormat.Rgba,
                 PixelType.UnsignedByte, Texture0);
+            updated = false;
         }
 
 
         GL.ActiveTexture(TextureUnit.Texture1);
         GL.BindTexture(TextureTarget.Texture2D, _textureHandle1);
-        if (updated)
+        if (updatedHeightMap)
         {
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Clamp);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) TextureWrapMode.Clamp);
@@ -350,14 +351,15 @@ public class Block : ParameterizedObject
                 (int) TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int) TextureMagFilter.Nearest);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, Tex1Width, Tex1Height, 0,
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, HeightMapWidth, HeightMapHeight, 0,
                 PixelFormat.Red,
-                PixelType.Float, Texture1);
-            updated = false;
+                PixelType.Float, HeightMap);
+            updatedHeightMap = false;
         }
     }
 
     private bool updated = false;
+    private bool updatedHeightMap = false;
 
     private byte[] _texture0;
 
@@ -375,18 +377,222 @@ public class Block : ParameterizedObject
     public int Tex0Height { get; set; }
 
 
-    private float[] _texture1;
+    private float[] _heightMap;
 
-    public float[] Texture1
+    public float[] HeightMap
     {
-        get => _texture1;
+        get => _heightMap;
         set
         {
-            _texture1 = value;
-            updated = true;
+            _heightMap = value;
+            updatedHeightMap = true;
         }
     }
 
-    public int Tex1Width { get; set; }
-    public int Tex1Height { get; set; }
+    public int HeightMapWidth { get; set; }
+    public int HeightMapHeight { get; set; }
+
+    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft)
+    {
+        UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft);
+    }
+
+    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits)
+    {
+        Vector2 currTexPos = GetTexPos(currPosInUnits);
+        Vector2 endTexPos = GetTexPos(endPosInUnits);
+
+        Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
+            ((int) (endTexPos.X), (int) (currTexPos.Y), endPosInUnits.Z));
+    }
+
+    private Vector2 GetTexPos(Vector3 currPosInUnits)
+    {
+        var xTex = (HeightMapWidth / 2.0f * (1 + currPosInUnits.X / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
+        var yTex = (HeightMapHeight / 2.0f * (1 + currPosInUnits.Y / (Simulator3C.Simulator.YGridSizeInUnits / 2.0f)));
+        return new Vector2(xTex, yTex);
+    }
+
+    bool InBox(Point a, int dx = 0, int dy = 0)
+    {
+        return a.X + dx > 0 && a.X + dx < HeightMapWidth && a.Y + dy > 0 && a.Y + dy < HeightMapHeight;
+    }
+
+    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b)
+    {
+        int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
+        float currZ = a.Z;
+        float dz = b.Z - a.Z;
+        //podział wzdłuż OY
+        if (b.X < a.X)
+        {
+            (a, b) = (b, a);
+        }
+
+        //Te same wartości dla kazdego przypadku
+        x1 = (int) a.X;
+        x2 = (int) b.X;
+        y1 = (int) a.Y;
+        y2 = (int) b.Y;
+        dx = x2 - x1;
+        x = x1;
+        y = y1;
+        //315-360
+        if (b.Y >= a.Y && b.Y - a.Y <= b.X - a.X)
+        {
+            dy = y2 - y1;
+            d = 2 * dy - dx;
+            incrE = 2 * dy;
+            incrNE = 2 * (dy - dx);
+            incrY = 1;
+        }
+        //0-45
+        else if (b.Y < a.Y && a.Y - b.Y <= b.X - a.X)
+        {
+            dy = y1 - y2;
+            d = 2 * dy - dx;
+            incrE = 2 * dy;
+            incrNE = 2 * (dy - dx);
+            incrY = -1;
+        }
+        //270-315
+        else if (b.Y >= a.Y)
+        {
+            dy = y2 - y1;
+            d = 2 * dx - dy;
+            incrE = 2 * dx;
+            incrNE = 2 * (dx - dy);
+        }
+        //45-90
+        else
+        {
+            dy = y1 - y2;
+            d = 2 * dx - dy;
+            incrE = 2 * dx;
+            incrNE = 2 * (dx - dy);
+        }
+
+        SetZValue(x, y, currZ);
+        //315-45
+        if (dx > dy)
+        {
+            while (x < x2)
+            {
+                if (d < 0)
+                    //chooseE 
+                {
+                    d += incrE;
+                    x++;
+                }
+                else
+                    //chooseNE
+                {
+                    d += incrNE;
+                    x++;
+                    y += incrY;
+                }
+
+                currZ += dz;
+                SetZValue(x, y, currZ);
+            }
+        }
+        //270-315
+        else if (y2 > y)
+        {
+            while (y < y2)
+            {
+                if (d < 0)
+                    //chooseE 
+                {
+                    d += incrE;
+                    y++;
+                }
+                else
+                    //chooseNE
+                {
+                    d += incrNE;
+                    y++;
+                    x++;
+                }
+
+                currZ += dz;
+                SetZValue(x, y, currZ);
+            }
+        }
+        //45-90
+        else
+        {
+            while (y > y2)
+            {
+                if (d < 0)
+                    //chooseE 
+                {
+                    d += incrE;
+                    y--;
+                }
+                else
+                    //chooseNE
+                {
+                    d += incrNE;
+                    y--;
+                    x++;
+                }
+
+                currZ += dz;
+                SetZValue(x, y, currZ);
+            }
+        }
+    }
+
+    private void SetZValue(int x, int y, float z)
+    {
+        if (x >= 0
+            && x < HeightMapWidth
+            && y >= 0
+            && y < HeightMapHeight)
+        {
+            if (_heightMap[y * HeightMapWidth + x] > z)
+            {
+                _heightMap[y * HeightMapWidth + x] = z;
+            }
+
+            int r = 12;
+            for (int i = 0; i < r; i++)
+            {
+                if (y * HeightMapWidth + x + i < HeightMapWidth * HeightMapHeight)
+                {
+                    if (_heightMap[y * HeightMapWidth + x + i] > z)
+                    {
+                        _heightMap[y * HeightMapWidth + x + i] = z;
+                    }
+                }
+
+                if ((y + i) * HeightMapWidth + x < HeightMapWidth * HeightMapHeight)
+                {
+                    if (_heightMap[(y + i) * HeightMapWidth + x] > z)
+                    {
+                        _heightMap[(y + i) * HeightMapWidth + x] = z;
+                    }
+                }
+
+                if (y * HeightMapWidth + x - i > 0)
+                {
+                    if (_heightMap[y * HeightMapWidth + x - i] > z)
+                    {
+                        _heightMap[y * HeightMapWidth + x - i] = z;
+                    }
+                }
+
+                if ((y - i) * HeightMapWidth + x > 0)
+                {
+                    if (_heightMap[(y - i) * HeightMapWidth + x] > z)
+                    {
+                        _heightMap[(y - i) * HeightMapWidth + x] = z;
+                    }
+                }
+            }
+
+            updatedHeightMap = true;
+        }
+    }
 }

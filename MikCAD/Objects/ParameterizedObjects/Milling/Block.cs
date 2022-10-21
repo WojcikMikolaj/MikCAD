@@ -155,14 +155,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-        
+
             triangleStart++;
         }
-        
+
         //Ściana x==max
         triangleStart = (XVerticesCount - 1) * YVerticesCount;
         for (int j = 0; j < YVerticesCount - 1; j++)
@@ -170,14 +170,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-        
+
             triangleStart++;
         }
-        
+
         //Ściana y==0
         triangleStart = 0;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -185,14 +185,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-        
+
             triangleStart += YVerticesCount;
         }
-        
+
         //Ściana y==max
         triangleStart = YVerticesCount - 1;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -200,14 +200,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-        
+
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-        
+
             triangleStart += YVerticesCount;
         }
-        
+
         //Dolna ściana
         triangleStart = 0;
         for (int i = 0; i < XVerticesCount - 1; i++)
@@ -217,14 +217,14 @@ public class Block : ParameterizedObject
                 triangleList.Add(triangleStart);
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
-        
+
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
                 triangleList.Add(triangleStart + YVerticesCount + 1);
-        
+
                 triangleStart++;
             }
-        
+
             triangleStart++;
         }
 
@@ -401,11 +401,16 @@ public class Block : ParameterizedObject
     {
         Vector2 currTexPos = GetTexPos(currPosInUnits);
         Vector2 endTexPos = GetTexPos(endPosInUnits);
-        int rInTex = ConvertXUnitsToTexX(rInUnits); 
+        int rInTex = ConvertXUnitsToTexX(rInUnits);
 
         Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
-            ((int) (endTexPos.X), (int) (currTexPos.Y), endPosInUnits.Z),
+            ((int) (endTexPos.X), (int) (endTexPos.Y), endPosInUnits.Z),
             rInTex);
+    }
+
+    public void UpdateHeightMapInPoint(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits)
+    {
+        
     }
 
     private int ConvertXUnitsToTexX(float rInUnits)
@@ -562,38 +567,18 @@ public class Block : ParameterizedObject
             {
                 _heightMap[y * HeightMapWidth + x] = z;
             }
-            
-            for (int i = 0; i < r; i++)
+
+            for (int i = -r + 1; i < r; i++)
             {
-                if (y * HeightMapWidth + x + i < HeightMapWidth * HeightMapHeight)
+                for (int j = -r + 1; j < r; j++)
                 {
-                    if (_heightMap[y * HeightMapWidth + x + i] > z)
+                    if ((y + i) * HeightMapWidth + x + j > 0 
+                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
                     {
-                        _heightMap[y * HeightMapWidth + x + i] = z;
-                    }
-                }
-
-                if ((y + i) * HeightMapWidth + x < HeightMapWidth * HeightMapHeight)
-                {
-                    if (_heightMap[(y + i) * HeightMapWidth + x] > z)
-                    {
-                        _heightMap[(y + i) * HeightMapWidth + x] = z;
-                    }
-                }
-
-                if (y * HeightMapWidth + x - i > 0)
-                {
-                    if (_heightMap[y * HeightMapWidth + x - i] > z)
-                    {
-                        _heightMap[y * HeightMapWidth + x - i] = z;
-                    }
-                }
-
-                if ((y - i) * HeightMapWidth + x > 0)
-                {
-                    if (_heightMap[(y - i) * HeightMapWidth + x] > z)
-                    {
-                        _heightMap[(y - i) * HeightMapWidth + x] = z;
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                        {
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                        }
                     }
                 }
             }

@@ -43,4 +43,9 @@ public partial class Simulator3CControl : UserControl
     {
         Simulator3C.Simulator.StartMilling();
     }
+
+    private void ResetBlock(object sender, RoutedEventArgs e)
+    {
+        Simulator3C.Simulator.ResetBlock();
+    }
 }

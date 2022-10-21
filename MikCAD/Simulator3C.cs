@@ -318,7 +318,7 @@ public class Simulator3C : INotifyPropertyChanged
     }
 
 
-    private float maxSpeedInMm = 0.1f;
+    private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
     private float dt = 1/3.0f;
     private float speedInUnitsPerSecond = 0;
@@ -398,13 +398,13 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
-                    //block.UpdateHeightMap(Unswap(currPos), endPos, rInUnits);
+                   // block.UpdateHeightMap(endPos,Unswap(currPos), rInUnits);
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;
                     cutter.posY = currPos.Y;
                     cutter.posZ = -currPos.Z;
-                    //currPos.Z = -currPos.Z;
+                    
                     endPos = points[i].GetPosInUnitsYZSwitched();
                     dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
                     lenToNextPoint = MathM.Distance(currPos, endPos);
@@ -445,5 +445,10 @@ public class Simulator3C : INotifyPropertyChanged
         Scene.CurrentScene.ObjectsController.Block.HeightMap = texture1.ToArray();
         Scene.CurrentScene.ObjectsController.Block.HeightMapWidth = (int)XGridDivisions;
         Scene.CurrentScene.ObjectsController.Block.HeightMapHeight = (int)YGridDivisions;
+    }
+
+    public void ResetBlock()
+    {
+        UpdateBlockHeightMap();
     }
 }

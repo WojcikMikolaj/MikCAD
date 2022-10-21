@@ -318,9 +318,9 @@ public class Simulator3C : INotifyPropertyChanged
     }
 
 
-    private float maxSpeedInMm = 1f;
+    private float maxSpeedInMm = 0.1f;
     private float MmToUnits = 0.1f;
-    private float dt = 1/30.0f;
+    private float dt = 1/3.0f;
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
     private Block block;
@@ -398,7 +398,7 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
-                    block.UpdateHeightMap(Unswap(currPos), endPos, rInUnits);
+                    //block.UpdateHeightMap(Unswap(currPos), endPos, rInUnits);
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;

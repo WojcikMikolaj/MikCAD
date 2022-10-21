@@ -155,14 +155,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-
+        
             triangleStart++;
         }
-
+        
         //Ściana x==max
         triangleStart = (XVerticesCount - 1) * YVerticesCount;
         for (int j = 0; j < YVerticesCount - 1; j++)
@@ -170,14 +170,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + 1);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount + 1);
-
+        
             triangleStart++;
         }
-
+        
         //Ściana y==0
         triangleStart = 0;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -185,14 +185,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-
+        
             triangleStart += YVerticesCount;
         }
-
+        
         //Ściana y==max
         triangleStart = YVerticesCount - 1;
         for (int j = 0; j < XVerticesCount - 1; j++)
@@ -200,14 +200,14 @@ public class Block : ParameterizedObject
             triangleList.Add(triangleStart);
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
-
+        
             triangleList.Add(triangleStart + YVerticesCount);
             triangleList.Add(triangleStart + XVerticesCount * YVerticesCount);
             triangleList.Add(triangleStart + YVerticesCount + XVerticesCount * YVerticesCount);
-
+        
             triangleStart += YVerticesCount;
         }
-
+        
         //Dolna ściana
         triangleStart = 0;
         for (int i = 0; i < XVerticesCount - 1; i++)
@@ -217,14 +217,14 @@ public class Block : ParameterizedObject
                 triangleList.Add(triangleStart);
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
-
+        
                 triangleList.Add(triangleStart + 1);
                 triangleList.Add(triangleStart + YVerticesCount);
                 triangleList.Add(triangleStart + YVerticesCount + 1);
-
+        
                 triangleStart++;
             }
-
+        
             triangleStart++;
         }
 

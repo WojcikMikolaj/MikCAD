@@ -366,9 +366,14 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
+        Scene.CurrentScene._shader.SetVector4("cameraPos", new Vector4(
+            Scene.CurrentScene.camera.posX,
+            Scene.CurrentScene.camera.posY, 
+            Scene.CurrentScene.camera.posZ, 1));
 
         Scene.CurrentScene._shader.SetInt("texture0", 0);
         Scene.CurrentScene._shader.SetInt("texture1", 1);
+        
         if (block.Texture0 != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);

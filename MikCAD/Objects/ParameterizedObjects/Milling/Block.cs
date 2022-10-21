@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
@@ -408,11 +409,6 @@ public class Block : ParameterizedObject
             rInTex);
     }
 
-    public void UpdateHeightMapInPoint(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits)
-    {
-        
-    }
-
     private int ConvertXUnitsToTexX(float rInUnits)
     {
         return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
@@ -568,19 +564,52 @@ public class Block : ParameterizedObject
                 _heightMap[y * HeightMapWidth + x] = z;
             }
 
-            for (int i = -r + 1; i < r; i++)
+            for(int i=-r+1; i<r; i++)
             {
-                for (int j = -r + 1; j < r; j++)
+                int j = r-1;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
                 {
-                    if ((y + i) * HeightMapWidth + x + j > 0 
-                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
                     {
-                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                        {
-                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                        }
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
                     }
                 }
+                j = -r+1;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                {
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                    {
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                    }
+                }
+            }
+
+            for(int j= -r+1; j<r; j++)
+            {
+                // Parallel.For(-r + 1, r, j =>
+                // {
+
+                int i = r-1;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                {
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                    {
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                    }
+                }
+                i = -r+1;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                {
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                    {
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                    }
+                }
+                //});
             }
 
             updatedHeightMap = true;

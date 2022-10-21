@@ -355,6 +355,8 @@ public class Simulator3C : INotifyPropertyChanged
         var lastXDiffSign = endPos.X - startPos.X > 0;
         var lastYDiffSign = endPos.Y - startPos.Y > 0;
         var lastZDiffSign = endPos.Z - startPos.Z > 0;
+
+        float rInUnits = (CutterDiameterInMm / 2 * 0.1f);
         
         while (i < points.Length)
         {
@@ -375,7 +377,7 @@ public class Simulator3C : INotifyPropertyChanged
                     && currYDiffSign == lastYDiffSign
                     && currZDiffSign == lastZDiffSign)
                 {
-                    block.UpdateHeightMap(Unswap(currPos), dir, distLeft);
+                    block.UpdateHeightMap(Unswap(currPos), dir, distLeft, rInUnits);
                     cutter.posX += dir.X * distLeft;
                     cutter.posY += dir.Y * distLeft;
                     cutter.posZ -= dir.Z * distLeft;
@@ -396,7 +398,7 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
-                    block.UpdateHeightMap(Unswap(currPos), endPos);
+                    block.UpdateHeightMap(Unswap(currPos), endPos, rInUnits);
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;

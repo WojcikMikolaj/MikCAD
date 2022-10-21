@@ -392,18 +392,25 @@ public class Block : ParameterizedObject
     public int HeightMapWidth { get; set; }
     public int HeightMapHeight { get; set; }
 
-    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft)
+    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft, float rInUnits)
     {
-        UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft);
+        UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft, rInUnits);
     }
 
-    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits)
+    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits)
     {
         Vector2 currTexPos = GetTexPos(currPosInUnits);
         Vector2 endTexPos = GetTexPos(endPosInUnits);
+        int rInTex = ConvertXUnitsToTexX(rInUnits); 
 
         Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
-            ((int) (endTexPos.X), (int) (currTexPos.Y), endPosInUnits.Z));
+            ((int) (endTexPos.X), (int) (currTexPos.Y), endPosInUnits.Z),
+            rInTex);
+    }
+
+    private int ConvertXUnitsToTexX(float rInUnits)
+    {
+        return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
     }
 
     private Vector2 GetTexPos(Vector3 currPosInUnits)
@@ -418,7 +425,7 @@ public class Block : ParameterizedObject
         return a.X + dx > 0 && a.X + dx < HeightMapWidth && a.Y + dy > 0 && a.Y + dy < HeightMapHeight;
     }
 
-    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b)
+    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int r)
     {
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
         float currZ = a.Z;
@@ -472,7 +479,7 @@ public class Block : ParameterizedObject
             incrNE = 2 * (dx - dy);
         }
 
-        SetZValue(x, y, currZ);
+        SetZValue(x, y, currZ, r);
         //315-45
         if (dx > dy)
         {
@@ -493,7 +500,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ);
+                SetZValue(x, y, currZ, r);
             }
         }
         //270-315
@@ -516,7 +523,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ);
+                SetZValue(x, y, currZ, r);
             }
         }
         //45-90
@@ -539,12 +546,12 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ);
+                SetZValue(x, y, currZ, r);
             }
         }
     }
 
-    private void SetZValue(int x, int y, float z)
+    private void SetZValue(int x, int y, float z, int r)
     {
         if (x >= 0
             && x < HeightMapWidth
@@ -555,8 +562,7 @@ public class Block : ParameterizedObject
             {
                 _heightMap[y * HeightMapWidth + x] = z;
             }
-
-            int r = 12;
+            
             for (int i = 0; i < r; i++)
             {
                 if (y * HeightMapWidth + x + i < HeightMapWidth * HeightMapHeight)

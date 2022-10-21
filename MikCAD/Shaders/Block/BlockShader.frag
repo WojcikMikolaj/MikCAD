@@ -19,10 +19,12 @@ void main()
 	FragColor = (1-overrideEnabled) * color + overrideEnabled * overrideColor;
 	if (useTexture>0)
 	{
-		//FragColor = texture(texture0, texCoord);
-		FragColor.rgb = texture(texture1, texCoord).rgb/5;
-		FragColor.a = 1;
-		FragColor.w =FragColor.w  + texture(texture0, texCoord).w;
+		FragColor = texture(texture0, texCoord);
+		//FragColor.rgb = texture(texture1, texCoord).rgb/5;
+//		FragColor.r = 0;
+//		FragColor.g = 1;
+//		FragColor.b = 0;
+//		FragColor.w =FragColor.w  + texture(texture0, texCoord).w;
 	}
 	FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 }

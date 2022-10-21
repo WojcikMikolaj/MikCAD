@@ -409,6 +409,14 @@ public class Block : ParameterizedObject
             rInTex);
     }
 
+    public void UpdateHeightMapInPoint(Vector3 posInUnits, float rInUnits)
+    {
+        Vector2 posInTex = GetTexPos(posInUnits);
+        int rInTex = ConvertXUnitsToTexX(rInUnits);
+        
+        SetZValue((int) (posInTex.X), (int) (posInTex.Y), posInUnits.Z, rInTex, true);
+    }
+    
     private int ConvertXUnitsToTexX(float rInUnits)
     {
         return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
@@ -552,67 +560,83 @@ public class Block : ParameterizedObject
         }
     }
 
-    private void SetZValue(int x, int y, float z, int r)
+    private void SetZValue(int x, int y, float z, int r, bool circle = false)
     {
         if (x >= 0
             && x < HeightMapWidth
             && y >= 0
             && y < HeightMapHeight)
         {
-            if (_heightMap[y * HeightMapWidth + x] > z)
+            if (!circle)
             {
-                _heightMap[y * HeightMapWidth + x] = z;
+                if (_heightMap[y * HeightMapWidth + x] > z)
+                {
+                    _heightMap[y * HeightMapWidth + x] = z;
+                }
+
+                for (int i = -r + 1; i < r; i++)
+                {
+                    int j = 0;
+                    if ((y + i) * HeightMapWidth + x + j > 0
+                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    {
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                        {
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                        }
+                    }
+                    // j = -r+1;
+                    // if ((y + i) * HeightMapWidth + x + j > 0
+                    //     && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    // {
+                    //     if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                    //     {
+                    //         _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                    //     }
+                    // }
+                }
+
+                for (int j = -r + 1; j < r; j++)
+                {
+                    int i = 0;
+                    if ((y + i) * HeightMapWidth + x + j > 0
+                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    {
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                        {
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                        }
+                    }
+                    // i = -r+1;
+                    // if ((y + i) * HeightMapWidth + x + j > 0
+                    //     && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    // {
+                    //     if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                    //     {
+                    //         _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                    //     }
+                    // }
+                }
+            }
+            else
+            {
+                for (int i = -r + 1; i < r; i++)
+                {
+                    for (int j = -r + 1; j < r; j++)
+                    {
+                        if ((y + i) * HeightMapWidth + x + j > 0
+                            && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                        {
+                            if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                            {
+                                _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                            }
+                        }
+                    }
+                }
             }
 
-            for(int i=-r+1; i<r; i++)
-            {
-                int j = r-1;
-                if ((y + i) * HeightMapWidth + x + j > 0
-                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                {
-                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    {
-                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    }
-                }
-                j = -r+1;
-                if ((y + i) * HeightMapWidth + x + j > 0
-                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                {
-                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    {
-                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    }
-                }
-            }
-
-            for(int j= -r+1; j<r; j++)
-            {
-                // Parallel.For(-r + 1, r, j =>
-                // {
-
-                int i = r-1;
-                if ((y + i) * HeightMapWidth + x + j > 0
-                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                {
-                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    {
-                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    }
-                }
-                i = -r+1;
-                if ((y + i) * HeightMapWidth + x + j > 0
-                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                {
-                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    {
-                        _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    }
-                }
-                //});
-            }
-
-            updatedHeightMap = true;
+           // updatedHeightMap = true;
         }
     }
 }

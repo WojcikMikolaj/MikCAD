@@ -19,7 +19,7 @@ public class Simulator3C : INotifyPropertyChanged
     public static Simulator3C Simulator;
 
     public bool IsAnimationRunning { get; private set; } = false;
-    
+
     public bool Enabled { get; set; }
     public bool IgnoreDepth { get; set; }
 
@@ -119,7 +119,7 @@ public class Simulator3C : INotifyPropertyChanged
             {
                 CutterType = value ? CutterType.Spherical : CutterType.Flat;
             }
-        } 
+        }
     }
 
     public bool FlatSelected
@@ -131,7 +131,7 @@ public class Simulator3C : INotifyPropertyChanged
             {
                 CutterType = value ? CutterType.Flat : CutterType.Spherical;
             }
-        } 
+        }
     }
 
     private uint _cutterDiameterInMm = 15;
@@ -298,7 +298,7 @@ public class Simulator3C : INotifyPropertyChanged
         Scene.CurrentScene.ObjectsController.Cutter.posX = pathPoints[0].XPosInUnits;
         Scene.CurrentScene.ObjectsController.Cutter.posY = pathPoints[0].ZPosInUnits;
         Scene.CurrentScene.ObjectsController.Cutter.posZ = -pathPoints[0].YPosInUnits;
-        
+
         return (true, SimulatorErrorCode.None);
     }
 
@@ -320,15 +320,16 @@ public class Simulator3C : INotifyPropertyChanged
 
     private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
-    private float dt = 1/3.0f;
+    private float dt = 1 / 3.0f;
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
     private Block block;
     private Thread cutterThread;
+
     public void StartMilling()
     {
         IsAnimationRunning = true;
-        
+
         cutter = Scene.CurrentScene.ObjectsController.Cutter;
         var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
         cutter.posX = pathPoints[0].XPosInUnits;
@@ -336,13 +337,13 @@ public class Simulator3C : INotifyPropertyChanged
         cutter.posZ = -pathPoints[0].YPosInUnits;
 
         block = Scene.CurrentScene.ObjectsController.Block;
-        
+
         speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
 
-        cutterThread = new Thread(_=>MoveCutter(pathPoints));
+        cutterThread = new Thread(_ => MoveCutter(pathPoints));
         cutterThread.Start();
     }
-    
+
     private void MoveCutter(CuttingLinePoint[] points)
     {
         int i = 1;
@@ -357,22 +358,21 @@ public class Simulator3C : INotifyPropertyChanged
         var lastZDiffSign = endPos.Z - startPos.Z > 0;
 
         float rInUnits = (CutterDiameterInMm / 2 * 0.1f);
-        
+
         while (i < points.Length)
         {
             var lenToNextPoint = MathM.Distance(currPos, endPos);
             var distLeft = speedInUnitsPerSecond * dt;
-            
-            
-            
-            while (distLeft > Single.Epsilon )
+
+
+            while (distLeft > Single.Epsilon)
             {
                 var currXDiffSign = endPos.X - currPos.X > 0;
                 var currYDiffSign = endPos.Y - currPos.Y > 0;
                 var currZDiffSign = endPos.Z - currPos.Z > 0;
-                
-                if (lenToNextPoint > distLeft 
-                    && lenToNextPoint > 0.01f 
+
+                if (lenToNextPoint > distLeft
+                    && lenToNextPoint > 0.01f
                     && currXDiffSign == lastXDiffSign
                     && currYDiffSign == lastYDiffSign
                     && currZDiffSign == lastZDiffSign)
@@ -383,8 +383,6 @@ public class Simulator3C : INotifyPropertyChanged
                     cutter.posZ -= dir.Z * distLeft;
                     currPos = cutter.pos;
                     currPos.Z = -currPos.Z;
-                    //Trace.WriteLine(currPos);
-                    break;
                 }
                 else
                 {
@@ -398,13 +396,14 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
-                   // block.UpdateHeightMap(endPos,Unswap(currPos), rInUnits);
+                    //block.UpdateHeightMapInPoint(Unswap(currPos), rInUnits);
+                    
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;
                     cutter.posY = currPos.Y;
                     cutter.posZ = -currPos.Z;
-                    
+
                     endPos = points[i].GetPosInUnitsYZSwitched();
                     dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
                     lenToNextPoint = MathM.Distance(currPos, endPos);
@@ -413,8 +412,10 @@ public class Simulator3C : INotifyPropertyChanged
                     lastZDiffSign = endPos.Z - currPos.Z > 0;
                 }
             }
+
             Task.Delay(TimeSpan.FromSeconds(dt));
         }
+
         IsAnimationRunning = false;
     }
 
@@ -426,7 +427,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     public void UpdateBlockHeightMap()
     {
-        var texture1 = new List<float>((int)XGridDivisions * (int)YGridDivisions);
+        var texture1 = new List<float>((int) XGridDivisions * (int) YGridDivisions);
 
         for (int j = 0; j < YGridDivisions; j++)
         {
@@ -437,14 +438,15 @@ public class Simulator3C : INotifyPropertyChanged
                 // {
                 //     color = 0.5f;
                 // }
-            
-                    
+
+
                 texture1.Add(color);
             }
         }
+
         Scene.CurrentScene.ObjectsController.Block.HeightMap = texture1.ToArray();
-        Scene.CurrentScene.ObjectsController.Block.HeightMapWidth = (int)XGridDivisions;
-        Scene.CurrentScene.ObjectsController.Block.HeightMapHeight = (int)YGridDivisions;
+        Scene.CurrentScene.ObjectsController.Block.HeightMapWidth = (int) XGridDivisions;
+        Scene.CurrentScene.ObjectsController.Block.HeightMapHeight = (int) YGridDivisions;
     }
 
     public void ResetBlock()

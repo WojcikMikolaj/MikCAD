@@ -383,6 +383,8 @@ public class Simulator3C : INotifyPropertyChanged
                     cutter.posZ -= dir.Z * distLeft;
                     currPos = cutter.pos;
                     currPos.Z = -currPos.Z;
+                    //Trace.WriteLine(currPos);
+                    break;
                 }
                 else
                 {
@@ -396,7 +398,7 @@ public class Simulator3C : INotifyPropertyChanged
                         return;
                     }
 
-                    //block.UpdateHeightMapInPoint(Unswap(currPos), rInUnits);
+                    block.UpdateHeightMapInPoint(Unswap(currPos), rInUnits);
                     
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;

@@ -636,7 +636,7 @@ public class Block : ParameterizedObject
                 }
             }
 
-           // updatedHeightMap = true;
+            updatedHeightMap = true;
         }
     }
 }

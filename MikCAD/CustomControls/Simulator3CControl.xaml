@@ -188,5 +188,69 @@
                 <Button Margin="5,5,5,5" Click="ResetBlock">Resetuj materiał</Button>
             </StackPanel>
         </GroupBox>
+        <Expander Header="Debug">
+            <GroupBox Header="Light">
+                <StackPanel>
+                    <Label>Light position</Label>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <n:FloatUpDown Grid.Column="0"
+                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightPosX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                       DisplayLength="5" IsReadOnly="False">
+                        </n:FloatUpDown>
+                        <n:FloatUpDown Grid.Column="1"
+                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightPosY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                       DisplayLength="5" IsReadOnly="False">
+                        </n:FloatUpDown>
+                        <n:FloatUpDown Grid.Column="2"
+                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightPosZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                       DisplayLength="5" IsReadOnly="False">
+                        </n:FloatUpDown>
+                    </Grid>
+                    <Label>ka</Label>
+                    <n:FloatUpDown
+                        HorizontalAlignment="Left"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.ka, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        MinWidth="0.01"
+                        DisplayLength="5" IsReadOnly="False">
+                    </n:FloatUpDown>
+                    
+                    <Label>ks</Label>
+                    <n:FloatUpDown
+                        HorizontalAlignment="Left"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.ks, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        MinWidth="0.01"
+                        DisplayLength="5" IsReadOnly="False">
+                    </n:FloatUpDown>
+                    
+                    <Label>kd</Label>
+                    <n:FloatUpDown
+                        HorizontalAlignment="Left"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.kd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        MinWidth="0.01"
+                        DisplayLength="5" IsReadOnly="False">
+                    </n:FloatUpDown>
+                    
+                    <Label>m</Label>
+                    <n:FloatUpDown
+                        HorizontalAlignment="Left"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.m, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        MinWidth="1"
+                        DisplayLength="5" IsReadOnly="False">
+                    </n:FloatUpDown>
+                </StackPanel>
+            </GroupBox>
+        </Expander>
     </StackPanel>
 </UserControl>

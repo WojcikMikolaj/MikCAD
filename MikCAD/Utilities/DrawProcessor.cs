@@ -368,12 +368,23 @@ public class DrawProcessor
         Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 1));
         Scene.CurrentScene._shader.SetVector4("cameraPos", new Vector4(
             Scene.CurrentScene.camera.posX,
-            Scene.CurrentScene.camera.posY, 
+            Scene.CurrentScene.camera.posY,
             Scene.CurrentScene.camera.posZ, 1));
+
+        Scene.CurrentScene._shader.SetVector4("LightPos", new Vector4(
+            Simulator3C.Simulator.LightPosX,
+            Simulator3C.Simulator.LightPosY,
+            Simulator3C.Simulator.LightPosZ,
+            1));
+        
+        Scene.CurrentScene._shader.SetFloat("ka", Simulator3C.Simulator.ka);
+        Scene.CurrentScene._shader.SetFloat("ks", Simulator3C.Simulator.ks);
+        Scene.CurrentScene._shader.SetFloat("kd", Simulator3C.Simulator.kd);
+        Scene.CurrentScene._shader.SetFloat("m", Simulator3C.Simulator.m);
 
         Scene.CurrentScene._shader.SetInt("texture0", 0);
         Scene.CurrentScene._shader.SetInt("texture1", 1);
-        
+
         if (block.Texture0 != null)
         {
             Scene.CurrentScene._shader.SetFloat("useTexture", 1);

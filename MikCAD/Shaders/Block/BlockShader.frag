@@ -19,21 +19,38 @@ in vec4 worldPos;
 
 uniform vec4 cameraPos;
 
-const vec4 LightPos = vec4(20,0,0,1);
-const vec3 LightColor = vec3(0.5,1,0.5);
+uniform vec4 LightPos;
+const vec3 LightColor = vec3(0.5,0.5,0.5);
 const vec3 LightAmbient = vec3(0.2,0.2,0.2);
 
-const float ka = 1;
-const float ks = 1;
-const float kd = 1;
-const float m = 1;
+uniform float ka;
+uniform float ks;
+uniform float kd;
+uniform float m;
+
+const ivec3 off = ivec3(-1,0,1);
 
 void main()
 {
 	FragColor = (1-overrideEnabled) * color + overrideEnabled * overrideColor;
 	if (useTexture>0)
 	{
-		vec3 normal = normalize(vec3(dFdx(texture(texture1, texCoord).r), dFdy(texture(texture1, texCoord).r), -1.0f));
+
+		vec4 wave = texture(unit_wave, tex_coord);
+		float s11 = wave.x;
+		float s01 = textureOffset(unit_wave, tex_coord, off.xy).x;
+		float s21 = textureOffset(unit_wave, tex_coord, off.zy).x;
+		float s10 = textureOffset(unit_wave, tex_coord, off.yx).x;
+		float s12 = textureOffset(unit_wave, tex_coord, off.yz).x;
+		vec3 va = normalize(vec3(size.xy,s21-s01));
+		vec3 vb = normalize(vec3(size.yx,s12-s10));
+		vec4 bump = vec4( cross(va,vb), s11 );
+		
+		vec3 normal = normalize(vec3(dFdx(texture(texture1, texCoord).r), 1.0f, dFdy(texture(texture1, texCoord).r)));
+		normal.x = dFdx(texture(texture1, texCoord).r);
+		normal.y = dFdx(texture(texture1, texCoord).r);
+		normal.z = dFdx(texture(texture1, texCoord).r);
+		
 		vec3 surfaceColor = texture(texture0, texCoord).rgb;
 		
 		vec4 lightPos = LightPos;
@@ -44,7 +61,12 @@ void main()
 		float spec = pow(max(dot(normal, halfVec), 0.0), m);
 		vec3 specular = LightColor * spec;
 		float diff = max(dot(normal, lightVec), 0.0);
-		FragColor = vec4((LightAmbient * ka + kd * LightColor * diff) * surfaceColor + specular,1);
+		FragColor = vec4((LightAmbient * ka + kd * LightColor * diff) * surfaceColor + specular * ks,1);
+		
+		FragColor.w = FragColor.x;
+		FragColor.x = abs(normal.x);
+		FragColor.y = abs(normal.y);
+		FragColor.z = abs(normal.z);
 	}
 	FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 }

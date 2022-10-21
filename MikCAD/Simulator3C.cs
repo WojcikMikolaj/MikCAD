@@ -23,8 +23,20 @@ public class Simulator3C : INotifyPropertyChanged
     public bool Enabled { get; set; }
     public bool IgnoreDepth { get; set; }
 
-    private uint _xGridSizeInUnits = 20;
+    #region Light
+    
+    public float LightPosX { get; set; }
+    public float LightPosY { get; set; }
+    public float LightPosZ { get; set; }
+    
+    public float ka { get; set; }
+    public float ks { get; set; }
+    public float kd { get; set; }
+    public float m { get; set; }
 
+    #endregion
+    
+    private uint _xGridSizeInUnits = 18;
     public uint XGridSizeInUnits
     {
         get => _xGridSizeInUnits;
@@ -38,7 +50,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _yGridSizeInUnits = 20;
+    private uint _yGridSizeInUnits = 18;
 
     public uint YGridSizeInUnits
     {

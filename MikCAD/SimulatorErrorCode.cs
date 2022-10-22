@@ -9,5 +9,5 @@ public enum SimulatorErrorCode
     UnsupportedCommand = 3,
     MissingInstructions = 4,
     FlatHeadMoveDownWhileMilling = 5,
-    MoveBelowSafeLimit = 5,
+    MoveBelowSafeLimit = 6,
 }

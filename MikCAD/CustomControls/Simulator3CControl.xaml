@@ -123,7 +123,7 @@
                                x:Name="maxCutterImmersion"
                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                                       Path=DataContext.MaxCutterImmersionInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                               MinValue="20"
+                               MinValue="10"
                                DisplayLength="25"
                                IsReadOnly="False"
                                FormatString="0.###" />

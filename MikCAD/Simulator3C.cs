@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using MikCAD.CustomControls;
 using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
@@ -26,19 +27,20 @@ public class Simulator3C : INotifyPropertyChanged
     public bool ShowLines { get; set; } = true;
 
     #region Light
-    
+
     public float LightPosX { get; set; }
     public float LightPosY { get; set; }
     public float LightPosZ { get; set; }
 
     public float ka { get; set; } = 0.2f;
-    public float ks { get; set; }= 0.2f;
-    public float kd { get; set; }= 0.5f;
+    public float ks { get; set; } = 0.2f;
+    public float kd { get; set; } = 0.5f;
     public float m { get; set; } = 100;
 
     #endregion
-    
+
     private uint _xGridSizeInUnits = 18;
+
     public uint XGridSizeInUnits
     {
         get => _xGridSizeInUnits;
@@ -114,7 +116,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _maxCutterImmersionInMm = 20;
+    private uint _maxCutterImmersionInMm = 10;
 
     public uint MaxCutterImmersionInMm
     {
@@ -334,17 +336,18 @@ public class Simulator3C : INotifyPropertyChanged
 
     private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
+    private float UnitsToMm = 10f;
     private float dt = 1 / 5.0f;
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
     private Block block;
     private BackgroundWorker cutterThread;
 
-    public Simulator3CControl _simulator3CControl; 
+    public Simulator3CControl _simulator3CControl;
 
     public void StartMilling()
     {
-        if (Scene.CurrentScene.ObjectsController.Path is {CuttingLines: {points:{}}})
+        if (Scene.CurrentScene.ObjectsController.Path is {CuttingLines: {points: { }}})
         {
             IsAnimationRunning = true;
 
@@ -360,15 +363,32 @@ public class Simulator3C : INotifyPropertyChanged
 
             cutterThread = new BackgroundWorker();
             cutterThread.WorkerReportsProgress = true;
-            cutterThread.DoWork += (sender, args) =>  MoveCutter(sender, args, pathPoints);
+            cutterThread.DoWork += (sender, args) => MoveCutter(sender, args, pathPoints);
             cutterThread.ProgressChanged +=
                 (sender, args) => _simulator3CControl.UpdateProgressBar(args.ProgressPercentage);
-            cutterThread.RunWorkerCompleted += (sender, args) =>  
+            cutterThread.RunWorkerCompleted += (sender, args) =>
+            {
+                if (args.Result is SimulatorErrorCode code)
+                {
+                    switch (code)
+                    {
+                        case SimulatorErrorCode.FlatHeadMoveDownWhileMilling:
+                        case SimulatorErrorCode.MoveBelowSafeLimit:
+                            MessageBox.Show($"Błąd podczas frezowania\nKod błędu: {code}", "Błąd",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                IsAnimationRunning = false;
+            };
             cutterThread.RunWorkerAsync();
         }
     }
 
-    private void MoveCutter(object sender,DoWorkEventArgs e, CuttingLinePoint[] points)
+    private void MoveCutter(object sender, DoWorkEventArgs e, CuttingLinePoint[] points)
     {
         int i = 1;
         var startPos = new Vector3(points[0].GetPosInUnitsYZSwitched());
@@ -402,13 +422,13 @@ public class Simulator3C : INotifyPropertyChanged
                     && currZDiffSign == lastZDiffSign)
                 {
                     var totalMilled = block.UpdateHeightMap(Unswap(currPos), dir, distLeft, rInUnits);
-                    if (totalMilled > Single.Epsilon && FlatSelected && dir.Z < -Single.Epsilon)
+                    if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
                     {
                         e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
                         IsAnimationRunning = false;
-                        e.Cancel = true;
                         return;
                     }
+
                     cutter.posX += dir.X * distLeft;
                     cutter.posY += dir.Y * distLeft;
                     cutter.posZ -= dir.Z * distLeft;
@@ -420,7 +440,7 @@ public class Simulator3C : INotifyPropertyChanged
                 else
                 {
                     i++;
-                    (sender as BackgroundWorker).ReportProgress((int)((float)i/points.Length*100));
+                    (sender as BackgroundWorker).ReportProgress((int) ((float) i / points.Length * 100));
                     if (i >= points.Length)
                     {
                         cutter.posX = points[^1].XPosInUnits;
@@ -431,7 +451,7 @@ public class Simulator3C : INotifyPropertyChanged
                     }
 
                     block.UpdateHeightMapInPoint(Unswap(currPos), rInUnits);
-                    
+
                     distLeft -= MathM.Distance(currPos, endPos);
                     currPos = startPos = endPos;
                     cutter.posX = currPos.X;
@@ -439,8 +459,13 @@ public class Simulator3C : INotifyPropertyChanged
                     cutter.posZ = -currPos.Z;
 
                     endPos = points[i].GetPosInUnitsYZSwitched();
-                    if(endPos.Z < )
-                    
+                    if (endPos.Y * UnitsToMm < _maxCutterImmersionInMm)
+                    {
+                        e.Result = SimulatorErrorCode.MoveBelowSafeLimit;
+                        IsAnimationRunning = false;
+                        return;
+                    }
+
                     dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
                     lenToNextPoint = MathM.Distance(currPos, endPos);
                     lastXDiffSign = endPos.X - currPos.X > 0;

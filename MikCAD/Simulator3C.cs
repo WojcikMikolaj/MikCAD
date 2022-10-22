@@ -171,9 +171,10 @@ public class Simulator3C : INotifyPropertyChanged
         get => _simulationSpeed;
         set
         {
-            if (value > 0 && value <= 10 && !IsAnimationRunning)
+            if (value > 0 && value <= 5 && !IsAnimationRunning)
             {
                 _simulationSpeed = value;
+                speedInUnitsPerSecond = (float) _simulationSpeed / 5 * maxSpeedInMm * MmToUnits;
             }
         }
     }
@@ -350,6 +351,7 @@ public class Simulator3C : INotifyPropertyChanged
         if (Scene.CurrentScene.ObjectsController.Path is {CuttingLines: {points: { }}})
         {
             _simulator3CControl.MaterialSettings.IsEnabled = false;
+            _simulator3CControl.CutterSettings.IsEnabled = false;
             IsAnimationRunning = true;
 
             cutter = Scene.CurrentScene.ObjectsController.Cutter;
@@ -360,10 +362,11 @@ public class Simulator3C : INotifyPropertyChanged
 
             block = Scene.CurrentScene.ObjectsController.Block;
 
-            speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
+            speedInUnitsPerSecond = (float) _simulationSpeed / 5 * maxSpeedInMm * MmToUnits;
 
             cutterThread = new BackgroundWorker();
             cutterThread.WorkerReportsProgress = true;
+            cutterThread.WorkerSupportsCancellation = true;
             cutterThread.DoWork += (sender, args) => MoveCutter(sender, args, pathPoints);
             cutterThread.ProgressChanged +=
                 (sender, args) => _simulator3CControl.UpdateProgressBar(args.ProgressPercentage);
@@ -384,11 +387,17 @@ public class Simulator3C : INotifyPropertyChanged
                 }
                 IsAnimationRunning = false;
                 _simulator3CControl.MaterialSettings.IsEnabled = true;
+                _simulator3CControl.CutterSettings.IsEnabled = true;
             };
             cutterThread.RunWorkerAsync();
         }
     }
 
+    public void StopSimulation()
+    {
+        cutterThread?.CancelAsync();
+    }
+    
     private void MoveCutter(object sender, DoWorkEventArgs e, CuttingLinePoint[] points)
     {
         int i = 1;
@@ -406,6 +415,13 @@ public class Simulator3C : INotifyPropertyChanged
 
         while (i < points.Length)
         {
+            if (sender is BackgroundWorker b)
+            {
+                if (b.CancellationPending)
+                {
+                    return;
+                }
+            }
             var lenToNextPoint = MathM.Distance(currPos, endPos);
             var distLeft = speedInUnitsPerSecond * dt;
 
@@ -426,7 +442,6 @@ public class Simulator3C : INotifyPropertyChanged
                     if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
                     {
                         e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
-                        IsAnimationRunning = false;
                         return;
                     }
 
@@ -463,7 +478,6 @@ public class Simulator3C : INotifyPropertyChanged
                     if (endPos.Y * UnitsToMm < _maxCutterImmersionInMm)
                     {
                         e.Result = SimulatorErrorCode.MoveBelowSafeLimit;
-                        IsAnimationRunning = false;
                         return;
                     }
 

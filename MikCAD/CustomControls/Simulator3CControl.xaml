@@ -129,7 +129,7 @@
                                FormatString="0.###" />
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Ustawienia narzędzia" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+        <GroupBox x:Name="CutterSettings" Header="Ustawienia narzędzia" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -190,8 +190,15 @@
                 <Label Margin="5,5,5,0">Postęp symulacji</Label>
                 <ProgressBar x:Name="ProgressBar" Margin="5,0,5,5" Height="20"  Minimum="0" Maximum="100"/>
                 <Label Margin="5,0,5,0">Prędkość symulacji</Label>
-                <Slider Margin="5,0,5,5" Minimum="1" Maximum="100" />
+                <Slider Margin="5,0,5,5" 
+                        Minimum="1"
+                        Maximum="5"
+                        TickPlacement="BottomRight"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                           Path=DataContext.SimulationSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Margin="5,5,5,5" Click="ResetBlock">Resetuj materiał</Button>
+                <Button Margin="5,5,5,5" Click="StopSimulation">Zatrzymaj symulację</Button>
             </StackPanel>
         </GroupBox>
         <Expander Header="Debug">

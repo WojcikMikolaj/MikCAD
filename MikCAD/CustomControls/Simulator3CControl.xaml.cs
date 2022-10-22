@@ -75,4 +75,9 @@ public partial class Simulator3CControl : UserControl
     {
         ProgressBar.Value = value;
     }
+
+    private void StopSimulation(object sender, RoutedEventArgs e)
+    {
+        Simulator3C.Simulator.StopSimulation();
+    }
 }

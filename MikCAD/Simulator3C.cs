@@ -349,6 +349,7 @@ public class Simulator3C : INotifyPropertyChanged
     {
         if (Scene.CurrentScene.ObjectsController.Path is {CuttingLines: {points: { }}})
         {
+            _simulator3CControl.MaterialSettings.IsEnabled = false;
             IsAnimationRunning = true;
 
             cutter = Scene.CurrentScene.ObjectsController.Cutter;
@@ -381,8 +382,8 @@ public class Simulator3C : INotifyPropertyChanged
                             break;
                     }
                 }
-
                 IsAnimationRunning = false;
+                _simulator3CControl.MaterialSettings.IsEnabled = true;
             };
             cutterThread.RunWorkerAsync();
         }

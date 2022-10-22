@@ -41,7 +41,7 @@
                 </Grid>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Ustawienia materiału" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+        <GroupBox x:Name="MaterialSettings" Header="Ustawienia materiału" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
                 <Label>Rozmiar siatki</Label>
                 <Grid>

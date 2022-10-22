@@ -443,6 +443,7 @@ public class Block : ParameterizedObject
 
     void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int rX, int rY)
     {
+        float totalMilledMaterial = 0;
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
         float currZ = a.Z;
         float dz = b.Z - a.Z;
@@ -495,7 +496,7 @@ public class Block : ParameterizedObject
             incrNE = 2 * (dx - dy);
         }
 
-        SetZValue(x, y, currZ, rX, rY);
+        totalMilledMaterial+= SetZValue(x, y, currZ, rX, rY);
         //315-45
         if (dx > dy)
         {
@@ -516,7 +517,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
             }
         }
         //270-315
@@ -539,7 +540,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
             }
         }
         //45-90
@@ -562,13 +563,14 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
             }
         }
     }
 
-    private void SetZValue(int x, int y, float z, int rX, int rY, bool circle = false)
+    private float SetZValue(int x, int y, float z, int rX, int rY, bool circle = false)
     {
+        float totalMilledMaterial = 0;
         if (x >= 0
             && x < HeightMapWidth
             && y >= 0
@@ -593,9 +595,10 @@ public class Block : ParameterizedObject
                             newZ = z + ConvertFromTexXToUnitsX(rX) - ConvertFromTexXToUnitsX(
                                                                MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i)) * MathF.Abs(MathF.Abs(i))));
                         }
-
+                        
                         if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
                         {
+                            totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
                             _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
@@ -616,6 +619,7 @@ public class Block : ParameterizedObject
 
                         if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
                         {
+                            totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
                             _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
@@ -632,6 +636,7 @@ public class Block : ParameterizedObject
                         {
                             if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
                             {
+                                totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - z;
                                 _heightMap[(y + i) * HeightMapWidth + x + j] = z;
                             }
                         }
@@ -641,6 +646,8 @@ public class Block : ParameterizedObject
 
             updatedHeightMap = true;
         }
+
+        return totalMilledMaterial;
     }
 
     private float ConvertFromTexXToUnitsX(float value)

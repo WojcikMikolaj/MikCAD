@@ -576,10 +576,10 @@ public class Block : ParameterizedObject
         {
             if (!circle)
             {
-                if (_heightMap[y * HeightMapWidth + x] > z)
-                {
-                    _heightMap[y * HeightMapWidth + x] = z;
-                }
+                // if (_heightMap[y * HeightMapWidth + x] > z)
+                // {
+                //     _heightMap[y * HeightMapWidth + x] = z;
+                // }
 
                 for (int i = -rY + 1; i < rY; i++)
                 {
@@ -590,8 +590,8 @@ public class Block : ParameterizedObject
                         var newZ = z;
                         if (Simulator3C.Simulator.SphericalSelected)
                         {
-                            newZ = z + ConvertFromTexXToUnitsX(
-                                MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i) - rY) * MathF.Abs(MathF.Abs(i) - rY)));
+                            newZ = z + ConvertFromTexXToUnitsX(rX) - ConvertFromTexXToUnitsX(
+                                                               MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i)) * MathF.Abs(MathF.Abs(i))));
                         }
 
                         if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
@@ -610,8 +610,8 @@ public class Block : ParameterizedObject
                         var newZ = z;
                         if (Simulator3C.Simulator.SphericalSelected)
                         {
-                            newZ = z + ConvertFromTexYToUnitsY(
-                                MathF.Sqrt(rX * rX - MathF.Abs(MathF.Abs(j) - rX) * MathF.Abs(MathF.Abs(j) - rX)));
+                            newZ = z + ConvertFromTexYToUnitsY(rY) - ConvertFromTexYToUnitsY(
+                                MathF.Sqrt(rX * rX - MathF.Abs(MathF.Abs(j)) * MathF.Abs(MathF.Abs(j))));
                         }
 
                         if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)

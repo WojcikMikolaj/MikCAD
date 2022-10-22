@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using ComboBox = System.Windows.Controls.ComboBox;
 using MessageBox = System.Windows.Forms.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -47,5 +49,22 @@ public partial class Simulator3CControl : UserControl
     private void ResetBlock(object sender, RoutedEventArgs e)
     {
         Simulator3C.Simulator.ResetBlock();
+    }
+
+    private void ChangeCutter(object sender, SelectionChangedEventArgs e)
+    {
+        if (sender is ComboBox c)
+        {
+            if (c.SelectedIndex == 0)
+            {
+                Simulator3C.Simulator.SphericalSelected = true;
+                Simulator3C.Simulator.FlatSelected = false;
+            }
+            else
+            {
+                Simulator3C.Simulator.SphericalSelected = false;
+                Simulator3C.Simulator.FlatSelected = true;
+            }
+        }
     }
 }

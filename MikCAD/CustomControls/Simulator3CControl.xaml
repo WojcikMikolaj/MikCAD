@@ -135,7 +135,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Typ narzędzia</Label>
-                    <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">
+                    <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" SelectionChanged="ChangeCutter">
                         <ComboBoxItem
                             IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                                       Path=DataContext.SphericalSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">

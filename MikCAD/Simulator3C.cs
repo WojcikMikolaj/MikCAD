@@ -28,11 +28,11 @@ public class Simulator3C : INotifyPropertyChanged
     public float LightPosX { get; set; }
     public float LightPosY { get; set; }
     public float LightPosZ { get; set; }
-    
-    public float ka { get; set; }
-    public float ks { get; set; }
-    public float kd { get; set; }
-    public float m { get; set; }
+
+    public float ka { get; set; } = 0.2f;
+    public float ks { get; set; }= 0.2f;
+    public float kd { get; set; }= 0.5f;
+    public float m { get; set; } = 100;
 
     #endregion
     
@@ -332,7 +332,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     private float maxSpeedInMm = 1f;
     private float MmToUnits = 0.1f;
-    private float dt = 1 / 3.0f;
+    private float dt = 1 / 5.0f;
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
     private Block block;
@@ -340,20 +340,23 @@ public class Simulator3C : INotifyPropertyChanged
 
     public void StartMilling()
     {
-        IsAnimationRunning = true;
+        if (Scene.CurrentScene.ObjectsController.Path is {CuttingLines: {points:{}}})
+        {
+            IsAnimationRunning = true;
 
-        cutter = Scene.CurrentScene.ObjectsController.Cutter;
-        var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
-        cutter.posX = pathPoints[0].XPosInUnits;
-        cutter.posY = pathPoints[0].ZPosInUnits;
-        cutter.posZ = -pathPoints[0].YPosInUnits;
+            cutter = Scene.CurrentScene.ObjectsController.Cutter;
+            var pathPoints = Scene.CurrentScene.ObjectsController.Path.CuttingLines.points;
+            cutter.posX = pathPoints[0].XPosInUnits;
+            cutter.posY = pathPoints[0].ZPosInUnits;
+            cutter.posZ = -pathPoints[0].YPosInUnits;
 
-        block = Scene.CurrentScene.ObjectsController.Block;
+            block = Scene.CurrentScene.ObjectsController.Block;
 
-        speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
+            speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
 
-        cutterThread = new Thread(_ => MoveCutter(pathPoints));
-        cutterThread.Start();
+            cutterThread = new Thread(_ => MoveCutter(pathPoints));
+            cutterThread.Start();
+        }
     }
 
     private void MoveCutter(CuttingLinePoint[] points)

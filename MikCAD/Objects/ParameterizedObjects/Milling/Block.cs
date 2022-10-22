@@ -402,24 +402,31 @@ public class Block : ParameterizedObject
     {
         Vector2 currTexPos = GetTexPos(currPosInUnits);
         Vector2 endTexPos = GetTexPos(endPosInUnits);
-        int rInTex = ConvertXUnitsToTexX(rInUnits);
+        int rXInTex = ConvertXUnitsToTexX(rInUnits);
+        int rYInTex = ConvertYUnitsToTexY(rInUnits);
 
         Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
             ((int) (endTexPos.X), (int) (endTexPos.Y), endPosInUnits.Z),
-            rInTex);
+            rXInTex, rYInTex);
     }
 
     public void UpdateHeightMapInPoint(Vector3 posInUnits, float rInUnits)
     {
         Vector2 posInTex = GetTexPos(posInUnits);
-        int rInTex = ConvertXUnitsToTexX(rInUnits);
+        int rXInTex = ConvertXUnitsToTexX(rInUnits);
+        int rYInTex = ConvertYUnitsToTexY(rInUnits);
         
-        SetZValue((int) (posInTex.X), (int) (posInTex.Y), posInUnits.Z, rInTex, true);
+        SetZValue((int) (posInTex.X), (int) (posInTex.Y), posInUnits.Z, rXInTex, rYInTex, true);
     }
     
     private int ConvertXUnitsToTexX(float rInUnits)
     {
         return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
+    }
+    
+    private int ConvertYUnitsToTexY(float rInUnits)
+    {
+        return (int) (rInUnits * ((HeightMapHeight / 2.0f) / (Simulator3C.Simulator.YGridSizeInUnits / 2.0f)));
     }
 
     private Vector2 GetTexPos(Vector3 currPosInUnits)
@@ -434,7 +441,7 @@ public class Block : ParameterizedObject
         return a.X + dx > 0 && a.X + dx < HeightMapWidth && a.Y + dy > 0 && a.Y + dy < HeightMapHeight;
     }
 
-    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int r)
+    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int rX, int rY)
     {
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
         float currZ = a.Z;
@@ -488,7 +495,7 @@ public class Block : ParameterizedObject
             incrNE = 2 * (dx - dy);
         }
 
-        SetZValue(x, y, currZ, r);
+        SetZValue(x, y, currZ, rX, rY);
         //315-45
         if (dx > dy)
         {
@@ -509,7 +516,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, r);
+                SetZValue(x, y, currZ, rX, rY);
             }
         }
         //270-315
@@ -532,7 +539,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, r);
+                SetZValue(x, y, currZ, rX, rY);
             }
         }
         //45-90
@@ -555,12 +562,12 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                SetZValue(x, y, currZ, r);
+                SetZValue(x, y, currZ, rX, rY);
             }
         }
     }
 
-    private void SetZValue(int x, int y, float z, int r, bool circle = false)
+    private void SetZValue(int x, int y, float z, int rX, int rY, bool circle = false)
     {
         if (x >= 0
             && x < HeightMapWidth
@@ -574,55 +581,51 @@ public class Block : ParameterizedObject
                     _heightMap[y * HeightMapWidth + x] = z;
                 }
 
-                for (int i = -r + 1; i < r; i++)
+                for (int i = -rY + 1; i < rY; i++)
                 {
                     int j = 0;
                     if ((y + i) * HeightMapWidth + x + j > 0
                         && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
                     {
-                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                        var newZ = z;
+                        if (Simulator3C.Simulator.SphericalSelected)
                         {
-                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                            newZ = z + ConvertFromTexXToUnitsX(
+                                MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i) - rY) * MathF.Abs(MathF.Abs(i) - rY)));
+                        }
+
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
+                        {
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
-                    // j = -r+1;
-                    // if ((y + i) * HeightMapWidth + x + j > 0
-                    //     && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                    // {
-                    //     if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    //     {
-                    //         _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    //     }
-                    // }
                 }
 
-                for (int j = -r + 1; j < r; j++)
+                for (int j = -rX + 1; j < rX; j++)
                 {
                     int i = 0;
                     if ((y + i) * HeightMapWidth + x + j > 0
                         && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
                     {
-                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
+                        var newZ = z;
+                        if (Simulator3C.Simulator.SphericalSelected)
                         {
-                            _heightMap[(y + i) * HeightMapWidth + x + j] = z;
+                            newZ = z + ConvertFromTexYToUnitsY(
+                                MathF.Sqrt(rX * rX - MathF.Abs(MathF.Abs(j) - rX) * MathF.Abs(MathF.Abs(j) - rX)));
+                        }
+
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
+                        {
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
-                    // i = -r+1;
-                    // if ((y + i) * HeightMapWidth + x + j > 0
-                    //     && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
-                    // {
-                    //     if (_heightMap[(y + i) * HeightMapWidth + x + j] > z)
-                    //     {
-                    //         _heightMap[(y + i) * HeightMapWidth + x + j] = z;
-                    //     }
-                    // }
                 }
             }
             else
             {
-                for (int i = -r + 1; i < r; i++)
+                for (int i = -rY + 1; i < rY; i++)
                 {
-                    for (int j = -r + 1; j < r; j++)
+                    for (int j = -rX + 1; j < rX; j++)
                     {
                         if ((y + i) * HeightMapWidth + x + j > 0
                             && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
@@ -638,5 +641,15 @@ public class Block : ParameterizedObject
 
             updatedHeightMap = true;
         }
+    }
+
+    private float ConvertFromTexXToUnitsX(float value)
+    {
+        return value * ((Simulator3C.Simulator.XGridSizeInUnits / 2.0f)/(HeightMapWidth / 2.0f));
+    }
+    
+    private float ConvertFromTexYToUnitsY(float value)
+    {
+        return value * ((Simulator3C.Simulator.YGridSizeInUnits / 2.0f)/(HeightMapHeight / 2.0f));
     }
 }

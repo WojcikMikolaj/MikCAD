@@ -35,16 +35,6 @@ void main()
 	FragColor = (1-overrideEnabled) * color + overrideEnabled * overrideColor;
 	if (useTexture>0)
 	{
-
-		vec4 wave = texture(unit_wave, tex_coord);
-		float s11 = wave.x;
-		float s01 = textureOffset(unit_wave, tex_coord, off.xy).x;
-		float s21 = textureOffset(unit_wave, tex_coord, off.zy).x;
-		float s10 = textureOffset(unit_wave, tex_coord, off.yx).x;
-		float s12 = textureOffset(unit_wave, tex_coord, off.yz).x;
-		vec3 va = normalize(vec3(size.xy,s21-s01));
-		vec3 vb = normalize(vec3(size.yx,s12-s10));
-		vec4 bump = vec4( cross(va,vb), s11 );
 		
 		vec3 normal = normalize(vec3(dFdx(texture(texture1, texCoord).r), 1.0f, dFdy(texture(texture1, texCoord).r)));
 		normal.x = dFdx(texture(texture1, texCoord).r);
@@ -64,9 +54,12 @@ void main()
 		FragColor = vec4((LightAmbient * ka + kd * LightColor * diff) * surfaceColor + specular * ks,1);
 		
 		FragColor.w = FragColor.x;
-		FragColor.x = abs(normal.x);
-		FragColor.y = abs(normal.y);
-		FragColor.z = abs(normal.z);
+		FragColor.x = surfaceColor.x;
+		FragColor.y = surfaceColor.y;
+		FragColor.z = surfaceColor.z;
+//		FragColor.x = abs(normal.x);
+//		FragColor.y = abs(normal.y);
+//		FragColor.z = abs(normal.z);
 	}
 	FragColor = (1 - overrideEnabled) * FragColor + overrideEnabled * overrideColor* FragColor;
 }

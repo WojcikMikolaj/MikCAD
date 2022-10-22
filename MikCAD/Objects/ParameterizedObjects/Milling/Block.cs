@@ -357,6 +357,42 @@ public class Block : ParameterizedObject
                 PixelType.Float, HeightMap);
             updatedHeightMap = false;
         }
+
+        if (_updatedRegionOfHeightMap)
+        {
+            GL.TexSubImage2D(TextureTarget.Texture2D,
+                0,
+                _updatedRegion.min.X,
+                _updatedRegion.min.Y,
+                _updatedRegion.max.X - _updatedRegion.min.X+1,
+                _updatedRegion.max.Y - _updatedRegion.min.Y+1,
+                PixelFormat.Red,
+                PixelType.Float,
+                GetSubTexture());
+            _updatedRegionOfHeightMap = false;
+        }
+    }
+
+    private float[] GetSubTexture()
+    {
+        int xSize = _updatedRegion.max.X - _updatedRegion.min.X + 1;
+        int ySize = _updatedRegion.max.Y - _updatedRegion.min.Y + 1;
+        float[] pixels = new float[xSize * ySize];
+        var it = 0;
+        var itt = 0;
+        for (int j = _updatedRegion.min.Y; j < _updatedRegion.max.Y; j++)
+        {
+            itt = 0;
+            for (int i = _updatedRegion.min.X; i < _updatedRegion.max.X; i++)
+            {
+                if(it * xSize + itt < xSize * ySize)
+                    pixels[it * xSize + itt] = _heightMap[j * HeightMapWidth + i];
+                itt++;
+            }
+            it++;
+        }
+
+        return pixels;
     }
 
     private bool updated = false;
@@ -379,6 +415,8 @@ public class Block : ParameterizedObject
 
 
     private float[] _heightMap;
+    private ((int X, int Y) min, (int X, int Y) max) _updatedRegion;
+    private bool _updatedRegionOfHeightMap;
 
     public float[] HeightMap
     {
@@ -415,15 +453,23 @@ public class Block : ParameterizedObject
         Vector2 posInTex = GetTexPos(posInUnits);
         int rXInTex = ConvertXUnitsToTexX(rInUnits);
         int rYInTex = ConvertYUnitsToTexY(rInUnits);
-        
+
         SetZValue((int) (posInTex.X), (int) (posInTex.Y), posInUnits.Z, rXInTex, rYInTex, true);
+        //updatedHeightMap = true;
+
+        _updatedRegionOfHeightMap = true;
+        var minX = Math.Max((int) posInTex.X - rXInTex, 0);
+        var maxX = Math.Min((int) posInTex.X + rXInTex, HeightMapWidth-1);
+        var minY = Math.Max((int) posInTex.Y - rYInTex, 0);
+        var maxY = Math.Min((int) posInTex.Y + rYInTex, HeightMapHeight-1);
+        _updatedRegion = ((minX,minY),(maxX,maxY));
     }
-    
+
     private int ConvertXUnitsToTexX(float rInUnits)
     {
         return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
     }
-    
+
     private int ConvertYUnitsToTexY(float rInUnits)
     {
         return (int) (rInUnits * ((HeightMapHeight / 2.0f) / (Simulator3C.Simulator.YGridSizeInUnits / 2.0f)));
@@ -496,7 +542,7 @@ public class Block : ParameterizedObject
             incrNE = 2 * (dx - dy);
         }
 
-        totalMilledMaterial+= SetZValue(x, y, currZ, rX, rY);
+        totalMilledMaterial += SetZValue(x, y, currZ, rX, rY);
         //315-45
         if (dx > dy)
         {
@@ -517,7 +563,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial += SetZValue(x, y, currZ, rX, rY);
             }
         }
         //270-315
@@ -540,7 +586,7 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial += SetZValue(x, y, currZ, rX, rY);
             }
         }
         //45-90
@@ -563,9 +609,17 @@ public class Block : ParameterizedObject
                 }
 
                 currZ += dz;
-                totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
+                totalMilledMaterial += SetZValue(x, y, currZ, rX, rY);
             }
         }
+
+        //updatedHeightMap = true;
+        _updatedRegionOfHeightMap = true;
+        var minX = Math.Max(Math.Min(a.X, b.X) - rX,0);
+        var maxX = Math.Min(Math.Max(a.X, b.X) + rX, HeightMapWidth-1);
+        var minY = Math.Max(Math.Min(a.Y, b.Y) - rY,0);
+        var maxY = Math.Min(Math.Max(a.Y, b.Y) + rY, HeightMapHeight-1);
+        _updatedRegion = ((minX, minY), (maxX, maxY));
         return totalMilledMaterial;
     }
 
@@ -594,9 +648,9 @@ public class Block : ParameterizedObject
                         if (Simulator3C.Simulator.SphericalSelected)
                         {
                             newZ = z + ConvertFromTexXToUnitsX(rX) - ConvertFromTexXToUnitsX(
-                                                               MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i)) * MathF.Abs(MathF.Abs(i))));
+                                MathF.Sqrt(rY * rY - MathF.Abs(MathF.Abs(i)) * MathF.Abs(MathF.Abs(i))));
                         }
-                        
+
                         if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
                         {
                             totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
@@ -644,8 +698,6 @@ public class Block : ParameterizedObject
                     }
                 }
             }
-
-            updatedHeightMap = true;
         }
 
         return totalMilledMaterial;
@@ -653,11 +705,11 @@ public class Block : ParameterizedObject
 
     private float ConvertFromTexXToUnitsX(float value)
     {
-        return value * ((Simulator3C.Simulator.XGridSizeInUnits / 2.0f)/(HeightMapWidth / 2.0f));
+        return value * ((Simulator3C.Simulator.XGridSizeInUnits / 2.0f) / (HeightMapWidth / 2.0f));
     }
-    
+
     private float ConvertFromTexYToUnitsY(float value)
     {
-        return value * ((Simulator3C.Simulator.YGridSizeInUnits / 2.0f)/(HeightMapHeight / 2.0f));
+        return value * ((Simulator3C.Simulator.YGridSizeInUnits / 2.0f) / (HeightMapHeight / 2.0f));
     }
 }

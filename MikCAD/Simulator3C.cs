@@ -362,7 +362,8 @@ public class Simulator3C : INotifyPropertyChanged
             cutterThread.WorkerReportsProgress = true;
             cutterThread.DoWork += (sender, args) =>  MoveCutter(sender, args, pathPoints);
             cutterThread.ProgressChanged +=
-                (sender, args) => _simulator3CControl.UpdateProgressBar(args.ProgressPercentage); 
+                (sender, args) => _simulator3CControl.UpdateProgressBar(args.ProgressPercentage);
+            cutterThread.RunWorkerCompleted += (sender, args) =>  
             cutterThread.RunWorkerAsync();
         }
     }
@@ -400,7 +401,14 @@ public class Simulator3C : INotifyPropertyChanged
                     && currYDiffSign == lastYDiffSign
                     && currZDiffSign == lastZDiffSign)
                 {
-                    block.UpdateHeightMap(Unswap(currPos), dir, distLeft, rInUnits);
+                    var totalMilled = block.UpdateHeightMap(Unswap(currPos), dir, distLeft, rInUnits);
+                    if (totalMilled > Single.Epsilon && FlatSelected && dir.Z < -Single.Epsilon)
+                    {
+                        e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
+                        IsAnimationRunning = false;
+                        e.Cancel = true;
+                        return;
+                    }
                     cutter.posX += dir.X * distLeft;
                     cutter.posY += dir.Y * distLeft;
                     cutter.posZ -= dir.Z * distLeft;
@@ -431,6 +439,8 @@ public class Simulator3C : INotifyPropertyChanged
                     cutter.posZ = -currPos.Z;
 
                     endPos = points[i].GetPosInUnitsYZSwitched();
+                    if(endPos.Z < )
+                    
                     dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
                     lenToNextPoint = MathM.Distance(currPos, endPos);
                     lastXDiffSign = endPos.X - currPos.X > 0;

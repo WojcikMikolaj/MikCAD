@@ -393,19 +393,19 @@ public class Block : ParameterizedObject
     public int HeightMapWidth { get; set; }
     public int HeightMapHeight { get; set; }
 
-    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft, float rInUnits)
+    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft, float rInUnits)
     {
-        UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft, rInUnits);
+        return UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft, rInUnits);
     }
 
-    public void UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits)
+    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits)
     {
         Vector2 currTexPos = GetTexPos(currPosInUnits);
         Vector2 endTexPos = GetTexPos(endPosInUnits);
         int rXInTex = ConvertXUnitsToTexX(rInUnits);
         int rYInTex = ConvertYUnitsToTexY(rInUnits);
 
-        Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
+        return Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
             ((int) (endTexPos.X), (int) (endTexPos.Y), endPosInUnits.Z),
             rXInTex, rYInTex);
     }
@@ -441,7 +441,7 @@ public class Block : ParameterizedObject
         return a.X + dx > 0 && a.X + dx < HeightMapWidth && a.Y + dy > 0 && a.Y + dy < HeightMapHeight;
     }
 
-    void Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int rX, int rY)
+    float Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, int rX, int rY)
     {
         float totalMilledMaterial = 0;
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
@@ -566,6 +566,7 @@ public class Block : ParameterizedObject
                 totalMilledMaterial+=SetZValue(x, y, currZ, rX, rY);
             }
         }
+        return totalMilledMaterial;
     }
 
     private float SetZValue(int x, int y, float z, int rX, int rY, bool circle = false)

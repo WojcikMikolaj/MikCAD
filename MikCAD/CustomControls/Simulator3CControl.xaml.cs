@@ -17,7 +17,8 @@ public partial class Simulator3CControl : UserControl
 
     public void LoadFile(object sender, RoutedEventArgs e)
     {
-        FileDialog diag = new OpenFileDialog()
+        Simulator3C.Simulator._simulator3CControl = this;
+            FileDialog diag = new OpenFileDialog()
         {
             Filter = "Path files (*.kXX;*.fXX)|*.k**;*.f**"
         };
@@ -32,6 +33,8 @@ public partial class Simulator3CControl : UserControl
                     Simulator3C.Simulator.FileName = "Brak pliku";
                     MessageBox.Show($"Błąd podczas wczytywania pliku\nKod błędu: {result.Item2}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
+                ProgressBar.Value = 0;
             }
             else
             {
@@ -66,5 +69,10 @@ public partial class Simulator3CControl : UserControl
                 Simulator3C.Simulator.FlatSelected = true;
             }
         }
+    }
+
+    public void UpdateProgressBar(int value)
+    {
+        ProgressBar.Value = value;
     }
 }

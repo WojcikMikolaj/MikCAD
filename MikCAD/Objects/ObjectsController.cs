@@ -384,7 +384,7 @@ public class ObjectsController : INotifyPropertyChanged
             }
         }
         
-        if (Simulator3C.Simulator.Enabled && Path is {CuttingLines: {points.Length: > 0}})
+        if (Simulator3C.Simulator.Enabled && Path is {CuttingLines: {points.Length: > 0}} && Simulator3C.Simulator.ShowLines)
         {
             if (Simulator3C.Simulator.IgnoreDepth)
             {

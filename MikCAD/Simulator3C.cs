@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using MikCAD.CustomControls;
 using MikCAD.Objects.ParameterizedObjects.Milling;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
@@ -22,6 +23,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     public bool Enabled { get; set; }
     public bool IgnoreDepth { get; set; }
+    public bool ShowLines { get; set; } = true;
 
     #region Light
     
@@ -336,7 +338,9 @@ public class Simulator3C : INotifyPropertyChanged
     private float speedInUnitsPerSecond = 0;
     private Torus cutter;
     private Block block;
-    private Thread cutterThread;
+    private BackgroundWorker cutterThread;
+
+    public Simulator3CControl _simulator3CControl; 
 
     public void StartMilling()
     {
@@ -354,12 +358,16 @@ public class Simulator3C : INotifyPropertyChanged
 
             speedInUnitsPerSecond = (float) _simulationSpeed / 10 * maxSpeedInMm * MmToUnits;
 
-            cutterThread = new Thread(_ => MoveCutter(pathPoints));
-            cutterThread.Start();
+            cutterThread = new BackgroundWorker();
+            cutterThread.WorkerReportsProgress = true;
+            cutterThread.DoWork += (sender, args) =>  MoveCutter(sender, args, pathPoints);
+            cutterThread.ProgressChanged +=
+                (sender, args) => _simulator3CControl.UpdateProgressBar(args.ProgressPercentage); 
+            cutterThread.RunWorkerAsync();
         }
     }
 
-    private void MoveCutter(CuttingLinePoint[] points)
+    private void MoveCutter(object sender,DoWorkEventArgs e, CuttingLinePoint[] points)
     {
         int i = 1;
         var startPos = new Vector3(points[0].GetPosInUnitsYZSwitched());
@@ -404,6 +412,7 @@ public class Simulator3C : INotifyPropertyChanged
                 else
                 {
                     i++;
+                    (sender as BackgroundWorker).ReportProgress((int)((float)i/points.Length*100));
                     if (i >= points.Length)
                     {
                         cutter.posX = points[^1].XPosInUnits;

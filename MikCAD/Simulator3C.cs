@@ -423,8 +423,11 @@ public class Simulator3C : INotifyPropertyChanged
         var lastYDiffSign = endPos.Y - startPos.Y > 0;
         var lastZDiffSign = endPos.Z - startPos.Z > 0;
 
-        float rInUnits = (CutterDiameterInMm / 2 * 0.1f);
+        float rInUnits = ((float)CutterDiameterInMm / 2 * 0.1f);
 
+        block.CalculateSimulationParams(rInUnits);
+        bool first = true;
+        
         while (i < points.Length)
         {
             if (sender is BackgroundWorker b)
@@ -511,13 +514,13 @@ public class Simulator3C : INotifyPropertyChanged
             }
             else
             {
-                var totalMilled = block.UpdateHeightMap(Unswap(currPos), Unswap(endPos), rInUnits, _skipVisualisation);
+                var totalMilled = block.UpdateHeightMap(currPos, endPos, rInUnits, _skipVisualisation);
                 if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
                 {
                     e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
                     return;
                 }
-                block.UpdateHeightMapInPoint(Unswap(endPos), rInUnits, _skipVisualisation);
+                block.UpdateHeightMapInPoint(endPos, rInUnits, _skipVisualisation);
                 i++;
                 (sender as BackgroundWorker).ReportProgress((int) ((float) i / points.Length * 100));
                 if (i >= points.Length)
@@ -531,6 +534,7 @@ public class Simulator3C : INotifyPropertyChanged
 
                 currPos = endPos;
                 endPos = points[i].GetPosInUnitsYZSwitched();
+                first = false;
             }
         }
     }

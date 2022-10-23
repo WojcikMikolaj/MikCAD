@@ -180,12 +180,12 @@
                         <RowDefinition Height="5px" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0" Click="LoadFile">Wczytaj plik</Button>
+                    <Button x:Name="LoadFileButton" Grid.Row="0" Grid.Column="0" Click="LoadFile">Wczytaj plik</Button>
                     <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center"
                            Content="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                            Path=DataContext.FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Grid.Row="2" Grid.Column="0" Click="StartMilling">Start</Button>
-                    <Button Grid.Row="2" Grid.Column="2">Przewiń</Button>
+                    <Button x:Name="StartMillingButton" Grid.Row="2" Grid.Column="0" Click="StartMilling">Start</Button>
+                    <Button Grid.Row="2" Grid.Column="2" Click="SkipMilling">Przewiń</Button>
                 </Grid>
                 <Label Margin="5,5,5,0">Postęp symulacji</Label>
                 <ProgressBar x:Name="ProgressBar" Margin="5,0,5,5" Height="20"  Minimum="0" Maximum="100"/>
@@ -197,7 +197,7 @@
                         IsSnapToTickEnabled="True"
                         Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                            Path=DataContext.SimulationSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Margin="5,5,5,5" Click="ResetBlock">Resetuj materiał</Button>
+                <Button x:Name="ResetBlockButton" Margin="5,5,5,5" Click="ResetBlock">Resetuj materiał</Button>
                 <Button Margin="5,5,5,5" Click="StopSimulation">Zatrzymaj symulację</Button>
             </StackPanel>
         </GroupBox>

@@ -80,4 +80,9 @@ public partial class Simulator3CControl : UserControl
     {
         Simulator3C.Simulator.StopSimulation();
     }
+
+    private void SkipMilling(object sender, RoutedEventArgs e)
+    {
+        Simulator3C.Simulator.SkipMilling();
+    }
 }

@@ -390,6 +390,7 @@ public class Block : ParameterizedObject
                 pixels[it * xSize + itt] = _heightMap[j * HeightMapWidth + i];
                 itt++;
             }
+
             it++;
         }
 
@@ -432,31 +433,26 @@ public class Block : ParameterizedObject
     public int HeightMapWidth { get; set; }
     public int HeightMapHeight { get; set; }
 
-    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft, float rInUnits,
-        bool skipTextureUpdate)
-    {
-        return UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft, rInUnits, skipTextureUpdate);
-    }
-
     private float _rInUnits = 0;
 
-    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits, float rInUnits, bool skipTextureUpdate)
+    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 dirInUnits, float distLeft,
+        bool skipTextureUpdate)
+    {
+        return UpdateHeightMap(currPosInUnits, currPosInUnits + dirInUnits * distLeft, skipTextureUpdate);
+    }
+
+    public float UpdateHeightMap(Vector3 currPosInUnits, Vector3 endPosInUnits, bool skipTextureUpdate)
     {
         Vector2 currTexPos = GetTexPos(currPosInUnits);
         Vector2 endTexPos = GetTexPos(endPosInUnits);
-        int rXInTex = ConvertXUnitsToTexX(rInUnits);
-        int rYInTex = ConvertYUnitsToTexY(rInUnits);
-        _rInUnits = rInUnits;
 
         return Line(((int) (currTexPos.X), (int) (currTexPos.Y), currPosInUnits.Z),
             ((int) (endTexPos.X), (int) (endTexPos.Y), endPosInUnits.Z), skipTextureUpdate);
     }
 
-    public void UpdateHeightMapInPoint(Vector3 posInUnits, float rInUnits, bool skipTextureUpdate)
+    public void UpdateHeightMapInPoint(Vector3 posInUnits, bool skipTextureUpdate)
     {
         Vector2 posInTex = GetTexPos(posInUnits);
-        
-        _rInUnits = rInUnits;
 
         var milledAmount = SetZValue((int) (posInTex.X), (int) (posInTex.Y), posInUnits.Z, true);
         //updatedHeightMap = true;
@@ -475,20 +471,11 @@ public class Block : ParameterizedObject
         }
     }
 
-    private int ConvertXUnitsToTexX(float rInUnits)
-    {
-        return (int) (rInUnits * ((HeightMapWidth / 2.0f) / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
-    }
-
-    private int ConvertYUnitsToTexY(float rInUnits)
-    {
-        return (int) (rInUnits * ((HeightMapHeight / 2.0f) / (Simulator3C.Simulator.YGridSizeInUnits / 2.0f)));
-    }
 
     private Vector2 GetTexPos(Vector3 currPosInUnits)
     {
-        var xTex = (HeightMapWidth / 2.0f * (1 + currPosInUnits.X / (Simulator3C.Simulator.XGridSizeInUnits / 2.0f)));
-        var yTex = (HeightMapHeight / 2.0f * (1 + currPosInUnits.Y / (Simulator3C.Simulator.YGridSizeInUnits / 2.0f)));
+        var xTex = HeightMapWidth * (0.5f + currPosInUnits.X / Simulator3C.Simulator.XGridSizeInUnits);
+        var yTex = HeightMapHeight * (0.5f + currPosInUnits.Y / Simulator3C.Simulator.YGridSizeInUnits);
         return new Vector2(xTex, yTex);
     }
 
@@ -500,9 +487,11 @@ public class Block : ParameterizedObject
     float Line((int X, int Y, float Z) a, (int X, int Y, float Z) b, bool skipTextureUpdate)
     {
         float totalMilledMaterial = 0;
+
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
         float currZ = a.Z;
         float dz = b.Z - a.Z;
+
         //podział wzdłuż OY
         if (b.X < a.X)
         {
@@ -644,81 +633,73 @@ public class Block : ParameterizedObject
     private float SetZValue(int x, int y, float z, bool circle = false)
     {
         float totalMilledMaterial = 0;
-        if (x >= 0
-            && x < HeightMapWidth
-            && y >= 0
-            && y < HeightMapHeight)
+
+        if (!circle)
         {
-            if (!circle)
+            int it = 0;
+            for (int i = -_rY + 1; i < _rY; i++)
             {
-                int it = 0;
-                for (int i = -_rY + 1; i < _rY; i++)
+                int j = 0;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
                 {
-                    int j = 0;
-                    if ((y + i) * HeightMapWidth + x + j > 0
-                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    var newZ = z;
+                    if (Simulator3C.Simulator.SphericalSelected)
                     {
-                        var newZ = z;
-                        if (Simulator3C.Simulator.SphericalSelected)
-                        {
-                            // newZ = z + ConvertFromTexXToUnitsX(_rX) - ConvertFromTexXToUnitsX(
-                                // MathF.Sqrt(_rY * _rY - MathF.Abs(MathF.Abs(i)) * MathF.Abs(MathF.Abs(i))));
-                                newZ = z + _yZArray[it++];
-                        }
-
-                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
-                        {
-                            totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
-                            _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
-                        }
+                        newZ = z + _yZArray[it++];
                     }
-                }
 
-                it = 0;
-                for (int j = -_rX + 1; j < _rX; j++)
-                {
-                    int i = 0;
-                    if ((y + i) * HeightMapWidth + x + j > 0
-                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
                     {
-                        var newZ = z;
-                        if (Simulator3C.Simulator.SphericalSelected)
-                        {
-                            // newZ = z + ConvertFromTexYToUnitsY(_rY) - ConvertFromTexYToUnitsY(
-                            //     MathF.Sqrt(_rX * _rX - j * j));
-                            newZ = z + _xZArray[it++];
-                        }
-
-                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
-                        {
-                            totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
-                            _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
-                        }
+                        totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                     }
                 }
             }
-            else
-            {
-                for (int i = -_rY + 1; i < _rY; i++)
-                {
-                    for (int j = -_rX + 1; j < _rX; j++)
-                    {
-                        //var newZ = GetZForYXInTex(i, j, y, x, z);
-                        var newZ = z;
 
-                        if ((y + i) * HeightMapWidth + x + j > 0
-                            && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+            it = 0;
+            for (int j = -_rX + 1; j < _rX; j++)
+            {
+                int i = 0;
+                if ((y + i) * HeightMapWidth + x + j > 0
+                    && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                {
+                    var newZ = z;
+                    if (Simulator3C.Simulator.SphericalSelected)
+                    {
+                        newZ = z + _xZArray[it++];
+                    }
+
+                    if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
+                    {
+                        totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
+                        _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (int i = -_rY + 1; i < _rY; i++)
+            {
+                for (int j = -_rX + 1; j < _rX; j++)
+                {
+                    //var newZ = GetZForYXInTex(i, j, y, x, z);
+                    var newZ = z;
+
+                    if ((y + i) * HeightMapWidth + x + j > 0
+                        && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
+                    {
+                        if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
                         {
-                            if (_heightMap[(y + i) * HeightMapWidth + x + j] > newZ)
-                            {
-                                totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
-                                _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
-                            }
+                            totalMilledMaterial += _heightMap[(y + i) * HeightMapWidth + x + j] - newZ;
+                            _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
                 }
             }
         }
+
 
         return totalMilledMaterial;
     }
@@ -731,7 +712,7 @@ public class Block : ParameterizedObject
         var unitCenterX = ConvertFromTexXToUnitsX(centerX);
 
         if ((unitPosX - unitCenterX) * (unitPosX - unitCenterX) + (unitPosY - unitCenterY) * (unitPosY - unitCenterY) -
-            (_rInUnits+2) * (_rInUnits+2) < Single.Epsilon)
+            (_rInUnits + 2) * (_rInUnits + 2) < Single.Epsilon)
         {
             // if (Simulator3C.Simulator.SphericalSelected)
             // {
@@ -750,14 +731,24 @@ public class Block : ParameterizedObject
         }
     }
 
+    private int ConvertXUnitsToTexX(float rInUnits)
+    {
+        return (int) (rInUnits * (HeightMapWidth / (float) Simulator3C.Simulator.XGridSizeInUnits));
+    }
+
+    private int ConvertYUnitsToTexY(float rInUnits)
+    {
+        return (int) (rInUnits * (HeightMapHeight / (float) Simulator3C.Simulator.YGridSizeInUnits));
+    }
+
     private float ConvertFromTexXToUnitsX(float value)
     {
-        return value * ((Simulator3C.Simulator.XGridSizeInUnits / 2.0f) / (HeightMapWidth / 2.0f));
+        return value * (Simulator3C.Simulator.XGridSizeInUnits / (float) HeightMapWidth);
     }
 
     private float ConvertFromTexYToUnitsY(float value)
     {
-        return value * ((Simulator3C.Simulator.YGridSizeInUnits / 2.0f) / (HeightMapHeight / 2.0f));
+        return value * (Simulator3C.Simulator.YGridSizeInUnits / (float) HeightMapHeight);
     }
 
     public void UpdateTexture()
@@ -771,20 +762,24 @@ public class Block : ParameterizedObject
 
     public void CalculateSimulationParams(float rInUnits)
     {
+        _rInUnits = rInUnits;
         _rX = ConvertXUnitsToTexX(rInUnits);
         _rY = ConvertYUnitsToTexY(rInUnits);
 
-        _yZArray = new float[(_rY-1)*2+1];
+        _yZArray = new float[(_rY - 1) * 2 + 1];
         int it = 0;
         for (int i = -_rY + 1; i < _rY; i++)
         {
-            _yZArray[it++] = ConvertFromTexXToUnitsX(_rX) - ConvertFromTexXToUnitsX(MathF.Sqrt(_rY * _rY -i * i));
+            _yZArray[it++] = ConvertFromTexXToUnitsX(_rX) - ConvertFromTexXToUnitsX(MathF.Sqrt(_rY * _rY - i * i));
+            //_yZArray[it++] = ConvertXUnitsToTexX(0.5f*(1.0f/_rY * i*i));
         }
-        _xZArray = new float[(_rY-1)*2+1];
+
+        _xZArray = new float[(_rX - 1) * 2 + 1];
         it = 0;
         for (int i = -_rX + 1; i < _rX; i++)
         {
             _xZArray[it++] = ConvertFromTexYToUnitsY(_rY) - ConvertFromTexYToUnitsY(MathF.Sqrt(_rX * _rX - i * i));
+            //_xZArray[it++] = ConvertYUnitsToTexY(0.5f*(1.0f/_rX * i*i));
         }
     }
 }

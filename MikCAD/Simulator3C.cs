@@ -412,36 +412,33 @@ public class Simulator3C : INotifyPropertyChanged
 
     private void MoveCutter(object sender, DoWorkEventArgs e, CuttingLinePoint[] points)
     {
-        int i = 1;
-        var startPos = new Vector3(points[0].GetPosInUnitsYZSwitched());
-        var currPos = cutter.pos;
-        currPos.Z = -currPos.Z;
-        var endPos = new Vector3(points[1].GetPosInUnitsYZSwitched());
-        var dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z).Normalized();
+        int nextPointId = 1;
+        var startPos = points[0].ToVector3();
+        var endPos = points[1].ToVector3();
+        var currPos = startPos;
 
-        var lastXDiffSign = endPos.X - startPos.X > 0;
-        var lastYDiffSign = endPos.Y - startPos.Y > 0;
-        var lastZDiffSign = endPos.Z - startPos.Z > 0;
+        var dir = (endPos - startPos).Normalized();
 
-        float rInUnits = ((float)CutterDiameterInMm / 2 * 0.1f);
+        var lastXDiffSign = dir.X > 0;
+        var lastYDiffSign = dir.Y > 0;
+        var lastZDiffSign = dir.Z > 0;
+
+        float rInUnits = ((float) CutterDiameterInMm / 2 * 0.1f);
 
         block.CalculateSimulationParams(rInUnits);
-        bool first = true;
-        
-        while (i < points.Length)
+
+        while (nextPointId < points.Length)
         {
-            if (sender is BackgroundWorker b)
+            if (sender is BackgroundWorker {CancellationPending: true})
             {
-                if (b.CancellationPending)
-                {
-                    return;
-                }
+                return;
             }
 
             if (!_skipVisualisation)
             {
                 var lenToNextPoint = MathM.Distance(currPos, endPos);
                 var distLeft = speedInUnitsPerSecond * dt;
+
                 while (distLeft > Single.Epsilon)
                 {
                     var currXDiffSign = endPos.X - currPos.X > 0;
@@ -456,87 +453,85 @@ public class Simulator3C : INotifyPropertyChanged
                     {
                         float totalMilled = 0.0f;
 
-                        totalMilled = block.UpdateHeightMap(Unswap(currPos), dir, distLeft, rInUnits,
-                            _skipVisualisation);
+                        totalMilled = block.UpdateHeightMap(currPos, dir, distLeft, _skipVisualisation);
 
-
-                        if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
+                        if (totalMilled > Single.Epsilon && FlatSelected && dir.Z < -Single.Epsilon)
                         {
                             e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
                             return;
                         }
 
-                        cutter.posX += dir.X * distLeft;
-                        cutter.posY += dir.Y * distLeft;
-                        cutter.posZ -= dir.Z * distLeft;
-                        currPos = cutter.pos;
-                        currPos.Z = -currPos.Z;
-                        //Trace.WriteLine(currPos);
+                        currPos += dir * distLeft;
+                        UpdateCutterPosition(currPos);
                         break;
                     }
                     else
                     {
-                        i++;
-                        (sender as BackgroundWorker).ReportProgress((int) ((float) i / points.Length * 100));
-                        if (i >= points.Length)
+                        nextPointId++;
+                        (sender as BackgroundWorker).ReportProgress((int) ((float) nextPointId / points.Length * 100));
+                        if (nextPointId >= points.Length)
                         {
-                            cutter.posX = points[^1].XPosInUnits;
-                            cutter.posY = points[^1].ZPosInUnits;
-                            cutter.posZ = -points[^1].YPosInUnits;
-                            IsAnimationRunning = false;
+                            UpdateCutterPosition(points[^1].ToVector3());
                             return;
                         }
 
-                        block.UpdateHeightMapInPoint(Unswap(currPos), rInUnits, _skipVisualisation);
+                        var dystansDoPunktu = MathM.Distance(currPos, endPos);
+                        block.UpdateHeightMap(currPos, dir, dystansDoPunktu, _skipVisualisation);
+                        block.UpdateHeightMapInPoint(endPos, _skipVisualisation);
 
-                        distLeft -= MathM.Distance(currPos, endPos);
+                        distLeft -= dystansDoPunktu;
+
                         currPos = startPos = endPos;
-                        cutter.posX = currPos.X;
-                        cutter.posY = currPos.Y;
-                        cutter.posZ = -currPos.Z;
+                        endPos = points[nextPointId].ToVector3();
+                        UpdateCutterPosition(currPos);
 
-                        endPos = points[i].GetPosInUnitsYZSwitched();
-                        if (endPos.Y * UnitsToMm < _maxCutterImmersionInMm)
+                        if (endPos.Z * UnitsToMm < _maxCutterImmersionInMm)
                         {
                             e.Result = SimulatorErrorCode.MoveBelowSafeLimit;
                             return;
                         }
 
-                        dir = new Vector3(endPos.X - startPos.X, endPos.Y - startPos.Y, endPos.Z - startPos.Z)
-                            .Normalized();
+                        dir = (endPos - startPos).Normalized();
+
                         lenToNextPoint = MathM.Distance(currPos, endPos);
-                        lastXDiffSign = endPos.X - currPos.X > 0;
-                        lastYDiffSign = endPos.Y - currPos.Y > 0;
-                        lastZDiffSign = endPos.Z - currPos.Z > 0;
+                        lastXDiffSign = dir.X > 0;
+                        lastYDiffSign = dir.Y > 0;
+                        lastZDiffSign = dir.Z > 0;
                     }
                 }
+
                 Task.Delay(TimeSpan.FromSeconds(dt / _waitTime));
             }
             else
             {
-                var totalMilled = block.UpdateHeightMap(currPos, endPos, rInUnits, _skipVisualisation);
+                var totalMilled = block.UpdateHeightMap(currPos, endPos, _skipVisualisation);
                 if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
                 {
                     e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
                     return;
                 }
-                block.UpdateHeightMapInPoint(endPos, rInUnits, _skipVisualisation);
-                i++;
-                (sender as BackgroundWorker).ReportProgress((int) ((float) i / points.Length * 100));
-                if (i >= points.Length)
+
+                block.UpdateHeightMapInPoint(endPos, _skipVisualisation);
+
+                nextPointId++;
+                (sender as BackgroundWorker).ReportProgress((int) ((float) nextPointId / points.Length * 100));
+                if (nextPointId >= points.Length)
                 {
-                    cutter.posX = points[^1].XPosInUnits;
-                    cutter.posY = points[^1].ZPosInUnits;
-                    cutter.posZ = -points[^1].YPosInUnits;
-                    IsAnimationRunning = false;
+                    UpdateCutterPosition(points[^1].ToVector3());
                     return;
                 }
 
                 currPos = endPos;
-                endPos = points[i].GetPosInUnitsYZSwitched();
-                first = false;
+                endPos = points[nextPointId].ToVector3();
             }
         }
+    }
+
+    private void UpdateCutterPosition(Vector3 position)
+    {
+        cutter.posX = position.X;
+        cutter.posY = position.Y;
+        cutter.posZ = position.Z;
     }
 
     private Vector3 Unswap(Vector3 currPos)

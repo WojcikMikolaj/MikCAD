@@ -28,6 +28,11 @@ public struct CuttingLinePoint
     {
         return (XPosInUnits, ZPosInUnits, YPosInUnits);
     }
+
+    public Vector3 ToVector3()
+    {
+        return new Vector3(XPosInUnits, YPosInUnits,ZPosInUnits);
+    }
 }
 
 public class CuttingLines

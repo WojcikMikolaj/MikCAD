@@ -530,8 +530,8 @@ public class Simulator3C : INotifyPropertyChanged
     private void UpdateCutterPosition(Vector3 position)
     {
         cutter.posX = position.X;
-        cutter.posY = position.Y;
-        cutter.posZ = position.Z;
+        cutter.posY = position.Z;
+        cutter.posZ = -position.Y;
     }
 
     private Vector3 Unswap(Vector3 currPos)

@@ -463,10 +463,10 @@ public class Block : ParameterizedObject
                 _updatedRegionOfHeightMap = true;
             }
 
-            var minX = Math.Max((int) posInTex.X - _rX, 0);
-            var maxX = Math.Min((int) posInTex.X + _rX, HeightMapWidth - 1);
-            var minY = Math.Max((int) posInTex.Y - _rY, 0);
-            var maxY = Math.Min((int) posInTex.Y + _rY, HeightMapHeight - 1);
+            var minX = Math.Min(Math.Max((int) posInTex.X - _rX, 0), HeightMapWidth -1);
+            var maxX = Math.Max(Math.Min((int) posInTex.X + _rX, HeightMapWidth - 1), 0);
+            var minY = Math.Min(Math.Max((int) posInTex.Y - _rY, 0), HeightMapHeight -1);
+            var maxY = Math.Max(Math.Min((int) posInTex.Y + _rY, HeightMapHeight - 1),0);
             _updatedRegion = ((minX, minY), (maxX, maxY));
         }
     }
@@ -620,10 +620,10 @@ public class Block : ParameterizedObject
                 _updatedRegionOfHeightMap = true;
             }
 
-            var minX = Math.Max(Math.Min(a.X, b.X) - _rX, 0);
-            var maxX = Math.Min(Math.Max(a.X, b.X) + _rX, HeightMapWidth - 1);
-            var minY = Math.Max(Math.Min(a.Y, b.Y) - _rY, 0);
-            var maxY = Math.Min(Math.Max(a.Y, b.Y) + _rY, HeightMapHeight - 1);
+            var minX = Math.Min(Math.Max(Math.Min(a.X, b.X) - _rX, 0), HeightMapWidth -1);
+            var maxX = Math.Max(Math.Min(Math.Max(a.X, b.X) + _rX, HeightMapWidth - 1), 0);
+            var minY = Math.Min(Math.Max(Math.Min(a.Y, b.Y) - _rY, 0), HeightMapHeight -1);
+            var maxY = Math.Max(Math.Min(Math.Max(a.Y, b.Y) + _rY, HeightMapHeight - 1),0);
             _updatedRegion = ((minX, minY), (maxX, maxY));
         }
 

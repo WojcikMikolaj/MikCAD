@@ -52,8 +52,8 @@ public class Block : ParameterizedObject
         }
     }
 
-    public uint XVerticesCount => 1024;
-    public uint YVerticesCount => 1024;
+    public uint XVerticesCount => 512;
+    public uint YVerticesCount => 512;
 
     private TexPoint[] _vertices;
     private uint[] _vertIndices;
@@ -490,7 +490,7 @@ public class Block : ParameterizedObject
 
         int x1 = 0, x2 = 02, y1 = 0, y2 = 0, dx = 0, dy = 0, d = 0, incrE = 0, incrNE = 0, x = 0, y = 0, incrY = 0;
         float currZ = a.Z;
-        float dz = b.Z - a.Z;
+        float dz = (b.Z - a.Z) / MathM.Length(a,b);
 
         //podział wzdłuż OY
         if (b.X < a.X)

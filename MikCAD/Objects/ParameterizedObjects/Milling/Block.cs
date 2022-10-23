@@ -680,12 +680,15 @@ public class Block : ParameterizedObject
         }
         else
         {
+            var itt = 0;
             for (int i = -_rY + 1; i < _rY; i++)
             {
+                var it = 0; 
                 for (int j = -_rX + 1; j < _rX; j++)
                 {
                     //var newZ = GetZForYXInTex(i, j, y, x, z);
-                    var newZ = z;
+                    //var newZ = z;
+                    var newZ = z + _xyZArray[it, itt];
 
                     if ((y + i) * HeightMapWidth + x + j > 0
                         && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)
@@ -696,7 +699,11 @@ public class Block : ParameterizedObject
                             _heightMap[(y + i) * HeightMapWidth + x + j] = newZ;
                         }
                     }
+
+                    it++;
                 }
+
+                itt++;
             }
         }
 
@@ -759,6 +766,7 @@ public class Block : ParameterizedObject
     private int _rX, _rY;
     private float[] _yZArray;
     private float[] _xZArray;
+    private float[,] _xyZArray;
 
     public void CalculateSimulationParams(float rInUnits)
     {
@@ -770,16 +778,29 @@ public class Block : ParameterizedObject
         int it = 0;
         for (int i = -_rY + 1; i < _rY; i++)
         {
-            _yZArray[it++] = ConvertFromTexXToUnitsX(_rX) - ConvertFromTexXToUnitsX(MathF.Sqrt(_rY * _rY - i * i));
-            //_yZArray[it++] = ConvertXUnitsToTexX(0.5f*(1.0f/_rY * i*i));
+            //_yZArray[it++] = ConvertFromTexXToUnitsX(_rX) - ConvertFromTexXToUnitsX(MathF.Sqrt(_rY * _rY - i * i));
+            _yZArray[it++] = (0.5f*(1.0f/_rInUnits * ConvertFromTexXToUnitsX(i)*ConvertFromTexXToUnitsX(i)));
         }
 
         _xZArray = new float[(_rX - 1) * 2 + 1];
         it = 0;
         for (int i = -_rX + 1; i < _rX; i++)
         {
-            _xZArray[it++] = ConvertFromTexYToUnitsY(_rY) - ConvertFromTexYToUnitsY(MathF.Sqrt(_rX * _rX - i * i));
-            //_xZArray[it++] = ConvertYUnitsToTexY(0.5f*(1.0f/_rX * i*i));
+            //_xZArray[it++] = ConvertFromTexYToUnitsY(_rY) - ConvertFromTexYToUnitsY(MathF.Sqrt(_rX * _rX - i * i));
+            _xZArray[it++] = 0.5f*(1.0f/_rInUnits * ConvertFromTexYToUnitsY(i)*ConvertFromTexYToUnitsY(i));
+        }
+
+        _xyZArray = new float[(_rX - 1) * 2 + 1, (_rY - 1) * 2 + 1];
+        it = 0;
+        for (int i = -_rX + 1; i < _rX; i++)
+        {
+            var itt = 0;
+            for (int j = -_rY + 1; j < _rY; j++)
+            {
+                _xyZArray[it, itt] = _xZArray[it] + _yZArray[itt];
+                itt++;
+            }
+            it++;
         }
     }
 }

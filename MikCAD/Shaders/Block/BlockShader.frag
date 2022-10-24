@@ -34,7 +34,7 @@ const ivec3 off = ivec3(-1, 0, 1);
 
 vec3 NormalMapping(vec3 normal)
 {
-    return mul(transpose(mat3(vec3(1,0,0), vec3(0,0,-1), vec3(0,1,0))), normal);
+    return transpose(mat3(vec3(1,0,0), vec3(0,0,-1), vec3(0,1,0))) * normal;
 }
 
 void main()

@@ -465,7 +465,7 @@ public class Simulator3C : INotifyPropertyChanged
 
                         totalMilled = block.UpdateHeightMap(currPos, dir, distLeft, _skipVisualisation);
 
-                        if (totalMilled > Single.Epsilon && FlatSelected && dir.Z < -Single.Epsilon)
+                        if (!IgnoreErrors && totalMilled > Single.Epsilon && FlatSelected && dir.Z < -Single.Epsilon)
                         {
                             e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
                             return;
@@ -495,7 +495,7 @@ public class Simulator3C : INotifyPropertyChanged
                         endPos = points[nextPointId].ToVector3();
                         UpdateCutterPosition(currPos);
 
-                        if (endPos.Z * UnitsToMm < _maxCutterImmersionInMm)
+                        if (!IgnoreErrors && endPos.Z * UnitsToMm < _maxCutterImmersionInMm)
                         {
                             e.Result = SimulatorErrorCode.MoveBelowSafeLimit;
                             return;
@@ -515,9 +515,15 @@ public class Simulator3C : INotifyPropertyChanged
             else
             {
                 var totalMilled = block.UpdateHeightMap(currPos, endPos, _skipVisualisation);
-                if (totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
+                if (!IgnoreErrors && totalMilled > Single.Epsilon && FlatSelected && dir.Y < -Single.Epsilon)
                 {
                     e.Result = SimulatorErrorCode.FlatHeadMoveDownWhileMilling;
+                    return;
+                }
+                
+                if (!IgnoreErrors && endPos.Z * UnitsToMm < _maxCutterImmersionInMm)
+                {
+                    e.Result = SimulatorErrorCode.MoveBelowSafeLimit;
                     return;
                 }
 

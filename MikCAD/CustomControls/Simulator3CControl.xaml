@@ -41,7 +41,8 @@
                 </Grid>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="MaterialSettings" Header="Ustawienia materiału" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+        <GroupBox x:Name="MaterialSettings" Header="Ustawienia materiału"
+                  IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
                 <Label>Rozmiar siatki</Label>
                 <Grid>
@@ -129,7 +130,8 @@
                                FormatString="0.###" />
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="CutterSettings" Header="Ustawienia narzędzia" IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
+        <GroupBox x:Name="CutterSettings" Header="Ustawienia narzędzia"
+                  IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -141,7 +143,8 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Typ narzędzia</Label>
-                    <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" SelectionChanged="ChangeCutter">
+                    <ComboBox Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center"
+                              SelectionChanged="ChangeCutter">
                         <ComboBoxItem
                             IsSelected="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                                       Path=DataContext.SphericalSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -188,82 +191,150 @@
                     <Button Grid.Row="2" Grid.Column="2" Click="SkipMilling">Przewiń</Button>
                 </Grid>
                 <Label Margin="5,5,5,0">Postęp symulacji</Label>
-                <ProgressBar x:Name="ProgressBar" Margin="5,0,5,5" Height="20"  Minimum="0" Maximum="100"/>
+                <ProgressBar x:Name="ProgressBar" Margin="5,0,5,5" Height="20" Minimum="0" Maximum="100" />
                 <Label Margin="5,0,5,0">Prędkość symulacji</Label>
-                <Slider Margin="5,0,5,5" 
+                <Slider Margin="5,0,5,5"
                         Minimum="1"
                         Maximum="5"
                         TickPlacement="BottomRight"
                         IsSnapToTickEnabled="True"
                         Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                           Path=DataContext.SimulationSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                           Path=DataContext.SimulationSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Button x:Name="ResetBlockButton" Margin="5,5,5,5" Click="ResetBlock">Resetuj materiał</Button>
                 <Button Margin="5,5,5,5" Click="StopSimulation">Zatrzymaj symulację</Button>
             </StackPanel>
         </GroupBox>
         <Expander Header="Debug">
-            <GroupBox Header="Light">
-                <StackPanel>
-                    <Label>Light position</Label>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <n:FloatUpDown Grid.Column="0"
-                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+            <ScrollViewer HorizontalScrollBarVisibility="Hidden" CanContentScroll="True" VerticalScrollBarVisibility="Visible">
+                <GroupBox Header="Light">
+                    <StackPanel>
+                        <CheckBox Margin="5,5,5,5" x:Name="normalsCheckBox"
+                                  IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}"
+                                  IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.ShowNormals, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Pokaż normalki</CheckBox>
+                        <CheckBox Margin="5,5,5,5" x:Name="ignoreErrorsCheckBox"
+                                  IsEnabled="{Binding ElementName=simulatorCheckBox, Path=IsChecked}"
+                                  IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.IgnoreErrors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Ignoruj błędy</CheckBox>
+                        <Label>Light position</Label>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <n:FloatUpDown Grid.Column="0"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.LightPosX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       DisplayLength="5" IsReadOnly="False">
-                        </n:FloatUpDown>
-                        <n:FloatUpDown Grid.Column="1"
-                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="1"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.LightPosY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       DisplayLength="5" IsReadOnly="False">
-                        </n:FloatUpDown>
-                        <n:FloatUpDown Grid.Column="2"
-                                       Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="2"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.LightPosZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       DisplayLength="5" IsReadOnly="False">
-                        </n:FloatUpDown>
-                    </Grid>
-                    <Label>ka</Label>
-                    <n:FloatUpDown
-                        HorizontalAlignment="Left"
-                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                        </Grid>
+                        <Label>Light color</Label>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <n:FloatUpDown Grid.Column="0"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightColorR, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="1"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightColorG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="2"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.LightColorB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                        </Grid>
+                        <Label>Ambient color</Label>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <n:FloatUpDown Grid.Column="0"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.AmbientColorR, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="1"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.AmbientColorG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                            <n:FloatUpDown Grid.Column="2"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.AmbientColorB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Column="0" Grid.Row="0">ka</Label>
+                            <n:FloatUpDown Grid.Column="0" Grid.Row="1"
+                                           HorizontalAlignment="Left"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.ka, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        MinWidth="0.01"
-                        DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
-                    
-                    <Label>ks</Label>
-                    <n:FloatUpDown
-                        HorizontalAlignment="Left"
-                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           MinWidth="0.01"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+
+                            <Label Grid.Column="1" Grid.Row="0">ks</Label>
+                            <n:FloatUpDown Grid.Column="1" Grid.Row="1"
+                                           HorizontalAlignment="Left"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.ks, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        MinWidth="0.01"
-                        DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
-                    
-                    <Label>kd</Label>
-                    <n:FloatUpDown
-                        HorizontalAlignment="Left"
-                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           MinWidth="0.01"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+
+                            <Label Grid.Column="2" Grid.Row="0">kd</Label>
+                            <n:FloatUpDown Grid.Column="2" Grid.Row="1"
+                                           HorizontalAlignment="Left"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.kd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        MinWidth="0.01"
-                        DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
-                    
-                    <Label>m</Label>
-                    <n:FloatUpDown
-                        HorizontalAlignment="Left"
-                        Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                                           MinWidth="0.01"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+
+                            <Label Grid.Column="3" Grid.Row="0">m</Label>
+                            <n:FloatUpDown Grid.Column="3" Grid.Row="1"
+                                           HorizontalAlignment="Left"
+                                           Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.m, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        MinWidth="1"
-                        DisplayLength="5" IsReadOnly="False">
-                    </n:FloatUpDown>
-                </StackPanel>
-            </GroupBox>
+                                           MinWidth="1"
+                                           DisplayLength="5" IsReadOnly="False">
+                            </n:FloatUpDown>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+            </ScrollViewer>
         </Expander>
     </StackPanel>
 </UserControl>

@@ -25,12 +25,22 @@ public class Simulator3C : INotifyPropertyChanged
     public bool Enabled { get; set; }
     public bool IgnoreDepth { get; set; }
     public bool ShowLines { get; set; } = true;
+    public bool ShowNormals { get; set; } = false;
+    public bool IgnoreErrors { get; set; }
 
     #region Light
 
     public float LightPosX { get; set; }
     public float LightPosY { get; set; }
     public float LightPosZ { get; set; }
+
+    public float LightColorR { get; set; } = 0.5f;
+    public float LightColorG { get; set; } = 0.5f;
+    public float LightColorB { get; set; } = 0.5f;
+    
+    public float AmbientColorR { get; set; } = 0.2f;
+    public float AmbientColorG { get; set; } = 0.2f;
+    public float AmbientColorB { get; set; } = 0.2f;
 
     public float ka { get; set; } = 0.2f;
     public float ks { get; set; } = 0.2f;

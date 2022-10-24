@@ -377,6 +377,18 @@ public class DrawProcessor
             Simulator3C.Simulator.LightPosZ,
             1));
         
+        Scene.CurrentScene._shader.SetVector3("LightColor", new Vector3(
+            Simulator3C.Simulator.LightColorR,
+            Simulator3C.Simulator.LightColorG,
+            Simulator3C.Simulator.LightColorB));
+
+        Scene.CurrentScene._shader.SetVector3("LightAmbient", new Vector3(
+            Simulator3C.Simulator.AmbientColorR,
+            Simulator3C.Simulator.AmbientColorG,
+            Simulator3C.Simulator.AmbientColorB));
+        
+        Scene.CurrentScene._shader.SetFloat("showNormals", Simulator3C.Simulator.ShowNormals ? 1: 0);
+
         Scene.CurrentScene._shader.SetFloat("ka", Simulator3C.Simulator.ka);
         Scene.CurrentScene._shader.SetFloat("ks", Simulator3C.Simulator.ks);
         Scene.CurrentScene._shader.SetFloat("kd", Simulator3C.Simulator.kd);

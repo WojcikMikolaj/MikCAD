@@ -31,16 +31,16 @@ public class Simulator3C : INotifyPropertyChanged
     #region Light
 
     public float LightPosX { get; set; }
-    public float LightPosY { get; set; }
+    public float LightPosY { get; set; } = 10;
     public float LightPosZ { get; set; }
 
-    public float LightColorR { get; set; } = 0.5f;
-    public float LightColorG { get; set; } = 0.5f;
-    public float LightColorB { get; set; } = 0.5f;
+    public float LightColorR { get; set; } = 1f;
+    public float LightColorG { get; set; } = 1f;
+    public float LightColorB { get; set; } = 1f;
     
-    public float AmbientColorR { get; set; } = 0.2f;
-    public float AmbientColorG { get; set; } = 0.2f;
-    public float AmbientColorB { get; set; } = 0.2f;
+    public float AmbientColorR { get; set; } = 1f;
+    public float AmbientColorG { get; set; } = 1f;
+    public float AmbientColorB { get; set; } = 1f;
 
     public float ka { get; set; } = 0.2f;
     public float ks { get; set; } = 0.2f;

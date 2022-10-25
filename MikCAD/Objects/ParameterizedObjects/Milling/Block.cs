@@ -688,7 +688,11 @@ public class Block : ParameterizedObject
                 {
                     //var newZ = GetZForYXInTex(i, j, y, x, z);
                     //var newZ = z;
-                    var newZ = z + _xyZArray[it, itt];
+                    var newZ = z;
+                    if (Simulator3C.Simulator.SphericalSelected)
+                    {
+                        newZ = z + _xyZArray[it, itt];
+                    }
 
                     if ((y + i) * HeightMapWidth + x + j > 0
                         && (y + i) * HeightMapWidth + x + j < HeightMapWidth * HeightMapHeight)

@@ -213,7 +213,7 @@ public class RigidBody
     public void UpdateRotationMatrix(Axis axis)
     {
         _rotationMatrix = Matrix4.CreateFromQuaternion(
-            new Quaternion(MH.DegreesToRadians(_rotation[0]),
+            Quaternion.FromEulerAngles(MH.DegreesToRadians(_rotation[0]),
                 MH.DegreesToRadians(_rotation[1]),
                 MH.DegreesToRadians(_rotation[2])));
 

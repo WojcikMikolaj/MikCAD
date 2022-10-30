@@ -120,5 +120,9 @@
                 </CheckBox>
             </StackPanel>
         </GroupBox>
+        <Expander Header="Debug">
+            <customControls:ModelMatrixControl DataContext="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext, Mode=TwoWay}"/>
+        </Expander>
     </StackPanel>
 </UserControl>

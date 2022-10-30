@@ -1,0 +1,124 @@
+﻿<UserControl x:Class="MikCAD.CustomControls.RigidBodyControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
+             xmlns:local="clr-namespace:MikCAD"
+             xmlns:customControls="clr-namespace:MikCAD.CustomControls"
+             mc:Ignorable="d"
+             d:DesignWidth="250">
+    <StackPanel>
+        <GroupBox Header="Ustawienia ogólne">
+            <StackPanel>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="enabledCheckBox">
+                    Moduł włączony
+                </CheckBox>
+            </StackPanel>
+        </GroupBox>
+
+        <Grid IsEnabled="{Binding ElementName=enabledCheckBox, Path=IsChecked}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <Button x:Name="startButton" Grid.Column="0" Click="StartSimulation">Start</Button>
+            <Button x:Name="stopButton" Grid.Column="1" Click="StopSimulation">Stop</Button>
+            <Button x:Name="resetButton" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Click="ResetSimulation">Reset</Button>
+        </Grid>
+
+        <GroupBox Header="Warunki początkowe"
+                  IsEnabled="{Binding ElementName=enabledCheckBox, Path=IsChecked}"
+                  x:Name="initialConditionsGroupBox">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0">Cube edge length:</Label>
+                <n:DoubleUpDown Grid.Row="0" Grid.Column="1"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.CubeEdgeLength, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayLength="13" IsReadOnly="False"
+                                IsUpdateValueWhenLostFocus="True"
+                                FormatString="0.###" />
+                <Label Grid.Row="1" Grid.Column="0">Cube density:</Label>
+                <n:DoubleUpDown Grid.Row="1" Grid.Column="1"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.CubeDensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayLength="13" IsReadOnly="False"
+                                IsUpdateValueWhenLostFocus="True"
+                                FormatString="0.###" />
+                <Label Grid.Row="2" Grid.Column="0">Cube deviation:</Label>
+                <n:DoubleUpDown Grid.Row="2" Grid.Column="1"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.CubeDeviation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayLength="13" IsReadOnly="False"
+                                IsUpdateValueWhenLostFocus="True"
+                                FormatString="0.###" />
+                <Label Grid.Row="3" Grid.Column="0">Angular velocity:</Label>
+                <n:DoubleUpDown Grid.Row="3" Grid.Column="1"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.AngularVelocity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayLength="13" IsReadOnly="False"
+                                IsUpdateValueWhenLostFocus="True"
+                                FormatString="0.###" />
+                <Label Grid.Row="4" Grid.Column="0">Integration step [s]:</Label>
+                <n:DoubleUpDown Grid.Row="4" Grid.Column="1"
+                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.IntegrationStep, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                DisplayLength="13" IsReadOnly="False"
+                                IsUpdateValueWhenLostFocus="True"
+                                FormatString="0.######" />
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="visualisationGroupBox" Header="Wyświetlanie" IsEnabled="{Binding ElementName=enabledCheckBox, Path=IsChecked}">
+            <StackPanel>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.DrawCube, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="drawCubeCheckBox">
+                    Wyświetl sześcian
+                </CheckBox>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.DrawDiagonal, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="drawDiagonalCheckBox">
+                    Wyświetl przekątną
+                </CheckBox>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.DrawPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="drawPathCheckBox">
+                    Wyświetl trajektorię
+                </CheckBox>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.DrawGravityVector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="drawGravityVectorCheckBox">
+                    Wyświetl wektor grawitacji
+                </CheckBox>
+                <CheckBox Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.DrawPlane, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          x:Name="drawPlaneCheckBox">
+                    Wyświetl płaszczyznę
+                </CheckBox>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>

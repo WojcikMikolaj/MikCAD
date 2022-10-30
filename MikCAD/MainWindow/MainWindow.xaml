@@ -139,6 +139,11 @@
                             DataContext="{Binding scene.Simulator3C, Mode=OneWay}"
                             x:Name="simulator3CControl"/>
                     </TabItem>
+                    <TabItem Header="Bączek">
+                        <customControls:RigidBodyControl 
+                            DataContext="{Binding scene.RigidBody, Mode=OneWay}"
+                            x:Name="rigidBodyControl"/>
+                    </TabItem>
                 </TabControl>
                 
             </Grid>

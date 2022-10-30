@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using BepuPhysics;
 using MikCAD.Objects.ParameterizedObjects.Milling;
+using MikCAD.Symulacje.RigidBody;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -28,6 +28,8 @@ namespace MikCAD
         private Matrix4 _viewMatrix;
         private Matrix4 _modelMatrix;
 
+        public RigidBody RigidBody { get; private set; } = new RigidBody();
+        
         public Scene()
         {
             CurrentScene = this;

@@ -11,6 +11,7 @@ using MikCAD.BezierCurves;
 using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
 using MikCAD.Objects.ParameterizedObjects.Milling;
+using MikCAD.Symulacje.RigidBody;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -368,13 +369,14 @@ public class ObjectsController : INotifyPropertyChanged
             Block.SetTexture();
             _drawProcessor.ProcessObject(Block, eye, vertexAttributeLocation, normalAttributeLocation);
         }
-        
+
         if (Simulator3C.Simulator.Enabled && Cutter is { })
         {
             if (Simulator3C.Simulator.IgnoreDepth)
             {
                 GL.Disable(EnableCap.DepthTest);
             }
+
             Cutter.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             //Cutter.SetTexture();
             _drawProcessor.ProcessObject(Cutter, eye, vertexAttributeLocation, normalAttributeLocation);
@@ -383,8 +385,9 @@ public class ObjectsController : INotifyPropertyChanged
                 GL.Enable(EnableCap.DepthTest);
             }
         }
-        
-        if (Simulator3C.Simulator.Enabled && Path is {CuttingLines: {points.Length: > 0}} && Simulator3C.Simulator.ShowLines)
+
+        if (Simulator3C.Simulator.Enabled && Path is {CuttingLines: {points.Length: > 0}} &&
+            Simulator3C.Simulator.ShowLines)
         {
             if (Simulator3C.Simulator.IgnoreDepth)
             {
@@ -393,11 +396,24 @@ public class ObjectsController : INotifyPropertyChanged
 
             Path.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
             _drawProcessor.ProcessObject(Path, eye, vertexAttributeLocation, normalAttributeLocation);
-            
+
             if (Simulator3C.Simulator.IgnoreDepth)
             {
                 GL.Enable(EnableCap.DepthTest);
             }
+        }
+
+        if (RigidBody.RB.Enabled)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.Disable(EnableCap.DepthTest);
+
+            RigidBody.RB.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(RigidBody.RB, eye, vertexAttributeLocation, normalAttributeLocation);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
         }
     }
 

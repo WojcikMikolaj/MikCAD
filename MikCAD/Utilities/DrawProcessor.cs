@@ -4,6 +4,7 @@ using MikCAD.BezierSurfaces;
 using MikCAD.Objects;
 using MikCAD.Objects.ParameterizedObjects;
 using MikCAD.Objects.ParameterizedObjects.Milling;
+using MikCAD.Symulacje.RigidBody;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -547,5 +548,29 @@ public class DrawProcessor
         GL.VertexAttribPointer(1, 1, VertexAttribPointerType.UnsignedInt, false, 0, 0);
         GL.EnableVertexAttribArray(1);
         GL.DrawElements(PrimitiveType.Quads, 4, DrawElementsType.UnsignedInt, 0);
+    }
+
+    public void ProcessObject(RigidBody rigidBody, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        GL.Disable(EnableCap.CullFace);
+        var _modelMatrix = rigidBody.GetModelMatrix();
+        Scene.CurrentScene._shader = _controller._colorShader;
+        Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
+        Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 0.2f));
+
+        if (RigidBody.RB.DrawCube)
+        {
+            GL.DrawElements(PrimitiveType.Triangles, rigidBody.TrianglesIndices.Length, DrawElementsType.UnsignedInt,
+                0);
+        }
+
+        if (RigidBody.RB.DrawDiagonal)
+        {
+            RigidBody.RB.GenerateIndicesForDiagonal();
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0, 0, 1, 1));
+            GL.DrawElements(PrimitiveType.Lines, rigidBody.DiagonalLineIndices.Length, DrawElementsType.UnsignedInt,
+                0);
+        }
     }
 }

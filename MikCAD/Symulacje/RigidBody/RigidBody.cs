@@ -20,7 +20,6 @@ public class RigidBody
     public RigidBodyControl _rigidBodyControl;
 
     private bool _isSimulationRunning = false;
-
     public bool IsSimulationRunning
     {
         get => _isSimulationRunning;
@@ -35,7 +34,6 @@ public class RigidBody
     public bool Enabled { get; set; }
 
     private double _cubeEdgeLength =1;
-
     public double CubeEdgeLength
     {
         get => _cubeEdgeLength;
@@ -48,6 +46,18 @@ public class RigidBody
     }
 
     public double CubeDensity { get; set; }
+
+    private double _cubeDeviation = 0;
+    public double CubeDeviation
+    {
+        get => _cubeDeviation;
+        set
+        {
+            _cubeDeviation = value;
+            _rotation = (-45, 0, 45.0f - (float)_cubeDeviation);
+            UpdateRotationMatrix();
+        }
+    }
 
     public double AngularVelocity { get; set; }
 
@@ -72,9 +82,9 @@ public class RigidBody
         _vao = GL.GenVertexArray();
         _ibo = GL.GenBuffer();
         GenerateCube(true);
-        UpdateRotationMatrix(Axis.X);
-        UpdateRotationMatrix(Axis.Y);
-        UpdateRotationMatrix(Axis.Z);
+        
+       // _rotation = new Vector3(-45, 0, 45);
+        UpdateRotationMatrix();
     }
 
     public void SetGuiIsEnabled(bool value)
@@ -134,7 +144,7 @@ public class RigidBody
         set
         {
             _rotation.X = value;
-            UpdateRotationMatrix(Axis.X);
+            UpdateRotationMatrix();
             OnPropertyChanged(nameof(rotX));
         }
     }
@@ -145,7 +155,7 @@ public class RigidBody
         set
         {
             _rotation.Y = value;
-            UpdateRotationMatrix(Axis.Y);
+            UpdateRotationMatrix();
             OnPropertyChanged(nameof(rotY));
         }
     }
@@ -156,7 +166,7 @@ public class RigidBody
         set
         {
             _rotation.Z = value;
-            UpdateRotationMatrix(Axis.Z);
+            UpdateRotationMatrix();
             OnPropertyChanged(nameof(rotZ));
         }
     }
@@ -196,7 +206,7 @@ public class RigidBody
 
     private Vector3 _position = new Vector3();
     private Vector3 _rotation = new Vector3();
-    //private Vector3 _rotation = new Vector3( -45, 0, (float)MH.RadiansToDegrees(MH.PiOver2 - MH.Atan( MH.Sqrt(2))));
+    //private Vector3 _rotation = new Vector3( -45, 0, 45);
     private Vector3 _scale = new Vector3(1, 1, 1);
 
     private Matrix4 _modelMatrix = Matrix4.Identity;
@@ -210,7 +220,7 @@ public class RigidBody
         _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
     }
 
-    public void UpdateRotationMatrix(Axis axis)
+    public void UpdateRotationMatrix()
     {
         _rotationMatrix = Matrix4.CreateFromQuaternion(
             Quaternion.FromEulerAngles(MH.DegreesToRadians(_rotation[0]),

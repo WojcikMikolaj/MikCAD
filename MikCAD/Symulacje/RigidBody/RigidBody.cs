@@ -205,35 +205,36 @@ public class RigidBody
     }
 
     private Vector3 _position = new Vector3();
-    private Vector3 _rotation = new Vector3();
-    //private Vector3 _rotation = new Vector3( -45, 0, 45);
+    //private Vector3 _rotation = new Vector3();
+    private Vector3 _rotation = new Vector3( -45, 0, 45);
     private Vector3 _scale = new Vector3(1, 1, 1);
 
     private Matrix4 _modelMatrix = Matrix4.Identity;
     private Matrix4 _scaleMatrix = Matrix4.Identity;
-    private Matrix4 _rotationMatrix = Matrix4.Identity;
+    private Matrix4 _rotationMatrixX = Matrix4.Identity;
+    private Matrix4 _rotationMatrixY = Matrix4.Identity;
+    private Matrix4 _rotationMatrixZ = Matrix4.Identity;
     private Matrix4 _translationMatrix = Matrix4.Identity;
 
     public void UpdateScaleMatrix()
     {
         _scaleMatrix = Matrix4.CreateScale(_scale);
-        _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
+        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
     }
 
     public void UpdateRotationMatrix()
     {
-        _rotationMatrix = Matrix4.CreateFromQuaternion(
-            Quaternion.FromEulerAngles(MH.DegreesToRadians(_rotation[0]),
-                MH.DegreesToRadians(_rotation[1]),
-                MH.DegreesToRadians(_rotation[2])));
+        _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]),0,0));
+        _rotationMatrixY = Matrix4.CreateFromQuaternion(new Quaternion(0,MH.DegreesToRadians(_rotation[1]),  0));
+        _rotationMatrixZ = Matrix4.CreateFromQuaternion(new Quaternion(0,0,MH.DegreesToRadians(_rotation[2])));
 
-        _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
+        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
     }
 
     public void UpdateTranslationMatrix()
     {
         _translationMatrix = Matrix4.CreateTranslation(_position);
-        _modelMatrix = _scaleMatrix * _rotationMatrix * _translationMatrix;
+        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
     }
 
     public Matrix4 GetModelMatrix()
@@ -265,15 +266,16 @@ public class RigidBody
     {
         _vertices = new TexPoint[8];
         _vertIndices = new uint[8];
-
-        _vertices[0] = new TexPoint((0, 0, 0), (0, 0));
-        _vertices[1] = new TexPoint((0, 0, (float) CubeEdgeLength), (0, 0));
-        _vertices[2] = new TexPoint((0, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
-        _vertices[3] = new TexPoint((0, (float) CubeEdgeLength, 0), (0, 0));
-        _vertices[4] = new TexPoint(((float) CubeEdgeLength, 0, 0), (0, 0));
-        _vertices[5] = new TexPoint(((float) CubeEdgeLength, 0, (float) CubeEdgeLength), (0, 0));
-        _vertices[6] = new TexPoint(((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
-        _vertices[7] = new TexPoint(((float) CubeEdgeLength, (float) CubeEdgeLength, 0), (0, 0));
+        Vector3 dirToPoint0 = (-(float) CubeEdgeLength/2, -(float) CubeEdgeLength/2, -(float) CubeEdgeLength/2);
+        dirToPoint0 = (0, 0, 0);
+        _vertices[0] = new TexPoint(dirToPoint0+(0, 0, 0), (0, 0));
+        _vertices[1] = new TexPoint(dirToPoint0+(0, 0, (float) CubeEdgeLength), (0, 0));
+        _vertices[2] = new TexPoint(dirToPoint0+(0, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
+        _vertices[3] = new TexPoint(dirToPoint0+(0, (float) CubeEdgeLength, 0), (0, 0));
+        _vertices[4] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, 0, 0), (0, 0));
+        _vertices[5] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, 0, (float) CubeEdgeLength), (0, 0));
+        _vertices[6] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
+        _vertices[7] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, (float) CubeEdgeLength, 0), (0, 0));
 
         _verticesDraw = new float[_vertices.Length * TexPoint.Size];
         for (int i = 0; i < _vertices.Length; i++)

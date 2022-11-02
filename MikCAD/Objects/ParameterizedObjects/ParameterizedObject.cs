@@ -186,7 +186,9 @@ namespace MikCAD
         protected int _vbo;
         protected int _vao;
         protected int _ibo;
-        
+        protected int _texHandle;
+
+        protected bool UpdateTexture;
         protected ParameterizedObject(string name)
         {
             int count = 1;
@@ -202,6 +204,7 @@ namespace MikCAD
             _vbo = GL.GenBuffer();
             _vao = GL.GenVertexArray();
             _ibo = GL.GenBuffer();
+            _texHandle = GL.GenTexture();
         }
 
         private static uint nextId = 0;

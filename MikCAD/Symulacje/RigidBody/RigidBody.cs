@@ -20,6 +20,7 @@ public class RigidBody
     public RigidBodyControl _rigidBodyControl;
 
     private bool _isSimulationRunning = false;
+
     public bool IsSimulationRunning
     {
         get => _isSimulationRunning;
@@ -33,7 +34,8 @@ public class RigidBody
 
     public bool Enabled { get; set; }
 
-    private double _cubeEdgeLength =1;
+    private double _cubeEdgeLength = 1;
+
     public double CubeEdgeLength
     {
         get => _cubeEdgeLength;
@@ -48,13 +50,16 @@ public class RigidBody
     public double CubeDensity { get; set; }
 
     private double _cubeDeviation = 0;
+
     public double CubeDeviation
     {
         get => _cubeDeviation;
         set
         {
             _cubeDeviation = value;
-            _rotation = (-45, 0, 45.0f - (float)_cubeDeviation);
+            var rot = InitialRotation;
+            rot.Z -= (float) _cubeDeviation;
+            _rotation = rot;
             UpdateRotationMatrix();
         }
     }
@@ -82,8 +87,8 @@ public class RigidBody
         _vao = GL.GenVertexArray();
         _ibo = GL.GenBuffer();
         GenerateCube(true);
-        
-       // _rotation = new Vector3(-45, 0, 45);
+
+        // _rotation = new Vector3(-45, 0, 45);
         UpdateRotationMatrix();
     }
 
@@ -205,8 +210,11 @@ public class RigidBody
     }
 
     private Vector3 _position = new Vector3();
-    //private Vector3 _rotation = new Vector3();
-    private Vector3 _rotation = new Vector3( -45, 0, 45);
+
+    private static readonly Vector3 InitialRotation =
+        new Vector3(0, 45, (float) MH.RadiansToDegrees(MH.Atan(MH.Sqrt(2))));
+
+    private Vector3 _rotation = InitialRotation;
     private Vector3 _scale = new Vector3(1, 1, 1);
 
     private Matrix4 _modelMatrix = Matrix4.Identity;
@@ -224,9 +232,9 @@ public class RigidBody
 
     public void UpdateRotationMatrix()
     {
-        _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]),0,0));
-        _rotationMatrixY = Matrix4.CreateFromQuaternion(new Quaternion(0,MH.DegreesToRadians(_rotation[1]),  0));
-        _rotationMatrixZ = Matrix4.CreateFromQuaternion(new Quaternion(0,0,MH.DegreesToRadians(_rotation[2])));
+        _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]), 0, 0));
+        _rotationMatrixY = Matrix4.CreateFromQuaternion(new Quaternion(0, MH.DegreesToRadians(_rotation[1]), 0));
+        _rotationMatrixZ = Matrix4.CreateFromQuaternion(new Quaternion(0, 0, MH.DegreesToRadians(_rotation[2])));
 
         _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
     }
@@ -257,25 +265,29 @@ public class RigidBody
 
     public uint[] DiagonalLineIndices => _diagonalLineIndices;
     private uint[] _diagonalLineIndices;
-    
+
     private int _vbo;
     private int _vao;
     private int _ibo;
+
+    public Matrix3 InertiaTensor { get; private set; }
 
     private void GenerateCube(bool generateNew = false)
     {
         _vertices = new TexPoint[8];
         _vertIndices = new uint[8];
-        Vector3 dirToPoint0 = (-(float) CubeEdgeLength/2, -(float) CubeEdgeLength/2, -(float) CubeEdgeLength/2);
+        Vector3 dirToPoint0 = (-(float) CubeEdgeLength / 2, -(float) CubeEdgeLength / 2, -(float) CubeEdgeLength / 2);
         dirToPoint0 = (0, 0, 0);
-        _vertices[0] = new TexPoint(dirToPoint0+(0, 0, 0), (0, 0));
-        _vertices[1] = new TexPoint(dirToPoint0+(0, 0, (float) CubeEdgeLength), (0, 0));
-        _vertices[2] = new TexPoint(dirToPoint0+(0, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
-        _vertices[3] = new TexPoint(dirToPoint0+(0, (float) CubeEdgeLength, 0), (0, 0));
-        _vertices[4] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, 0, 0), (0, 0));
-        _vertices[5] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, 0, (float) CubeEdgeLength), (0, 0));
-        _vertices[6] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
-        _vertices[7] = new TexPoint(dirToPoint0+((float) CubeEdgeLength, (float) CubeEdgeLength, 0), (0, 0));
+        _vertices[0] = new TexPoint(dirToPoint0 + (0, 0, 0), (0, 0));
+        _vertices[1] = new TexPoint(dirToPoint0 + (0, 0, (float) CubeEdgeLength), (0, 0));
+        _vertices[2] = new TexPoint(dirToPoint0 + (0, (float) CubeEdgeLength, (float) CubeEdgeLength), (0, 0));
+        _vertices[3] = new TexPoint(dirToPoint0 + (0, (float) CubeEdgeLength, 0), (0, 0));
+        _vertices[4] = new TexPoint(dirToPoint0 + ((float) CubeEdgeLength, 0, 0), (0, 0));
+        _vertices[5] = new TexPoint(dirToPoint0 + ((float) CubeEdgeLength, 0, (float) CubeEdgeLength), (0, 0));
+        _vertices[6] =
+            new TexPoint(dirToPoint0 + ((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength),
+                (0, 0));
+        _vertices[7] = new TexPoint(dirToPoint0 + ((float) CubeEdgeLength, (float) CubeEdgeLength, 0), (0, 0));
 
         _verticesDraw = new float[_vertices.Length * TexPoint.Size];
         for (int i = 0; i < _vertices.Length; i++)
@@ -293,26 +305,37 @@ public class RigidBody
             GenerateCubeTriangles();
             GenerateDiagonalLine();
         }
+
+        CalculateInertiaTensor();
+    }
+
+    private void CalculateInertiaTensor()
+    {
+        var faceLength5 = Math.Pow(_cubeEdgeLength, 5);
+        float xx, yy, zz;
+        xx = yy = zz = (float)(faceLength5 * CubeDensity / 12);
+        //tensor względem punktu 0,0,0
+        InertiaTensor = new Matrix3((yy+zz,0,0),(0,xx+zz,0),(0,0,xx+yy));
     }
 
     private void GenerateCubeLines()
     {
         _lines = new uint[]
         {
-            0,1,
-            1,2,
-            2,3,
-            3,0,
-            
-            1,5,
-            2,6,
-            3,7,
-            0,4,
-            
-            4,5,
-            5,6,
-            6,7,
-            7,4
+            0, 1,
+            1, 2,
+            2, 3,
+            3, 0,
+
+            1, 5,
+            2, 6,
+            3, 7,
+            0, 4,
+
+            4, 5,
+            5, 6,
+            6, 7,
+            7, 4
         };
     }
 
@@ -380,5 +403,44 @@ public class RigidBody
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _diagonalLineIndices.Length * sizeof(uint), _diagonalLineIndices,
             BufferUsageHint.StaticDraw);
+    }
+
+    public void GeneratePlaneIndices()
+    {
+        
+    }
+
+    public void GenerateGravityVectorIndices()
+    {
+        
+    }
+
+    public void SimulateNextStep()
+    {
+        /*
+         Jak to policzyć?
+         funkcja1  N+(IW)*W
+         funkcja2  QxW/2
+        //Z poprzedniego kroku
+        W(t), Wt(t)
+        Q(t), Qt(t)
+        //Inne
+        I - stałe
+        N - liczymy na bieżąco
+       //w tym kroku dla Eulera (dla rungego robimy więcej razy)
+       W(t+delta) =W(t) + Wt(t) * delta
+       Wt(t+delta) = I^(-1)*funkcja1
+       
+        Q(t+delta) = Q(t) + Qt(t)*delta
+        Qt(t+delta) = funkcja2
+        */  
+        
+        /*
+         Jak to narysować?
+         Q(t+delta) - nasza obecna rotacja w układzie bączka
+         teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
+         */
+        
+        //Główne pytanie, jak policzyć B?
     }
 }

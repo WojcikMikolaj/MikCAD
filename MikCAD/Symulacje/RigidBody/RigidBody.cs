@@ -315,7 +315,7 @@ public class RigidBody
         float xx, yy, zz;
         xx = yy = zz = (float)(faceLength5 * CubeDensity / 12);
         //tensor względem punktu 0,0,0
-        InertiaTensor = new Matrix3((yy+zz,0,0),(0,xx+zz,0),(0,0,xx+yy));
+        //zdiagonalizować, tensor będzie wektorem
     }
 
     private void GenerateCubeLines()
@@ -432,6 +432,7 @@ public class RigidBody
        Wt(t+delta) = I^(-1)*funkcja1
        
         Q(t+delta) = Q(t) + Qt(t)*delta
+        znormalizować Q(t+delta)
         Qt(t+delta) = funkcja2
         */  
         

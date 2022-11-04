@@ -66,7 +66,7 @@ public class RigidBody
 
     public double AngularVelocity { get; set; }
 
-    public double IntegrationStep { get; set; }
+    public float IntegrationStep { get; set; }
 
     public bool DrawCube { get; set; } = true;
 
@@ -271,6 +271,7 @@ public class RigidBody
     private int _ibo;
 
     public Matrix3 InertiaTensor { get; private set; }
+    public Vector3 DiagonalizedInertiaTensor { get; private set; }
 
     private void GenerateCube(bool generateNew = false)
     {
@@ -415,6 +416,11 @@ public class RigidBody
         
     }
 
+    // ReSharper disable once InconsistentNaming
+    private Quaternion Q, Q_t, Q1, Q_t1;
+    // ReSharper disable once InconsistentNaming
+    private Vector3 W, W_t, W1, W_t1; //prędkość kątowa
+    
     public void SimulateNextStep()
     {
         /*
@@ -426,22 +432,26 @@ public class RigidBody
         Q(t), Qt(t)
         //Inne
         I - stałe
-        N - liczymy na bieżąco
+        N - liczymy na bieżąco*/
        //w tym kroku dla Eulera (dla rungego robimy więcej razy)
-       W(t+delta) =W(t) + Wt(t) * delta
-       Wt(t+delta) = I^(-1)*funkcja1
-       
-        Q(t+delta) = Q(t) + Qt(t)*delta
-        znormalizować Q(t+delta)
-        Qt(t+delta) = funkcja2
-        */  
-        
-        /*
-         Jak to narysować?
-         Q(t+delta) - nasza obecna rotacja w układzie bączka
-         teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
-         */
-        
-        //Główne pytanie, jak policzyć B?
+       //W(t+delta) =W(t) + Wt(t) * delta
+       //Wt(t+delta) = I^(-1)*funkcja1
+
+       //Q(t+delta) = Q(t) + Qt(t)*delta
+       //znormalizować Q(t+delta)
+       Q1.Normalize();
+       //Qt(t+delta) = funkcja2
+
+
+       /*
+        Jak to narysować?
+        Q(t+delta) - nasza obecna rotacja w układzie bączka
+        teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
+        */
+
+       //Główne pytanie, jak policzyć B?
+       //B to nasz kwaternion
     }
+
+    
 }

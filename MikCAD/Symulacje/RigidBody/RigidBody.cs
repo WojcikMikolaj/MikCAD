@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Management;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using MikCAD.Annotations;
 using MikCAD.CustomControls;
 using MikCAD.Objects;
@@ -47,7 +49,7 @@ public class RigidBody
         }
     }
 
-    public double CubeDensity { get; set; }
+    public double CubeDensity { get; set; } = 1;
 
     private double _cubeDeviation = 0;
 
@@ -64,9 +66,9 @@ public class RigidBody
         }
     }
 
-    public double AngularVelocity { get; set; }
+    public double AngularVelocity { get; set; } = 1;
 
-    public float IntegrationStep { get; set; }
+    public float IntegrationStep { get; set; } = 0.001f;
 
     public bool DrawCube { get; set; } = true;
 
@@ -80,6 +82,9 @@ public class RigidBody
 
     #endregion
 
+
+    private Timer _timer = new Timer();
+    
     public RigidBody()
     {
         RB = this;
@@ -89,7 +94,12 @@ public class RigidBody
         GenerateCube(true);
 
         // _rotation = new Vector3(-45, 0, 45);
+        Q = Quaternion.FromAxisAngle((0,0,1),0);
         UpdateRotationMatrix();
+        StartingGravityVectorInChangedBase = ChangeBaseMatrixT0 * GravityVector;
+        _timer.Tick += (sender, args) => SimulateNextStep();
+
+        ResetPath();
     }
 
     public void SetGuiIsEnabled(bool value)
@@ -222,12 +232,24 @@ public class RigidBody
     private Matrix4 _rotationMatrixX = Matrix4.Identity;
     private Matrix4 _rotationMatrixY = Matrix4.Identity;
     private Matrix4 _rotationMatrixZ = Matrix4.Identity;
+    private Matrix4 _rigidBodyRotation = Matrix4.Identity;
     private Matrix4 _translationMatrix = Matrix4.Identity;
 
+    public void UpdateRigidBodyRotationMatrix()
+    {
+        _rigidBodyRotation = Matrix4.CreateFromQuaternion(Q);
+        UpdateModelMatrix();
+    }
+    
+    public void UpdateModelMatrix()
+    {
+        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _rigidBodyRotation * _translationMatrix;
+    }
+    
     public void UpdateScaleMatrix()
     {
         _scaleMatrix = Matrix4.CreateScale(_scale);
-        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
+        UpdateModelMatrix();
     }
 
     public void UpdateRotationMatrix()
@@ -235,14 +257,13 @@ public class RigidBody
         _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]), 0, 0));
         _rotationMatrixY = Matrix4.CreateFromQuaternion(new Quaternion(0, MH.DegreesToRadians(_rotation[1]), 0));
         _rotationMatrixZ = Matrix4.CreateFromQuaternion(new Quaternion(0, 0, MH.DegreesToRadians(_rotation[2])));
-
-        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
+        UpdateModelMatrix();
     }
 
     public void UpdateTranslationMatrix()
     {
         _translationMatrix = Matrix4.CreateTranslation(_position);
-        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _translationMatrix;
+        UpdateModelMatrix();
     }
 
     public Matrix4 GetModelMatrix()
@@ -257,6 +278,13 @@ public class RigidBody
     public int VerticesCount => _vertices.Length;
     private float[] _verticesDraw;
 
+    private uint PathLength = 5000;
+    private uint currentVert = 1;
+    private TexPoint[] _pathVertices;
+    private uint[] _pathLinesIndices;
+    public uint[] PathLinesIndices => _pathLinesIndices;
+    private float[] _pathVerticesDraw;
+    
     public uint[] Lines => _lines;
     private uint[] _lines;
 
@@ -270,8 +298,8 @@ public class RigidBody
     private int _vao;
     private int _ibo;
 
-    public Matrix3 InertiaTensor { get; private set; }
     public Vector3 DiagonalizedInertiaTensor { get; private set; }
+    public Vector3 InversedDaigonalizedInertiaTensor { get; private set; }
 
     private void GenerateCube(bool generateNew = false)
     {
@@ -313,10 +341,13 @@ public class RigidBody
     private void CalculateInertiaTensor()
     {
         var faceLength5 = Math.Pow(_cubeEdgeLength, 5);
-        float xx, yy, zz;
-        xx = yy = zz = (float)(faceLength5 * CubeDensity / 12);
-        //tensor względem punktu 0,0,0
-        //zdiagonalizować, tensor będzie wektorem
+
+        var I1 = (float) (11.0f / 12 * faceLength5 * CubeDensity); //wektor własny {-1,0,1}
+        var I2 = (float) (11.0f / 12 * faceLength5 * CubeDensity); //wektor własny {-1,1,0} 
+        var I3 = (float) (faceLength5 * CubeDensity / 6.0f); //wektor własny {1,1,1} - nasza przekątna
+
+        DiagonalizedInertiaTensor = (I1, I2, I3);
+        InversedDaigonalizedInertiaTensor = (1.0f / I1, 1.0f / I2, 1.0f / I3);
     }
 
     private void GenerateCubeLines()
@@ -392,7 +423,80 @@ public class RigidBody
             BufferUsageHint.StaticDraw);
     }
 
+    
+    private void ResetPath()
+    {
+        _pathVertices = new TexPoint[PathLength];
+        for (uint i = 0; i < PathLength; i++)
+        {
+            _pathVertices[i] = new TexPoint();
+        }
+        _pathLinesIndices = new uint[2*(PathLength-1)];
+        for (uint i = 0; i < 2*(PathLength-1); i++)
+        {
+            _pathLinesIndices[i] = i;
+            _pathLinesIndices[i] = i+1;
+        }
+        
+        _pathVerticesDraw = new float[_pathVertices.Length * TexPoint.Size];
+        for (int i = 0; i < _pathVertices.Length; i++)
+        {
+            _pathVerticesDraw[TexPoint.Size * i] = _pathVertices[i].X;
+            _pathVerticesDraw[TexPoint.Size * i + 1] = _pathVertices[i].Y;
+            _pathVerticesDraw[TexPoint.Size * i + 2] = _pathVertices[i].Z;
+            _pathVerticesDraw[TexPoint.Size * i + 3] = _pathVertices[i].TexX;
+            _pathVerticesDraw[TexPoint.Size * i + 4] = _pathVertices[i].TexY;
+        }
+    }
 
+    public void AddVertexToPath()
+    {
+        if (!IsSimulationRunning)
+        {
+            return;
+        }
+
+        var point = _modelMatrix * new Vector4(1, 1, 1,1);
+        _pathVertices[currentVert] = new TexPoint()
+        {
+            X = point.X,
+            Y = point.Y,
+            Z = point.Z,
+            TexX = 0,
+            TexY = 0
+        };
+        
+        _pathVerticesDraw[TexPoint.Size * currentVert] = _pathVertices[currentVert].X;
+        _pathVerticesDraw[TexPoint.Size * currentVert + 1] = _pathVertices[currentVert].Y;
+        _pathVerticesDraw[TexPoint.Size * currentVert + 2] = _pathVertices[currentVert].Z;
+        _pathVerticesDraw[TexPoint.Size * currentVert + 3] = _pathVertices[currentVert].TexX;
+        _pathVerticesDraw[TexPoint.Size * currentVert + 4] = _pathVertices[currentVert].TexY;
+
+        currentVert++;
+        currentVert %= PathLength;
+    }
+    
+
+    public void GeneratePathVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    {
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, _pathVertices.Length * TexPoint.Size * sizeof(float), _pathVerticesDraw,
+            BufferUsageHint.StaticDraw);
+
+        GL.BindVertexArray(_vao);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+
+        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float),
+            3 * sizeof(float));
+        GL.EnableVertexAttribArray(1);
+
+
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _pathLinesIndices.Length * sizeof(uint), _pathLinesIndices,
+            BufferUsageHint.StaticDraw);
+    }
+    
     public void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
@@ -408,50 +512,122 @@ public class RigidBody
 
     public void GeneratePlaneIndices()
     {
-        
     }
 
     public void GenerateGravityVectorIndices()
     {
-        
     }
 
     // ReSharper disable once InconsistentNaming
     private Quaternion Q, Q_t, Q1, Q_t1;
+
     // ReSharper disable once InconsistentNaming
     private Vector3 W, W_t, W1, W_t1; //prędkość kątowa
-    
+    private float t = 0;
+
+    // ReSharper disable once InconsistentNaming
+    private readonly Matrix3 ChangeBaseMatrixT0 = new Matrix3(
+        (-1.0f / 3.0f, -1.0f / 3.0f, 2.0f / 3.0f),
+        (-1.0f / 3.0f, 2.0f / 3.0f, -1.0f / 3.0f),
+        (1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f));
+
+    // ReSharper disable once InconsistentNaming
+    private readonly Vector3 GravityVector = new Vector3(0, 0, -9.807f);
+
+    // ReSharper disable once InconsistentNaming
+    private Vector3 StartingGravityVectorInChangedBase;
+    private Vector3 GravityTorque;
+
+    private Vector3 CalculateTorque(Quaternion Q)
+    {
+        return Q * StartingGravityVectorInChangedBase;
+    }
+
+    private Vector3 f(Quaternion Q, Vector3 W)
+    {
+        return Vector3.Multiply(InversedDaigonalizedInertiaTensor,
+            (CalculateTorque(Q) + Vector3.Cross(Vector3.Multiply(DiagonalizedInertiaTensor, W), W)));
+    }
+
+    private Quaternion g(Quaternion Q, Vector3 W)
+    {
+        Matrix4x3 qMatrix4x3 = new Matrix4x3((-Q.X, -Q.Y, -Q.Z), (Q.W, -Q.Z, Q.Y), (Q.Z, Q.W, -Q.X), (-Q.Y, Q.X, Q.W));
+
+        return new Quaternion(
+            w: qMatrix4x3[0, 0] * W[0] + qMatrix4x3[0, 1] * W[1] + qMatrix4x3[0, 2] * W[2],
+            x: qMatrix4x3[1, 0] * W[0] + qMatrix4x3[1, 1] * W[1] + qMatrix4x3[1, 2] * W[2],
+            y: qMatrix4x3[2, 0] * W[0] + qMatrix4x3[2, 1] * W[1] + qMatrix4x3[2, 2] * W[2],
+            z: qMatrix4x3[3, 0] * W[0] + qMatrix4x3[3, 1] * W[1] + qMatrix4x3[3, 2] * W[2]
+        );
+    }
+
+
     public void SimulateNextStep()
     {
         /*
          Jak to policzyć?
-         funkcja1  N+(IW)*W
-         funkcja2  QxW/2
+         funkcja1  f(t)=I^(-1)(N+(IW)*W)
+         funkcja2  g(t)=QxW/2
         //Z poprzedniego kroku
         W(t), Wt(t)
         Q(t), Qt(t)
         //Inne
         I - stałe
         N - liczymy na bieżąco*/
-       //w tym kroku dla Eulera (dla rungego robimy więcej razy)
-       //W(t+delta) =W(t) + Wt(t) * delta
-       //Wt(t+delta) = I^(-1)*funkcja1
-
-       //Q(t+delta) = Q(t) + Qt(t)*delta
-       //znormalizować Q(t+delta)
-       Q1.Normalize();
-       //Qt(t+delta) = funkcja2
 
 
-       /*
-        Jak to narysować?
-        Q(t+delta) - nasza obecna rotacja w układzie bączka
-        teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
-        */
+        var f_k1 = f(Q, W);
+        var g_k1 = g(Q, W);
 
-       //Główne pytanie, jak policzyć B?
-       //B to nasz kwaternion
+        var f_k2 = f(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
+        var g_k2 = g(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
+
+        var f_k3 = f(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k2 / 2.0f);
+        var g_k3 = g(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k2 / 2.0f);
+
+        var f_k4 = f(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k3);
+        var g_k4 = g(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k3);
+
+        W1 = W + 1.0f / 6.0f * (f_k1 + 2 * f_k2 + 2 * f_k3 + f_k4) * IntegrationStep;
+        Q1 = Q + 1.0f / 6.0f * (g_k1 + 2 * g_k2 + 2 * g_k3 + g_k4) * IntegrationStep;
+        //W_t1 = ;
+
+
+        Q1.Normalize();
+
+        W = W1;
+        Q = Q1;
+        /*
+         Jak to narysować?
+         Q(t+delta) - nasza obecna rotacja w układzie bączka
+         teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
+         */
+
+        //Główne pytanie, jak policzyć B?
+        //B to nasz kwaternion
     }
 
-    
+    public void StartSimulation()
+    {
+        W = (0, 0, (float)AngularVelocity);
+        Q = Quaternion.FromAxisAngle((0,0,1),0);
+        
+        
+        _timer.Interval = (int)(IntegrationStep * 1000);
+        _timer.Enabled = true;
+        _timer.Start();
+    }
+
+    public void StopSimulation()
+    {
+        _timer.Enabled = false;
+        _timer.Stop();
+    }
+
+    public void ResetSimulation()
+    {
+        _timer.Stop();
+        _rigidBodyRotation = Matrix4.Identity;
+        StartSimulation();
+    }
 }

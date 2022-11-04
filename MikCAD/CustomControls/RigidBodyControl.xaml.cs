@@ -21,16 +21,19 @@ public partial class RigidBodyControl : UserControl
     {
         RigidBody.RB._rigidBodyControl ??= this;
         RigidBody.RB.IsSimulationRunning = true;
+        RigidBody.RB.StartSimulation();
     }
 
     private void StopSimulation(object sender, RoutedEventArgs e)
     {
         RigidBody.RB._rigidBodyControl ??= this;
         RigidBody.RB.IsSimulationRunning = false;
+        RigidBody.RB.StopSimulation();
     }
 
     private void ResetSimulation(object sender, RoutedEventArgs e)
     {
         RigidBody.RB._rigidBodyControl ??= this;
+        RigidBody.RB.ResetSimulation();
     }
 }

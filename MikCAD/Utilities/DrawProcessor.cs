@@ -572,5 +572,13 @@ public class DrawProcessor
             GL.DrawElements(PrimitiveType.Lines, rigidBody.DiagonalLineIndices.Length, DrawElementsType.UnsignedInt,
                 0);
         }
+
+        if (RigidBody.RB.DrawPath)
+        {
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            RigidBody.RB.GeneratePathVertices(vertexAttributeLocation, normalAttributeLocation);
+            GL.DrawElements(PrimitiveType.Lines, rigidBody.PathLinesIndices.Length, DrawElementsType.UnsignedInt,
+                0);
+        }
     }
 }

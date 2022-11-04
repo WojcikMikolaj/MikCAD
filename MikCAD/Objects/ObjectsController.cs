@@ -410,6 +410,8 @@ public class ObjectsController : INotifyPropertyChanged
             GL.Disable(EnableCap.DepthTest);
 
             RigidBody.RB.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            RigidBody.RB.UpdateRigidBodyRotationMatrix();
+            RigidBody.RB.AddVertexToPath();
             _drawProcessor.ProcessObject(RigidBody.RB, eye, vertexAttributeLocation, normalAttributeLocation);
 
             GL.Enable(EnableCap.DepthTest);

@@ -456,7 +456,7 @@ public class RigidBody
             return;
         }
 
-        var point = _modelMatrix * new Vector4(1, 1, 1,1);
+        var point =  new Vector4(1, 1, 1,1) * _modelMatrix ;
         _pathVertices[currentVert] = new TexPoint()
         {
             X = point.X,

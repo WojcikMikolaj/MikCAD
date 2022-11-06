@@ -14,7 +14,7 @@ using MH = OpenTK.Mathematics.MathHelper;
 
 namespace MikCAD.Symulacje.RigidBody;
 
-public class RigidBody
+public partial class RigidBody
 {
     #region UserInteractionsVariablesAndProperties
 
@@ -85,21 +85,12 @@ public class RigidBody
 
     private Timer _timer = new Timer();
     
-    public RigidBody()
+    private void SetUpModel()
     {
-        RB = this;
         _vbo = GL.GenBuffer();
         _vao = GL.GenVertexArray();
         _ibo = GL.GenBuffer();
         GenerateCube(true);
-
-        // _rotation = new Vector3(-45, 0, 45);
-        Q = Quaternion.FromAxisAngle((0,0,1),0);
-        UpdateRotationMatrix();
-        StartingGravityVectorInChangedBase = ChangeBaseMatrixT0 * GravityVector;
-        _timer.Tick += (sender, args) => SimulateNextStep();
-
-        ResetPath();
     }
 
     public void SetGuiIsEnabled(bool value)
@@ -426,16 +417,19 @@ public class RigidBody
     
     private void ResetPath()
     {
+        currentVert = 0;
         _pathVertices = new TexPoint[PathLength];
         for (uint i = 0; i < PathLength; i++)
         {
             _pathVertices[i] = new TexPoint();
         }
         _pathLinesIndices = new uint[2*(PathLength-1)];
-        for (uint i = 0; i < 2*(PathLength-1); i++)
+        uint k = 0;
+        for (uint j = 0; j < 2*(PathLength-1); j+=2)
         {
-            _pathLinesIndices[i] = i;
-            _pathLinesIndices[i] = i+1;
+            _pathLinesIndices[j] = k;
+            _pathLinesIndices[j+1] = k+1;
+            k++;
         }
         
         _pathVerticesDraw = new float[_pathVertices.Length * TexPoint.Size];
@@ -628,6 +622,7 @@ public class RigidBody
     {
         _timer.Stop();
         _rigidBodyRotation = Matrix4.Identity;
+        ResetPath();
         StartSimulation();
     }
 }

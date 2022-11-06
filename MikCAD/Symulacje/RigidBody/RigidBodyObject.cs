@@ -16,95 +16,12 @@ namespace MikCAD.Symulacje.RigidBody;
 
 public partial class RigidBody
 {
-    #region UserInteractionsVariablesAndProperties
-
-    public static RigidBody RB;
-    public RigidBodyControl _rigidBodyControl;
-
-    private bool _isSimulationRunning = false;
-
-    public bool IsSimulationRunning
-    {
-        get => _isSimulationRunning;
-        set
-        {
-            _isSimulationRunning = value;
-            SetGuiIsEnabled(!_isSimulationRunning);
-            OnPropertyChanged();
-        }
-    }
-
-    public bool Enabled { get; set; }
-
-    private double _cubeEdgeLength = 1;
-
-    public double CubeEdgeLength
-    {
-        get => _cubeEdgeLength;
-        set
-        {
-            _cubeEdgeLength = value;
-            GenerateCube();
-            OnPropertyChanged();
-        }
-    }
-
-    public double CubeDensity { get; set; } = 1;
-
-    private double _cubeDeviation = 0;
-
-    public double CubeDeviation
-    {
-        get => _cubeDeviation;
-        set
-        {
-            _cubeDeviation = value;
-            var rot = InitialRotation;
-            rot.Z -= (float) _cubeDeviation;
-            _rotation = rot;
-            UpdateRotationMatrix();
-        }
-    }
-
-    public double AngularVelocity { get; set; } = 1;
-
-    public float IntegrationStep { get; set; } = 0.001f;
-
-    public bool DrawCube { get; set; } = true;
-
-    public bool DrawDiagonal { get; set; } = true;
-
-    public bool DrawPath { get; set; }
-
-    public bool DrawGravityVector { get; set; }
-
-    public bool DrawPlane { get; set; }
-
-    #endregion
-
-
-    private Timer _timer = new Timer();
-    
     private void SetUpModel()
     {
         _vbo = GL.GenBuffer();
         _vao = GL.GenVertexArray();
         _ibo = GL.GenBuffer();
         GenerateCube(true);
-    }
-
-    public void SetGuiIsEnabled(bool value)
-    {
-        _rigidBodyControl.initialConditionsGroupBox.IsEnabled = value;
-        _rigidBodyControl.visualisationGroupBox.IsEnabled = value;
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    [NotifyPropertyChangedInvocator]
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     #region PosRotScaleMatrices
@@ -289,8 +206,7 @@ public partial class RigidBody
     private int _vao;
     private int _ibo;
 
-    public Vector3 DiagonalizedInertiaTensor { get; private set; }
-    public Vector3 InversedDaigonalizedInertiaTensor { get; private set; }
+    
 
     private void GenerateCube(bool generateNew = false)
     {
@@ -326,19 +242,7 @@ public partial class RigidBody
             GenerateDiagonalLine();
         }
 
-        CalculateInertiaTensor();
-    }
-
-    private void CalculateInertiaTensor()
-    {
-        var faceLength5 = Math.Pow(_cubeEdgeLength, 5);
-
-        var I1 = (float) (11.0f / 12 * faceLength5 * CubeDensity); //wektor własny {-1,0,1}
-        var I2 = (float) (11.0f / 12 * faceLength5 * CubeDensity); //wektor własny {-1,1,0} 
-        var I3 = (float) (faceLength5 * CubeDensity / 6.0f); //wektor własny {1,1,1} - nasza przekątna
-
-        DiagonalizedInertiaTensor = (I1, I2, I3);
-        InversedDaigonalizedInertiaTensor = (1.0f / I1, 1.0f / I2, 1.0f / I3);
+        CalculateDiagonalizedInertiaTensor();
     }
 
     private void GenerateCubeLines()
@@ -511,118 +415,5 @@ public partial class RigidBody
     public void GenerateGravityVectorIndices()
     {
     }
-
-    // ReSharper disable once InconsistentNaming
-    private Quaternion Q, Q_t, Q1, Q_t1;
-
-    // ReSharper disable once InconsistentNaming
-    private Vector3 W, W_t, W1, W_t1; //prędkość kątowa
-    private float t = 0;
-
-    // ReSharper disable once InconsistentNaming
-    private readonly Matrix3 ChangeBaseMatrixT0 = new Matrix3(
-        (-1.0f / 3.0f, -1.0f / 3.0f, 2.0f / 3.0f),
-        (-1.0f / 3.0f, 2.0f / 3.0f, -1.0f / 3.0f),
-        (1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f));
-
-    // ReSharper disable once InconsistentNaming
-    private readonly Vector3 GravityVector = new Vector3(0, 0, -9.807f);
-
-    // ReSharper disable once InconsistentNaming
-    private Vector3 StartingGravityVectorInChangedBase;
-    private Vector3 GravityTorque;
-
-    private Vector3 CalculateTorque(Quaternion Q)
-    {
-        return Q * StartingGravityVectorInChangedBase;
-    }
-
-    private Vector3 f(Quaternion Q, Vector3 W)
-    {
-        return Vector3.Multiply(InversedDaigonalizedInertiaTensor,
-            (CalculateTorque(Q) + Vector3.Cross(Vector3.Multiply(DiagonalizedInertiaTensor, W), W)));
-    }
-
-    private Quaternion g(Quaternion Q, Vector3 W)
-    {
-        Matrix4x3 qMatrix4x3 = new Matrix4x3((-Q.X, -Q.Y, -Q.Z), (Q.W, -Q.Z, Q.Y), (Q.Z, Q.W, -Q.X), (-Q.Y, Q.X, Q.W));
-
-        return new Quaternion(
-            w: qMatrix4x3[0, 0] * W[0] + qMatrix4x3[0, 1] * W[1] + qMatrix4x3[0, 2] * W[2],
-            x: qMatrix4x3[1, 0] * W[0] + qMatrix4x3[1, 1] * W[1] + qMatrix4x3[1, 2] * W[2],
-            y: qMatrix4x3[2, 0] * W[0] + qMatrix4x3[2, 1] * W[1] + qMatrix4x3[2, 2] * W[2],
-            z: qMatrix4x3[3, 0] * W[0] + qMatrix4x3[3, 1] * W[1] + qMatrix4x3[3, 2] * W[2]
-        );
-    }
-
-
-    public void SimulateNextStep()
-    {
-        /*
-         Jak to policzyć?
-         funkcja1  f(t)=I^(-1)(N+(IW)*W)
-         funkcja2  g(t)=QxW/2
-        //Z poprzedniego kroku
-        W(t), Wt(t)
-        Q(t), Qt(t)
-        //Inne
-        I - stałe
-        N - liczymy na bieżąco*/
-
-
-        var f_k1 = f(Q, W);
-        var g_k1 = g(Q, W);
-
-        var f_k2 = f(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
-        var g_k2 = g(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
-
-        var f_k3 = f(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k2 / 2.0f);
-        var g_k3 = g(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k2 / 2.0f);
-
-        var f_k4 = f(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k3);
-        var g_k4 = g(Q + IntegrationStep / 2.0f * g_k2, W + IntegrationStep * f_k3);
-
-        W1 = W + 1.0f / 6.0f * (f_k1 + 2 * f_k2 + 2 * f_k3 + f_k4) * IntegrationStep;
-        Q1 = Q + 1.0f / 6.0f * (g_k1 + 2 * g_k2 + 2 * g_k3 + g_k4) * IntegrationStep;
-        //W_t1 = ;
-
-
-        Q1.Normalize();
-
-        W = W1;
-        Q = Q1;
-        /*
-         Jak to narysować?
-         Q(t+delta) - nasza obecna rotacja w układzie bączka
-         teraz chcemy to za pomocą "macierz" B obrócić do układu sceny i zastosować na startowym obiekcie
-         */
-
-        //Główne pytanie, jak policzyć B?
-        //B to nasz kwaternion
-    }
-
-    public void StartSimulation()
-    {
-        W = (0, 0, (float)AngularVelocity);
-        Q = Quaternion.FromAxisAngle((0,0,1),0);
-        
-        
-        _timer.Interval = (int)(IntegrationStep * 1000);
-        _timer.Enabled = true;
-        _timer.Start();
-    }
-
-    public void StopSimulation()
-    {
-        _timer.Enabled = false;
-        _timer.Stop();
-    }
-
-    public void ResetSimulation()
-    {
-        _timer.Stop();
-        _rigidBodyRotation = Matrix4.Identity;
-        ResetPath();
-        StartSimulation();
-    }
+    
 }

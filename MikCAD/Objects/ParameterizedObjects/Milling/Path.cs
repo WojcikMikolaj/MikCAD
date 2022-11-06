@@ -159,7 +159,7 @@ public class Path : ParameterizedObject
         return _modelMatrix;
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * 3 * sizeof(float), _verticesDraw,
@@ -216,9 +216,8 @@ public class Path : ParameterizedObject
         return vertices;
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
-        uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
 }

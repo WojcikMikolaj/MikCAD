@@ -328,9 +328,9 @@ public class ObjectsController : INotifyPropertyChanged
         }
     }
 
-    public void DrawObjects(EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void DrawObjects(EyeEnum eye)
     {
-        _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, eye, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.DrawGrid(Scene.CurrentScene.camera.grid, eye);
         foreach (var obj in ParameterizedObjects)
         {
             Scene.CurrentScene._shader = obj.Selected ? _selectedObjectShader : _standardObjectShader;
@@ -347,27 +347,27 @@ public class ObjectsController : INotifyPropertyChanged
                     break;
             }
 
-            obj.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            obj.GenerateVertices();
             obj.SetTexture();
-            obj.PassToDrawProcessor(_drawProcessor, eye, vertexAttributeLocation, normalAttributeLocation);
+            obj.PassToDrawProcessor(_drawProcessor, eye);
         }
 
         if (SelectedObject is not IBezierCurve && SelectedObject is not ISurface)
             if (SelectedObject is CompositeObject o)
             {
-                _drawProcessor.ProcessObject(o, eye, vertexAttributeLocation, normalAttributeLocation);
+                _drawProcessor.ProcessObject(o, eye);
             }
 
-        _drawProcessor.ProcessObject(_pointer, eye, vertexAttributeLocation, normalAttributeLocation);
-        _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, eye, vertexAttributeLocation, normalAttributeLocation);
+        _drawProcessor.ProcessObject(_pointer, eye);
+        _drawProcessor.DrawAxis(MainWindow.current.ActiveAxis, eye);
         if (SelectionBox.Draw)
             _drawProcessor.DrawSelectionBox(SelectionBox);
 
         if (Simulator3C.Simulator.Enabled && Block is { })
         {
-            Block.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            Block.GenerateVertices();
             Block.SetTexture();
-            _drawProcessor.ProcessObject(Block, eye, vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Block, eye);
         }
 
         if (Simulator3C.Simulator.Enabled && Cutter is { })
@@ -377,9 +377,9 @@ public class ObjectsController : INotifyPropertyChanged
                 GL.Disable(EnableCap.DepthTest);
             }
 
-            Cutter.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            Cutter.GenerateVertices();
             //Cutter.SetTexture();
-            _drawProcessor.ProcessObject(Cutter, eye, vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(Cutter, eye);
             if (Simulator3C.Simulator.IgnoreDepth)
             {
                 GL.Enable(EnableCap.DepthTest);
@@ -394,8 +394,8 @@ public class ObjectsController : INotifyPropertyChanged
                 GL.Disable(EnableCap.DepthTest);
             }
 
-            Path.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
-            _drawProcessor.ProcessObject(Path, eye, vertexAttributeLocation, normalAttributeLocation);
+            Path.GenerateVertices();
+            _drawProcessor.ProcessObject(Path, eye);
 
             if (Simulator3C.Simulator.IgnoreDepth)
             {
@@ -409,10 +409,10 @@ public class ObjectsController : INotifyPropertyChanged
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.DepthTest);
 
-            RigidBody.RB.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            RigidBody.RB.GenerateVertices();
             RigidBody.RB.UpdateRigidBodyRotationMatrix();
             RigidBody.RB.AddVertexToPath();
-            _drawProcessor.ProcessObject(RigidBody.RB, eye, vertexAttributeLocation, normalAttributeLocation);
+            _drawProcessor.ProcessObject(RigidBody.RB, eye);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
@@ -459,7 +459,7 @@ public class ObjectsController : INotifyPropertyChanged
             var _modelMatrix = point.GetModelMatrix();
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
             Scene.CurrentScene._shader.SetVector3("PickingColor", point.PickingColor);
-            point.GenerateVertices(0, 0);
+            point.GenerateVertices();
             GL.DrawElements(PrimitiveType.Points, 1, DrawElementsType.UnsignedInt, 0);
         }
 

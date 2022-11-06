@@ -228,7 +228,7 @@ namespace MikCAD
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public abstract void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation);
+        public abstract void GenerateVertices();
         public abstract Matrix4 GetModelMatrix();
         public abstract Matrix4 GetOnlyModelMatrix();
         
@@ -239,7 +239,7 @@ namespace MikCAD
             
         }
 
-        public abstract void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation);
+        public abstract void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye);
 
         public virtual void SetTexture()
         {

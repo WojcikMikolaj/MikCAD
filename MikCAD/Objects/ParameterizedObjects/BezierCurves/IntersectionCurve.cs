@@ -131,7 +131,7 @@ public class IntersectionCurve : CompositeObject, IBezierCurve
         //return new uint[]{0, 1, 2, 3};
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         float minX = 1;
         float maxX = -1;
@@ -174,9 +174,9 @@ public class IntersectionCurve : CompositeObject, IBezierCurve
         _patches = GeneratePatches();
     }
 
-    public void GenerateVerticesBase(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVerticesBase()
     {
-        base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        base.GenerateVertices();
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)
@@ -207,9 +207,8 @@ public class IntersectionCurve : CompositeObject, IBezierCurve
         }
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
-        uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
 }

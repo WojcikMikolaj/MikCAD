@@ -70,7 +70,7 @@ public class ParameterizedPoint : ParameterizedObject
     private float[] _vertices = new float[3];
 
     private uint[] _indexArray = {0};
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
@@ -127,9 +127,9 @@ public class ParameterizedPoint : ParameterizedObject
         }
     }
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
     
     public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.Point(ParameterizedPoint point)

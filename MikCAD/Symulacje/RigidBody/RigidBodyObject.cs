@@ -346,7 +346,7 @@ public partial class RigidBody
 
     private bool _cubeFirstIter = true;
 
-    public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVertices()
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _cubeVbo);
         if (_cubeFirstIter)
@@ -430,7 +430,7 @@ public partial class RigidBody
 
     private bool _pathFirstIter = true;
 
-    public void GeneratePathVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GeneratePathVertices()
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, _pathVbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _pathVertices.Length * TexPoint.Size * sizeof(float),
@@ -455,10 +455,9 @@ public partial class RigidBody
         _pathFirstIter = false;
     }
 
-    public void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
-        uint normalAttributeLocation)
+    public void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
 
     public void GenerateIndicesForDiagonal()

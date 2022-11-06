@@ -248,7 +248,7 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         }
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         CalculateBezierCoefficients();
 
@@ -277,9 +277,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
     }
 
 
-    public void GenerateVerticesBase(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVerticesBase()
     {
-        base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        base.GenerateVertices();
     }
 
     public void MoveUp(ParameterizedObject parameterizedObject)
@@ -312,10 +312,9 @@ public class InterpolatingBezierCurveC2 : CompositeObject, IBezierCurve
         }
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye,uint vertexAttributeLocation,
-        uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
     
     public static explicit operator InterpolatedC2(InterpolatingBezierCurveC2 interpolatingCurve)

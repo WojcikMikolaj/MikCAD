@@ -153,7 +153,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         //return new uint[]{0, 1, 2, 3};
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         float minX = 1;
         float maxX = -1;
@@ -203,9 +203,9 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
     }
 
 
-    public void GenerateVerticesBase(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVerticesBase()
     {
-        base.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+        base.GenerateVertices();
     }
 
     public void ConvertBSplineToBernstein(bool update = false)
@@ -373,7 +373,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         }
     }
 
-    public void GenerateVerticesForBernsteinPoints(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVerticesForBernsteinPoints()
     {
         var points = _bernsteinPoints;
         var vertices = new float[(points.Count) * 4];
@@ -412,7 +412,7 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         GL.EnableVertexAttribArray(1);
     }
 
-    public void GenerateVerticesForBSplinePoints(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public void GenerateVerticesForBSplinePoints()
     {
         var vertices = new float[(_objects.Count) * 4];
         for (int i = 0; i < (_objects.Count); i++)
@@ -448,9 +448,9 @@ public class BezierCurveC2 : CompositeObject, IBezierCurve
         GL.EnableVertexAttribArray(1);
     }
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
     
     public static explicit operator BezierC2(BezierCurveC2 curveC2)

@@ -195,10 +195,10 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
         }
     }
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         if (_centerRender != null)
-            _centerRender.GenerateVertices(vertexAttributeLocation, normalAttributeLocation);
+            _centerRender.GenerateVertices();
     }
 
     public override Matrix4 GetModelMatrix()
@@ -219,9 +219,9 @@ public class CompositeObject : ParameterizedObject, INotifyCollectionChanged
     }
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor,EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this,eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this,eye);
     }
 
     public Intersection GetNewIntersectionObject()

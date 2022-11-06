@@ -67,7 +67,7 @@ public class Pointer3D : ParameterizedObject
         0, 3,
     };
     
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
 
         GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
@@ -132,8 +132,8 @@ public class Pointer3D : ParameterizedObject
         OnPropertyChanged(nameof(posZ));
     }
     
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
 }

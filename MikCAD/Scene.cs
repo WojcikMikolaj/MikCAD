@@ -124,18 +124,18 @@ namespace MikCAD
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
                 //GL.ColorMask(true, false,false,true);
-                ObjectsController.DrawObjects(EyeEnum.Left,0,  0);
+                ObjectsController.DrawObjects(EyeEnum.Left);
                 //GL.ColorMask(true, true,true,true);
                 GL.Clear(ClearBufferMask.DepthBufferBit);
                 //GL.ColorMask(false, true,true,true);
-                ObjectsController.DrawObjects(EyeEnum.Right,0,  0);
+                ObjectsController.DrawObjects(EyeEnum.Right);
                 //GL.ColorMask(true, true,true,true);
             }
             else
             {
                 GL.Disable(EnableCap.Blend);
                 //GL.ColorMask(true, true,true,true);
-                ObjectsController.DrawObjects(EyeEnum.Both,0,  0);
+                ObjectsController.DrawObjects(EyeEnum.Both);
             }
         }
     }

@@ -415,7 +415,7 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
 
     private float[] _vertices;
 
-    public override void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
+    public override void GenerateVertices()
     {
         //nie zawijany
         int rowsCount = 0;
@@ -480,10 +480,9 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
         base.OnDelete();
     }
 
-    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
-        uint normalAttributeLocation)
+    public override void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye)
     {
-        drawProcessor.ProcessObject(this, eye, vertexAttributeLocation, normalAttributeLocation);
+        drawProcessor.ProcessObject(this, eye);
     }
 
     public static explicit operator SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2(BezierSurfaceC2 surfaceC2)

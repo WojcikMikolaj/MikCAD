@@ -135,24 +135,27 @@ public partial class RigidBody
 
     private Vector3 _rotation = InitialRotation;
     private Vector3 _scale = new Vector3(1, 1, 1);
-
-    private Matrix4 _modelMatrix = Matrix4.Identity;
-    private Matrix4 _scaleMatrix = Matrix4.Identity;
     private Matrix4 _rotationMatrixX = Matrix4.Identity;
     private Matrix4 _rotationMatrixY = Matrix4.Identity;
     private Matrix4 _rotationMatrixZ = Matrix4.Identity;
+    private Matrix4 _modelMatrix = Matrix4.Identity;
+    private Matrix4 _scaleMatrix = Matrix4.Identity;
     private Matrix4 _rigidBodyRotation = Matrix4.Identity;
     private Matrix4 _translationMatrix = Matrix4.Identity;
 
     public void UpdateRigidBodyRotationMatrix()
     {
-        _rigidBodyRotation = Matrix4.CreateFromQuaternion(Q);
+        if (IsSimulationRunning)
+        {
+            _rigidBodyRotation = Matrix4.CreateFromQuaternion(Q);
+        }
+
         UpdateModelMatrix();
     }
     
     public void UpdateModelMatrix()
     {
-        _modelMatrix = _scaleMatrix * _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ * _rigidBodyRotation * _translationMatrix;
+        _modelMatrix = _scaleMatrix *  _rigidBodyRotation * _translationMatrix;
     }
     
     public void UpdateScaleMatrix()
@@ -160,12 +163,13 @@ public partial class RigidBody
         _scaleMatrix = Matrix4.CreateScale(_scale);
         UpdateModelMatrix();
     }
-
+    
     public void UpdateRotationMatrix()
     {
         _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]), 0, 0));
         _rotationMatrixY = Matrix4.CreateFromQuaternion(new Quaternion(0, MH.DegreesToRadians(_rotation[1]), 0));
         _rotationMatrixZ = Matrix4.CreateFromQuaternion(new Quaternion(0, 0, MH.DegreesToRadians(_rotation[2])));
+        _rigidBodyRotation = _rotationMatrixX * _rotationMatrixY * _rotationMatrixZ;
         UpdateModelMatrix();
     }
 
@@ -355,7 +359,7 @@ public partial class RigidBody
             return;
         }
 
-        var point =  new Vector4(1, 1, 1,1) * _modelMatrix ;
+        var point =  new Vector4((float)CubeEdgeLength, (float)CubeEdgeLength, (float)CubeEdgeLength,1) * _modelMatrix ;
         _pathVertices[currentVert] = new TexPoint()
         {
             X = point.X,

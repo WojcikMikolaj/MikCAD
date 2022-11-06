@@ -28,7 +28,7 @@ public partial class RigidBodyControl : UserControl
     {
         RigidBody.RB._rigidBodyControl ??= this;
         RigidBody.RB.IsSimulationRunning = false;
-        RigidBody.RB.StopSimulation();
+        RigidBody.RB.PauseSimulation();
     }
 
     private void ResetSimulation(object sender, RoutedEventArgs e)

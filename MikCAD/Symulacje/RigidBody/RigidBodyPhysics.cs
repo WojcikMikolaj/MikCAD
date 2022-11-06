@@ -21,13 +21,11 @@ public partial class RigidBody
 {
     private void SetUpPhysics()
     {
-        Q = Quaternion.FromAxisAngle((0, 0, 1), 0);
-        UpdateRigidBodyRotationMatrix();
+        W = ((float) _angularVelocity, (float) _angularVelocity, (float) _angularVelocity);
+        t = 0;
     }
 
-    public Vector3 DiagonalizedInertiaTensor { get; private set; }
     public Matrix3 InertiaTensor { get; private set; }
-    public Vector3 InversedDiagonalizedInertiaTensor { get; private set; }
     public Matrix3 InversedInertiaTensor { get; private set; }
 
     private void CalculateDiagonalizedInertiaTensor()
@@ -44,7 +42,7 @@ public partial class RigidBody
     private Vector3 W, W1; //prędkość kątowa
     private float t = 0;
 
-    private readonly Vector3 GravityVector = new Vector3(0, 0, -9.807f);
+    private readonly Vector3 GravityVector = new Vector3(0, -9.807f, 0);
     private Vector3 GravityTorque;
 
     [SuppressMessage("ReSharper", "ParameterHidesMember")]
@@ -53,8 +51,13 @@ public partial class RigidBody
     {
         //mam g;
         var G = Q.Inverted() * GravityVector;
-        //wstwiam G do całki
-        return (0, 0, 0);
+        float faceLength4ro = MathF.Pow((float) CubeEdgeLength, 4) * (float) CubeDensity;
+        var integrationResult = (
+            -1.0f / 2 * faceLength4ro * G.Y + 1.0f / 2 * faceLength4ro * G.Z,
+            1.0f / 2 * faceLength4ro * G.X - 1.0f / 2 * faceLength4ro * G.Z,
+            -1.0f / 2 * faceLength4ro * G.X + 1.0f / 2 * faceLength4ro * G.Y
+        );
+        return integrationResult;
     }
 
 
@@ -119,7 +122,10 @@ public partial class RigidBody
 
     private void ResetPhysics()
     {
-        Q = Quaternion.FromMatrix();
+        _rotation = InitialRotation;
+        _rotation.Z -= (float) _cubeDeviation;
+        UpdateRotationMatrix();
+        Q = _rigidBodyRotation.ExtractRotation();
         W = ((float) _angularVelocity, (float) _angularVelocity, (float) _angularVelocity);
         t = 0;
         UpdateRigidBodyRotationMatrix();

@@ -71,7 +71,7 @@ public partial class RigidBody
         set
         {
             _angularVelocity = value;
-            W = (0, 0, (float) _angularVelocity);
+            W = ((float) _angularVelocity, (float) _angularVelocity, (float) _angularVelocity);
         }
     }
 
@@ -99,8 +99,10 @@ public partial class RigidBody
         SetUpPhysics();
 
         UpdateRotationMatrix();
+        //Musi być po update
+        Q = _rigidBodyRotation.ExtractRotation();
+        
         _timer.Tick += (sender, args) => SimulateNextStep();
-
         ResetPath();
     }
     
@@ -115,9 +117,10 @@ public partial class RigidBody
         _timer.Enabled = true;
         _timer.Start();
         IsSimulationRunning = true;
+        Q = _rigidBodyRotation.ExtractRotation();
     }
 
-    public void StopSimulation()
+    public void PauseSimulation()
     {
         _timer.Enabled = false;
         _timer.Stop();
@@ -126,10 +129,9 @@ public partial class RigidBody
 
     public void ResetSimulation()
     {
-        StopSimulation();
+        PauseSimulation();
         ResetPhysics();
         ResetPath();
-        StartSimulation();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

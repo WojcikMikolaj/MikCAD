@@ -557,27 +557,37 @@ public class DrawProcessor
         Scene.CurrentScene._shader = _controller._colorShader;
         Scene.CurrentScene._shader.SetMatrix4("modelMatrix", _modelMatrix);
         Scene.CurrentScene.UpdatePVMAndStereoscopics(eye);
-        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 0.2f));
+        Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 0, 0, 0.7f));
 
-        if (RigidBody.RB.DrawCube)
+        if (rigidBody.DrawCube)
         {
             GL.DrawElements(PrimitiveType.Triangles, rigidBody.TrianglesIndices.Length, DrawElementsType.UnsignedInt,
                 0);
         }
 
-        if (RigidBody.RB.DrawDiagonal)
+        if (rigidBody.DrawDiagonal)
         {
-            RigidBody.RB.GenerateIndicesForDiagonal();
-            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0, 0, 1, 1));
+            rigidBody.GenerateIndicesForDiagonal();
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0, 1, 1, 1));
             GL.DrawElements(PrimitiveType.Lines, rigidBody.DiagonalLineIndices.Length, DrawElementsType.UnsignedInt,
                 0);
         }
 
-        if (RigidBody.RB.DrawPath)
+        if (rigidBody.DrawPath)
         {
             Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
-            RigidBody.RB.GeneratePathVertices(vertexAttributeLocation, normalAttributeLocation);
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(0, 1, 1, 1));
+            rigidBody.GeneratePathVertices(vertexAttributeLocation, normalAttributeLocation);
             GL.DrawElements(PrimitiveType.Lines, rigidBody.PathLinesIndices.Length, DrawElementsType.UnsignedInt,
+                0);
+        }
+
+        if (rigidBody.DrawPlane)
+        {
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 1, 1, 0.5f));
+            rigidBody.GeneratePlaneVerticesAndIndices();
+            GL.DrawElements(PrimitiveType.Triangles, rigidBody.PlaneTrianglesIndices.Length, DrawElementsType.UnsignedInt,
                 0);
         }
     }

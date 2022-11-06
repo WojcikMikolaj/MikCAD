@@ -109,6 +109,10 @@ public partial class RigidBody
     public void SetGuiIsEnabled(bool value)
     {
         _rigidBodyControl.initialConditionsGroupBox.IsEnabled = value;
+        if (!value)
+        {
+            //PauseSimulation();
+        }
     }
     
     public void StartSimulation()

@@ -18,10 +18,19 @@ public partial class RigidBody
 {
     private void SetUpModel()
     {
-        _vbo = GL.GenBuffer();
-        _vao = GL.GenVertexArray();
-        _ibo = GL.GenBuffer();
+        _cubeVbo = GL.GenBuffer();
+        _cubeVao = GL.GenVertexArray();
+        _cubeIbo = GL.GenBuffer();
+
+        _planeVbo = GL.GenBuffer();
+        _planeVao = GL.GenVertexArray();
+        _planeIbo = GL.GenBuffer();
+
+        _pathVbo = GL.GenBuffer();
+        _pathVao = GL.GenVertexArray();
+        _pathIbo = GL.GenBuffer();
         GenerateCube(true);
+        GeneratePlane();
     }
 
     #region PosRotScaleMatrices
@@ -131,7 +140,7 @@ public partial class RigidBody
 
     private static readonly Vector3 InitialRotation =
         new Vector3(0, 45, (float) MH.RadiansToDegrees(MH.Atan(MH.Sqrt(2))));
-        //new Vector3(0, 0, 0);
+    //new Vector3(0, 0, 0);
 
     private Vector3 _rotation = InitialRotation;
     private Vector3 _scale = new Vector3(1, 1, 1);
@@ -152,18 +161,18 @@ public partial class RigidBody
 
         UpdateModelMatrix();
     }
-    
+
     public void UpdateModelMatrix()
     {
-        _modelMatrix = _scaleMatrix *  _rigidBodyRotation * _translationMatrix;
+        _modelMatrix = _scaleMatrix * _rigidBodyRotation * _translationMatrix;
     }
-    
+
     public void UpdateScaleMatrix()
     {
         _scaleMatrix = Matrix4.CreateScale(_scale);
         UpdateModelMatrix();
     }
-    
+
     public void UpdateRotationMatrix()
     {
         _rotationMatrixX = Matrix4.CreateFromQuaternion(new Quaternion(MH.DegreesToRadians(_rotation[0]), 0, 0));
@@ -197,7 +206,7 @@ public partial class RigidBody
     private uint[] _pathLinesIndices;
     public uint[] PathLinesIndices => _pathLinesIndices;
     private float[] _pathVerticesDraw;
-    
+
     public uint[] Lines => _lines;
     private uint[] _lines;
 
@@ -207,11 +216,26 @@ public partial class RigidBody
     public uint[] DiagonalLineIndices => _diagonalLineIndices;
     private uint[] _diagonalLineIndices;
 
-    private int _vbo;
-    private int _vao;
-    private int _ibo;
+    private int _cubeVbo;
+    private int _cubeVao;
+    private int _cubeIbo;
 
-    
+    private int _pathVbo;
+    private int _pathVao;
+    private int _pathIbo;
+
+    private int _planeVbo;
+    private int _planeVao;
+    private int _planeIbo;
+
+
+    private TexPoint[] _planeVertices;
+    private uint[] _planeVertIndices;
+    public int PlaneVerticesCount => _planeVertices.Length;
+    private float[] _planeVerticesDraw;
+    public uint[] PlaneTrianglesIndices => _planeTrianglesIndices;
+    private uint[] _planeTrianglesIndices;
+
 
     private void GenerateCube(bool generateNew = false)
     {
@@ -245,6 +269,7 @@ public partial class RigidBody
             GenerateCubeLines();
             GenerateCubeTriangles();
             GenerateDiagonalLine();
+            _cubeFirstIter = true;
         }
 
         CalculateDiagonalizedInertiaTensor();
@@ -303,27 +328,32 @@ public partial class RigidBody
         };
     }
 
+    private bool _cubeFirstIter = true;
+
     public void GenerateVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * TexPoint.Size * sizeof(float), _verticesDraw,
-            BufferUsageHint.StaticDraw);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _cubeVbo);
+        if (_cubeFirstIter)
+        {
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * TexPoint.Size * sizeof(float), _verticesDraw,
+                BufferUsageHint.StaticDraw);
+        }
 
-        GL.BindVertexArray(_vao);
+        GL.BindVertexArray(_cubeVao);
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
-
         GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float),
             3 * sizeof(float));
         GL.EnableVertexAttribArray(1);
 
-
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _cubeIbo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _trianglesIndices.Length * sizeof(uint), _trianglesIndices,
             BufferUsageHint.StaticDraw);
+        
+        _cubeFirstIter = false;
     }
 
-    
+
     private void ResetPath()
     {
         currentVert = 0;
@@ -332,15 +362,16 @@ public partial class RigidBody
         {
             _pathVertices[i] = new TexPoint();
         }
-        _pathLinesIndices = new uint[2*(PathLength-1)];
+
+        _pathLinesIndices = new uint[2 * (PathLength - 1)];
         uint k = 0;
-        for (uint j = 0; j < 2*(PathLength-1); j+=2)
+        for (uint j = 0; j < 2 * (PathLength - 1); j += 2)
         {
             _pathLinesIndices[j] = k;
-            _pathLinesIndices[j+1] = k+1;
+            _pathLinesIndices[j + 1] = k + 1;
             k++;
         }
-        
+
         _pathVerticesDraw = new float[_pathVertices.Length * TexPoint.Size];
         for (int i = 0; i < _pathVertices.Length; i++)
         {
@@ -359,7 +390,8 @@ public partial class RigidBody
             return;
         }
 
-        var point =  new Vector4((float)CubeEdgeLength, (float)CubeEdgeLength, (float)CubeEdgeLength,1) * _modelMatrix ;
+        var point = new Vector4((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength, 1) *
+                    _modelMatrix;
         _pathVertices[currentVert] = new TexPoint()
         {
             X = point.X,
@@ -368,7 +400,7 @@ public partial class RigidBody
             TexX = 0,
             TexY = 0
         };
-        
+
         _pathVerticesDraw[TexPoint.Size * currentVert] = _pathVertices[currentVert].X;
         _pathVerticesDraw[TexPoint.Size * currentVert + 1] = _pathVertices[currentVert].Y;
         _pathVerticesDraw[TexPoint.Size * currentVert + 2] = _pathVertices[currentVert].Z;
@@ -378,15 +410,19 @@ public partial class RigidBody
         currentVert++;
         currentVert %= PathLength;
     }
-    
+
+
+    private bool _pathFirstIter = true;
 
     public void GeneratePathVertices(uint vertexAttributeLocation, uint normalAttributeLocation)
     {
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, _pathVertices.Length * TexPoint.Size * sizeof(float), _pathVerticesDraw,
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _pathVbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, _pathVertices.Length * TexPoint.Size * sizeof(float),
+            _pathVerticesDraw,
             BufferUsageHint.StaticDraw);
 
-        GL.BindVertexArray(_vao);
+
+        GL.BindVertexArray(_pathVao);
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float), 0);
         GL.EnableVertexAttribArray(0);
 
@@ -394,12 +430,16 @@ public partial class RigidBody
             3 * sizeof(float));
         GL.EnableVertexAttribArray(1);
 
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _pathIbo);
+        if (_pathFirstIter)
+        {
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _pathLinesIndices.Length * sizeof(uint), _pathLinesIndices,
+                BufferUsageHint.StaticDraw);
+        }
 
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, _pathLinesIndices.Length * sizeof(uint), _pathLinesIndices,
-            BufferUsageHint.StaticDraw);
+        _pathFirstIter = false;
     }
-    
+
     public void PassToDrawProcessor(DrawProcessor drawProcessor, EyeEnum eye, uint vertexAttributeLocation,
         uint normalAttributeLocation)
     {
@@ -408,17 +448,77 @@ public partial class RigidBody
 
     public void GenerateIndicesForDiagonal()
     {
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ibo);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _cubeIbo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _diagonalLineIndices.Length * sizeof(uint), _diagonalLineIndices,
             BufferUsageHint.StaticDraw);
     }
 
-    public void GeneratePlaneIndices()
+    private void GeneratePlane()
+    {
+        _planeVertices = new TexPoint[4];
+        _planeVertIndices = new uint[4];
+        _planeVertices[0] = new TexPoint((-3, 0, 3), (0, 0));
+        _planeVertices[1] = new TexPoint((3, 0, 3), (0, 0));
+        _planeVertices[2] = new TexPoint((3, 0, -3), (0, 0));
+        _planeVertices[3] = new TexPoint((-3, 0, -3), (0, 0));
+
+        _planeVerticesDraw = new float[_planeVertices.Length * TexPoint.Size];
+        for (int i = 0; i < _planeVertices.Length; i++)
+        {
+            _planeVerticesDraw[TexPoint.Size * i] = _planeVertices[i].X;
+            _planeVerticesDraw[TexPoint.Size * i + 1] = _planeVertices[i].Y;
+            _planeVerticesDraw[TexPoint.Size * i + 2] = _planeVertices[i].Z;
+            _planeVerticesDraw[TexPoint.Size * i + 3] = _planeVertices[i].TexX;
+            _planeVerticesDraw[TexPoint.Size * i + 4] = _planeVertices[i].TexY;
+        }
+
+        GeneratePlaneTriangles();
+    }
+
+    private void GeneratePlaneTriangles()
+    {
+        _planeTrianglesIndices = new uint[]
+        {
+            0, 1, 2,
+            0, 2, 3,
+        };
+    }
+
+    private bool _planeFirstIter = true;
+
+    public void GeneratePlaneVerticesAndIndices()
+    {
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _planeVbo);
+        if (_planeFirstIter)
+        {
+            GL.BufferData(BufferTarget.ArrayBuffer, _planeVertices.Length * TexPoint.Size * sizeof(float),
+                _planeVerticesDraw,
+                BufferUsageHint.StaticDraw);
+        }
+
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, TexPoint.Size * sizeof(float),
+            3 * sizeof(float));
+        GL.EnableVertexAttribArray(1);
+
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _planeIbo);
+        if (_planeFirstIter)
+        {
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _planeTrianglesIndices.Length * sizeof(uint),
+                _planeTrianglesIndices,
+                BufferUsageHint.StaticDraw);
+        }
+
+        _planeFirstIter = false;
+    }
+
+    private void GenerateGravityVector()
     {
     }
+
 
     public void GenerateGravityVectorIndices()
     {
     }
-    
 }

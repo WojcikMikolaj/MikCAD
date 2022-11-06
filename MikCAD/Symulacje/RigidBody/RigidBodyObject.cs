@@ -131,6 +131,7 @@ public partial class RigidBody
 
     private static readonly Vector3 InitialRotation =
         new Vector3(0, 45, (float) MH.RadiansToDegrees(MH.Atan(MH.Sqrt(2))));
+        //new Vector3(0, 0, 0);
 
     private Vector3 _rotation = InitialRotation;
     private Vector3 _scale = new Vector3(1, 1, 1);

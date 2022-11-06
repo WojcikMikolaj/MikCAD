@@ -590,5 +590,14 @@ public class DrawProcessor
             GL.DrawElements(PrimitiveType.Triangles, rigidBody.PlaneTrianglesIndices.Length, DrawElementsType.UnsignedInt,
                 0);
         }
+        
+        if (rigidBody.DrawGravityVector)
+        {
+            Scene.CurrentScene._shader.SetMatrix4("modelMatrix", Matrix4.Identity);
+            Scene.CurrentScene._shader.SetVector4("color", new Vector4(1, 1, 0, 1));
+            rigidBody.GenerateGravityVectorVertices();
+            GL.DrawElements(PrimitiveType.Lines, rigidBody.PlaneTrianglesIndices.Length, DrawElementsType.UnsignedInt,
+                0);
+        }
     }
 }

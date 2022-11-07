@@ -401,17 +401,17 @@ public partial class RigidBody
     
     private void ResizePath()
     {
-        var _pathOld = _pathVertices;
+        var pathOld = _pathVertices;
         _pathVertices = new TexPoint[_pathLength];
         for (uint i = 0; i < _pathLength; i++)
         {
-            if (i >= _pathOld.Length)
+            if (i >= pathOld.Length)
             {
                 _pathVertices[i] = new TexPoint();   
             }
             else
             {
-                _pathVertices[i] = _pathOld[i];    
+                _pathVertices[i] = pathOld[i];    
             }
             
         }

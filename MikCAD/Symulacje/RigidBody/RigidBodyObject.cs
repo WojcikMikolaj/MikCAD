@@ -206,8 +206,8 @@ public partial class RigidBody
     public int VerticesCount => _vertices.Length;
     private float[] _verticesDraw;
 
-    private uint PathLength = 5000;
-    private uint currentVert = 1;
+    private uint _pathLength = 5000;
+    private uint _currentVert = 1;
     private TexPoint[] _pathVertices;
     private uint[] _pathLinesIndices;
     public uint[] PathLinesIndices => _pathLinesIndices;
@@ -372,16 +372,16 @@ public partial class RigidBody
 
     private void ResetPath()
     {
-        currentVert = 0;
-        _pathVertices = new TexPoint[PathLength];
-        for (uint i = 0; i < PathLength; i++)
+        _currentVert = 0;
+        _pathVertices = new TexPoint[_pathLength];
+        for (uint i = 0; i < _pathLength; i++)
         {
             _pathVertices[i] = new TexPoint();
         }
 
-        _pathLinesIndices = new uint[2 * (PathLength - 1)];
+        _pathLinesIndices = new uint[2 * (_pathLength - 1)];
         uint k = 0;
-        for (uint j = 0; j < 2 * (PathLength - 1); j += 2)
+        for (uint j = 0; j < 2 * (_pathLength - 1); j += 2)
         {
             _pathLinesIndices[j] = k;
             _pathLinesIndices[j + 1] = k + 1;
@@ -398,6 +398,45 @@ public partial class RigidBody
             _pathVerticesDraw[TexPoint.Size * i + 4] = _pathVertices[i].TexY;
         }
     }
+    
+    private void ResizePath()
+    {
+        var _pathOld = _pathVertices;
+        _pathVertices = new TexPoint[_pathLength];
+        for (uint i = 0; i < _pathLength; i++)
+        {
+            if (i >= _pathOld.Length)
+            {
+                _pathVertices[i] = new TexPoint();   
+            }
+            else
+            {
+                _pathVertices[i] = _pathOld[i];    
+            }
+            
+        }
+
+        _pathLinesIndices = new uint[2 * (_pathLength - 1)];
+        uint k = 0;
+        for (uint j = 0; j < 2 * (_pathLength - 1); j += 2)
+        {
+            _pathLinesIndices[j] = k;
+            _pathLinesIndices[j + 1] = k + 1;
+            k++;
+        }
+
+        _pathVerticesDraw = new float[_pathVertices.Length * TexPoint.Size];
+        for (int i = 0; i < _pathVertices.Length; i++)
+        {
+            _pathVerticesDraw[TexPoint.Size * i] = _pathVertices[i].X;
+            _pathVerticesDraw[TexPoint.Size * i + 1] = _pathVertices[i].Y;
+            _pathVerticesDraw[TexPoint.Size * i + 2] = _pathVertices[i].Z;
+            _pathVerticesDraw[TexPoint.Size * i + 3] = _pathVertices[i].TexX;
+            _pathVerticesDraw[TexPoint.Size * i + 4] = _pathVertices[i].TexY;
+        }
+
+        _currentVert %= _pathLength;
+    }
 
     public void AddVertexToPath()
     {
@@ -408,7 +447,7 @@ public partial class RigidBody
 
         var point = new Vector4((float) CubeEdgeLength, (float) CubeEdgeLength, (float) CubeEdgeLength, 1) *
                     _modelMatrix;
-        _pathVertices[currentVert] = new TexPoint()
+        _pathVertices[_currentVert] = new TexPoint()
         {
             X = point.X,
             Y = point.Y,
@@ -417,14 +456,14 @@ public partial class RigidBody
             TexY = 0
         };
 
-        _pathVerticesDraw[TexPoint.Size * currentVert] = _pathVertices[currentVert].X;
-        _pathVerticesDraw[TexPoint.Size * currentVert + 1] = _pathVertices[currentVert].Y;
-        _pathVerticesDraw[TexPoint.Size * currentVert + 2] = _pathVertices[currentVert].Z;
-        _pathVerticesDraw[TexPoint.Size * currentVert + 3] = _pathVertices[currentVert].TexX;
-        _pathVerticesDraw[TexPoint.Size * currentVert + 4] = _pathVertices[currentVert].TexY;
+        _pathVerticesDraw[TexPoint.Size * _currentVert] = _pathVertices[_currentVert].X;
+        _pathVerticesDraw[TexPoint.Size * _currentVert + 1] = _pathVertices[_currentVert].Y;
+        _pathVerticesDraw[TexPoint.Size * _currentVert + 2] = _pathVertices[_currentVert].Z;
+        _pathVerticesDraw[TexPoint.Size * _currentVert + 3] = _pathVertices[_currentVert].TexX;
+        _pathVerticesDraw[TexPoint.Size * _currentVert + 4] = _pathVertices[_currentVert].TexY;
 
-        currentVert++;
-        currentVert %= PathLength;
+        _currentVert++;
+        _currentVert %= _pathLength;
     }
 
 

@@ -93,6 +93,17 @@ public partial class RigidBody
     public bool DrawGravityVector { get; set; }
     public bool DrawPlane { get; set; }
 
+    public uint PathLength
+    {
+        get => _pathLength;
+        set
+        {
+            _pathLength = value;
+            ResizePath();
+        }
+        
+    }
+
     #endregion
     
     private Timer _timer = new Timer();

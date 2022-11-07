@@ -48,6 +48,7 @@
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0">Cube edge length:</Label>
                 <n:DoubleUpDown Grid.Row="0" Grid.Column="1"
@@ -84,6 +85,10 @@
                                 DisplayLength="13" IsReadOnly="False"
                                 IsUpdateValueWhenLostFocus="True"
                                 FormatString="0.######" />
+                <CheckBox Grid.Row="5" Grid.ColumnSpan="2"  Margin="5,5,5,5"
+                           IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.IsGravityEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="isGravityEnabledCheckBox">Grawitacja włączona</CheckBox>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="visualisationGroupBox" Header="Wyświetlanie" IsEnabled="{Binding ElementName=enabledCheckBox, Path=IsChecked}">

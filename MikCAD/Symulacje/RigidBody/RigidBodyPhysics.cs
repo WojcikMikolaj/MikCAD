@@ -49,6 +49,11 @@ public partial class RigidBody
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private Vector3 CalculateTorque(Quaternion Q)
     {
+        if (!IsGravityEnabled)
+        {
+            return Vector3.Zero;
+        }
+
         //mam g;
         var G = Q.Inverted() * GravityVector;
         float faceLength4ro = MathF.Pow((float) CubeEdgeLength, 4) * (float) CubeDensity;

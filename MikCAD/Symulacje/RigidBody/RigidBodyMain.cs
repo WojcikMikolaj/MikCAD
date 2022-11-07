@@ -77,6 +77,11 @@ public partial class RigidBody
 
     public float IntegrationStep { get; set; } = 0.001f;
 
+    public bool IsGravityEnabled
+    {
+        get;
+        set;
+    } = true;
 
     #endregion
 

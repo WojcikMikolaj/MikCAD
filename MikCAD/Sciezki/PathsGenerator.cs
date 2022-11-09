@@ -91,7 +91,7 @@ public class PathsGenerator
 
                             v += dV;
                         }
-            
+
                         u += dU;
                     }
 
@@ -100,66 +100,113 @@ public class PathsGenerator
                     break;
             }
         }
+
         SaveAsBitmap();
 
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();
         list.Add(new CuttingLinePoint()
         {
-            XPosInMm = XBlockSize/2 * CmToMm,
-            YPosInMm = YBlockSize/2 * CmToMm,
-            ZPosInMm = 2 * ZBlockSize * CmToMm, 
+            XPosInMm = XBlockSize / 2 * CmToMm,
+            YPosInMm = YBlockSize / 2 * CmToMm,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
         });
 
         var distanceBetweenPaths = radius * 0.8f;
-        var nominalHeightForFirstPass = (ZBlockSize - SupportSize) / 2 + SupportSize;
-        var numberOfPathsOnSinglePlain = (int)XBlockSize * CmToMm / distanceBetweenPaths;
+        var nominalHeightForFirstPass = ((ZBlockSize - SupportSize) / 2 + SupportSize)*CmToMm;
+        var numberOfPathsOnSinglePlain = (int) XBlockSize * CmToMm / distanceBetweenPaths;
 
         var cutterArray = CalculateCutterArray(frez, radius);
-        
-        for(int i=0; i<numberOfPathsOnSinglePlain; ++i)
-        {
-            var startXinMm = i * distanceBetweenPaths - XBlockSize/2;
-            var startYinMm = i % 2 == 0 ? 0 : YBlockSize - YBlockSize/2;
-            var startZinMm = MathF.Max(nominalHeightForFirstPass, GetZFromArray(startXinMm, startYinMm, cutterArray));
+        var rX = ConvertXInMmToTexX(radius);
+        var rY = ConvertYInMmToTexY(radius);
 
-            for (int j = 0; j < _width; ++j)
+
+        for (int i = 0; i < numberOfPathsOnSinglePlain; ++i)
+        {
+            bool moveRight = i % 2 == 0;
+            var startXinMm = (moveRight ? 0 : XBlockSize - XBlockSize / 2) * CmToMm;
+            var startYinMm = (i * distanceBetweenPaths - YBlockSize / 2) * CmToMm;
+            var startZinMm = MathF.Max(nominalHeightForFirstPass,
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+
+            list.Add(new CuttingLinePoint()
             {
-                
+                XPosInMm = startXinMm,
+                YPosInMm = startYinMm,
+                ZPosInMm = startZinMm
+            });
+
+            var posXInMm = startXinMm;
+            var posYInMm = startYinMm;
+            var posZInMm = startZinMm;
+
+            while (true)
+            {
+                if (moveRight)
+                {
+                    if (posXInMm + radius >= XBlockSize * CmToMm / 2)
+                    {
+                        break;
+                    }
+
+                    posXInMm += radius;
+                }
+                else
+                {
+                    if (posXInMm - radius <= -XBlockSize * CmToMm / 2)
+                    {
+                        break;
+                    }
+
+                    posXInMm -= radius;
+                }
+
+                posZInMm = MathF.Max(nominalHeightForFirstPass,
+                    GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+
+                list.Add(new CuttingLinePoint()
+                {
+                    XPosInMm = posXInMm,
+                    YPosInMm = posYInMm,
+                    ZPosInMm = posZInMm
+                });
             }
         }
-        
+
+        CuttingLines cuttingLines = new CuttingLines()
+        {
+            points = list.ToArray()
+        };
+        cuttingLines.SaveFile(frez, radius);
     }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)
     {
         var rX = ConvertXInMmToTexX(radiusInMm);
         var rY = ConvertYInMmToTexY(radiusInMm);
-        
+
         var yZArray = new float[(rY - 1) * 2 + 1];
         var xZArray = new float[(rX - 1) * 2 + 1];
         var xyZArray = new float[(rX - 1) * 2 + 1, (rY - 1) * 2 + 1];
-        
+
         if (frez == CutterType.Flat)
         {
-            
         }
         else
         {
-        
             int it = 0;
             for (int i = -rY + 1; i < rY; i++)
             {
-                yZArray[it++] = (0.5f*(1.0f/radiusInMm * ConvertFromTexXToXInMm(i)*ConvertFromTexXToXInMm(i)));
+                yZArray[it++] = (0.5f * (1.0f / radiusInMm * ConvertFromTexXToXInMm(i) * ConvertFromTexXToXInMm(i)));
             }
 
-            
+
             it = 0;
             for (int i = -rX + 1; i < rX; i++)
             {
-                xZArray[it++] = 0.5f*(1.0f/radiusInMm * ConvertFromTexYToYInMm(i)*ConvertFromTexYToYInMm(i));
+                xZArray[it++] = 0.5f * (1.0f / radiusInMm * ConvertFromTexYToYInMm(i) * ConvertFromTexYToYInMm(i));
             }
 
-            
+
             it = 0;
             for (int i = -rX + 1; i < rX; i++)
             {
@@ -169,6 +216,7 @@ public class PathsGenerator
                     xyZArray[it, itt] = xZArray[it] + yZArray[itt];
                     itt++;
                 }
+
                 it++;
             }
         }
@@ -176,26 +224,31 @@ public class PathsGenerator
         return xyZArray;
     }
 
-    private float GetZFromArray(float Xpos, float Ypos, float[,] cutterArray)
+    private float GetZFromArray(float Xpos, float Ypos, float[,] cutterArray, int rX, int rY)
     {
         var posXArray = (int) (Xpos / dXPerArrayElement);
         var posYArray = (int) (Ypos / dZPerArrayElement);
 
         var height = SupportSize * CmToMm;
-        
-        if (posXArray >= 0
-            && posXArray < _width
-            && posYArray >= 0
-            && posYArray < _height)
+
+
+        int it = 0;
+        for (int i = -rX + 1; i < rX; i++)
         {
-            for (int i =  )
+            var itt = 0;
+            for (int j = -rY + 1; j < rY; j++)
             {
-                
+                if (posXArray + i >= 0
+                    && posXArray + i < _width
+                    && posYArray + j >= 0
+                    && posYArray + j < _height)
+                {
+                    height = MathF.Max(height, HeightMap[posXArray + i, posYArray + j] - cutterArray[it, itt]);
+                }
             }
-            
         }
 
-        return ;
+        return height;
     }
 
     public void GenerateSupportFlatFinish(CutterType frez, uint radius)
@@ -205,7 +258,7 @@ public class PathsGenerator
     public void GenerateDetailed(CutterType frez, uint radius)
     {
     }
-    
+
     private int ConvertXInMmToTexX(float rInMm)
     {
         return (int) (rInMm * (_width / (XBlockSize * CmToMm)));
@@ -220,7 +273,7 @@ public class PathsGenerator
     {
         return value * ((XBlockSize * CmToMm) / (float) _width);
     }
-    
+
     private float ConvertFromTexYToYInMm(float value)
     {
         return value * ((YBlockSize * CmToMm) / (float) _height);
@@ -233,7 +286,7 @@ public class PathsGenerator
         {
             for (int j = 0; j < _height; ++j)
             {
-                var c = (int) ((HeightMap[i, j] / (ZBlockSize*UnitsToCm*CmToMm)) * 255);
+                var c = (int) ((HeightMap[i, j] / (ZBlockSize * UnitsToCm * CmToMm)) * 255);
                 db.SetPixel(i, j, Color.FromArgb(c, c, c));
             }
         }

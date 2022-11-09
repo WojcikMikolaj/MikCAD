@@ -124,7 +124,7 @@ public class PathsGenerator
         {
             bool moveRight = i % 2 == 0;
             var startXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
-            var startYinMm = i * distanceBetweenPaths - ( YBlockSize / 2) * CmToMm;
+            var startYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var startZinMm = MathF.Max(nominalHeightForFirstPass,
                 GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
 
@@ -226,8 +226,8 @@ public class PathsGenerator
 
     private float GetZFromArray(float Xpos, float Ypos, float[,] cutterArray, int rX, int rY)
     {
-        var posXArray = (int) (Xpos / dXPerArrayElement);
-        var posYArray = (int) (Ypos / dZPerArrayElement);
+        var posXArray = (int) ((Xpos + XBlockSize / 2 * CmToMm) / dXPerArrayElement);
+        var posYArray = (int) ((Ypos + YBlockSize / 2 * CmToMm) / dZPerArrayElement);
 
         var height = SupportSize * CmToMm;
 

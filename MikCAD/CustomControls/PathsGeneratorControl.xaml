@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="MikCAD.CustomControls.PathsGeneratorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:n="clr-namespace:NumericUpDownLib;assembly=NumericUpDownLib"
+             xmlns:local="clr-namespace:MikCAD"
+             xmlns:customControls="clr-namespace:MikCAD.CustomControls"
+             mc:Ignorable="d"
+             d:DesignWidth="250">
+    <StackPanel>
+        <GroupBox Header="Ustawienia ogólne">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0">Rozmiar X</Label>
+                <Label Grid.Row="1" Grid.Column="0">Rozmiar Y</Label>
+                <Label Grid.Row="2" Grid.Column="0">Rozmiar Z</Label>
+                <Label Grid.Row="3" Grid.Column="0">Grubość podstawki</Label>
+                
+                <n:FloatUpDown Grid.Row="0" Grid.Column="1"
+                               Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.XBlockSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               DisplayLength="13" IsReadOnly="False"
+                               IsUpdateValueWhenLostFocus="True"
+                               MinValue="1"
+                               StepSize="1" LargeStepSize="1"
+                               FormatString="0.###" />
+                <n:FloatUpDown Grid.Row="1" Grid.Column="1"
+                               Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.YBlockSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               DisplayLength="13" IsReadOnly="False"
+                               IsUpdateValueWhenLostFocus="True"
+                               MinValue="1"
+                               StepSize="1" LargeStepSize="1"
+                               FormatString="0.###" />
+                <n:FloatUpDown Grid.Row="2" Grid.Column="1"
+                               Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.ZBlockSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               DisplayLength="13" IsReadOnly="False"
+                               IsUpdateValueWhenLostFocus="True"
+                               MinValue="1"
+                               StepSize="1" LargeStepSize="1"
+                               FormatString="0.###" />
+                <n:FloatUpDown Grid.Row="3" Grid.Column="1"
+                               Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.SupportSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               DisplayLength="13" IsReadOnly="False"
+                               IsUpdateValueWhenLostFocus="True"
+                               MinValue="0"
+                               StepSize="0.1" LargeStepSize="0.1"
+                               FormatString="0.###" />
+            </Grid>    
+        </GroupBox>
+        
+        <GroupBox Header="Obróbka zgrubna">
+            <StackPanel>
+                <Label>Typ freza</Label>
+                <RadioButton x:Name="radioRK16" IsChecked="True">K16</RadioButton>
+                <RadioButton x:Name="radioRK08">K08</RadioButton>
+                <RadioButton x:Name="radioRK01">K01</RadioButton>
+                <RadioButton x:Name="radioRF12">F12</RadioButton>
+                <RadioButton x:Name="radioRF10">F10</RadioButton>
+                <Button Click="GenerateRough">Generuj</Button>
+            </StackPanel>
+        </GroupBox>
+        
+        <GroupBox Header="Frezowanie podstawki frezem płaskim">
+            <StackPanel>
+                <Label>Typ freza</Label>
+                <RadioButton x:Name="radioSFK16">K16</RadioButton>
+                <RadioButton x:Name="radioSFK08">K08</RadioButton>
+                <RadioButton x:Name="radioSFK01">K01</RadioButton>
+                <RadioButton x:Name="radioSFF12" IsChecked="True">F12</RadioButton>
+                <RadioButton x:Name="radioSFF10">F10</RadioButton>
+                <Button Click="GenerateSupportFlatFinish">Generuj</Button>
+            </StackPanel>
+        </GroupBox>
+        
+        <GroupBox Header="Obróbka dokładna">
+            <StackPanel>
+                <Label>Typ freza</Label>
+                <RadioButton x:Name="radioDK16">K16</RadioButton>
+                <RadioButton x:Name="radioDK08" IsChecked="True">K08</RadioButton>
+                <RadioButton x:Name="radioDK01">K01</RadioButton>
+                <RadioButton x:Name="radioDF12">F12</RadioButton>
+                <RadioButton x:Name="radioDF10">F10</RadioButton>
+                <Button Click="GenerateDetailed">Generuj</Button>
+            </StackPanel>
+        </GroupBox>
+        
+        <Expander Header="Debug">
+        </Expander>
+    </StackPanel>
+</UserControl>

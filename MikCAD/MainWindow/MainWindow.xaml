@@ -144,6 +144,11 @@
                             DataContext="{Binding scene.RigidBody, Mode=OneWay}"
                             x:Name="rigidBodyControl"/>
                     </TabItem>
+                    <TabItem Header="Ścieżki">
+                        <customControls:PathsGeneratorControl 
+                            DataContext="{Binding scene.PathsGenerator, Mode=OneWay}"
+                            x:Name="pathsControl"/>
+                    </TabItem>
                 </TabControl>
                 
             </Grid>

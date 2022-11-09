@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using MikCAD.Objects.ParameterizedObjects.Milling;
+using MikCAD.Sciezki;
 using MikCAD.Symulacje.RigidBody;
 using MikCAD.Utilities;
 using OpenTK.Graphics.OpenGL;
@@ -29,6 +30,7 @@ namespace MikCAD
         private Matrix4 _modelMatrix;
 
         public RigidBody RigidBody { get; private set; } = new RigidBody();
+        public PathsGenerator PathsGenerator { get; private set; } = new PathsGenerator();
         
         public Scene()
         {

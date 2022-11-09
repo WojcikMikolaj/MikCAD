@@ -32,6 +32,8 @@ public class PathsGenerator
     private float dXPerArrayElement;
     private float dZPerArrayElement;
 
+    private float dXInMmPerArrayElement;
+    private float dYInMmPerArrayElement;
     public PathsGenerator()
     {
         Generator = this;
@@ -51,6 +53,8 @@ public class PathsGenerator
         dXPerArrayElement = XBlockSize / _width;
         //bo y jest zamieniony z z
         dZPerArrayElement = YBlockSize / _height;
+        dXInMmPerArrayElement = dXPerArrayElement * CmToMm;
+        dYInMmPerArrayElement = dZPerArrayElement * CmToMm;
 
         foreach (var parameterizedObject in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
         {
@@ -148,7 +152,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius;
+                    posXInMm += radius*0.1f;
                 }
                 else
                 {
@@ -157,11 +161,11 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius;
+                    posXInMm -= radius*0.1f;
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
-                    GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY));
 
                 list.Add(new CuttingLinePoint()
                 {
@@ -226,8 +230,8 @@ public class PathsGenerator
 
     private float GetZFromArray(float Xpos, float Ypos, float[,] cutterArray, int rX, int rY)
     {
-        var posXArray = (int) ((Xpos + XBlockSize / 2 * CmToMm) / dXPerArrayElement);
-        var posYArray = (int) ((Ypos + YBlockSize / 2 * CmToMm) / dZPerArrayElement);
+        var posXArray = (int) ((Xpos + XBlockSize * CmToMm / 2) / dXInMmPerArrayElement);
+        var posYArray = (int) ((Ypos + YBlockSize * CmToMm / 2) / dYInMmPerArrayElement);
 
         var height = SupportSize * CmToMm;
 
@@ -243,7 +247,8 @@ public class PathsGenerator
                     && posYArray + j >= 0
                     && posYArray + j < _height)
                 {
-                    height = MathF.Max(height, HeightMap[posXArray + i, posYArray + j] - cutterArray[it, itt]);
+                    //tu coś nie tak z tym dodawaniem
+                    height = MathF.Max(height, HeightMap[posXArray + i, posYArray + j] /*- cutterArray[it, itt]*/);
                 }
             }
         }

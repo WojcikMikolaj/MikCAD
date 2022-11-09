@@ -112,7 +112,7 @@ public class PathsGenerator
         });
 
         var distanceBetweenPaths = radius * 0.8f;
-        var nominalHeightForFirstPass = ((ZBlockSize - SupportSize) / 2 + SupportSize)*CmToMm;
+        var nominalHeightForFirstPass = ((ZBlockSize - SupportSize) / 2 + SupportSize) * CmToMm;
         var numberOfPathsOnSinglePlain = (int) XBlockSize * CmToMm / distanceBetweenPaths;
 
         var cutterArray = CalculateCutterArray(frez, radius);
@@ -123,8 +123,8 @@ public class PathsGenerator
         for (int i = 0; i < numberOfPathsOnSinglePlain; ++i)
         {
             bool moveRight = i % 2 == 0;
-            var startXinMm = (moveRight ? 0 : XBlockSize - XBlockSize / 2) * CmToMm;
-            var startYinMm = (i * distanceBetweenPaths - YBlockSize / 2) * CmToMm;
+            var startXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
+            var startYinMm = i * distanceBetweenPaths - ( YBlockSize / 2) * CmToMm;
             var startZinMm = MathF.Max(nominalHeightForFirstPass,
                 GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
 

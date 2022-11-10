@@ -86,7 +86,8 @@ public class PathsGenerator
                                 pos += (XBlockSize / 2, 0, YBlockSize / 2);
 
                                 var posXArray = (int) (pos.X / dXPerArrayElement);
-                                var posYArray = (int) (pos.Z / dZPerArrayElement);
+                                //odwrócone, żeby się zgadzało na frezarce
+                                var posYArray = _height - (int) (pos.Z / dZPerArrayElement);
 
                                 pos *= CmToMm;
 

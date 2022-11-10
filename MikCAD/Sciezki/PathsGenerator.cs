@@ -355,20 +355,20 @@ public class PathsGenerator
 
 
         int it = 0;
-        for (int i = -4*rX + 1; i < 4*rX; i++)
+        for (int i = -rX + 1; i < rX; i++)
         {
             var itt = 0;
-            for (int j = -4*rY + 1; j < 4*rY; j++)
+            for (int j = -rY + 1; j < rY; j++)
             {
-                if (posXArray + (int) (i * dXInMmPerArrayElement) >= 0
-                    && posXArray + (int) (i * dXInMmPerArrayElement) < _width
-                    && posYArray + (int) (j * dYInMmPerArrayElement) >= 0
-                    && posYArray + (int) (j * dYInMmPerArrayElement) < _height)
+                if (posXArray + (int) (i * dXInMmPerArrayElement*4) >= 0
+                    && posXArray + (int) (i * dXInMmPerArrayElement*4) < _width
+                    && posYArray + (int) (j * dYInMmPerArrayElement*4) >= 0
+                    && posYArray + (int) (j * dYInMmPerArrayElement*4) < _height)
                 {
                     //tu coś nie tak z tym dodawaniem
                     height = MathF.Max(height,
-                        HeightMap[posXArray + (int) (i * dXInMmPerArrayElement),
-                            posYArray + (int) (j * dYInMmPerArrayElement)] /*- cutterArray[it, itt]*/);
+                        HeightMap[posXArray + (int) (i * dXInMmPerArrayElement*4),
+                            posYArray + (int) (j * dYInMmPerArrayElement*4)] /*- cutterArray[it, itt]*/);
                 }
             }
         }

@@ -149,7 +149,7 @@ public class PathsGenerator
             var startXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
             var startYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var startZinMm = MathF.Max(nominalHeightForFirstPass,
-                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY))+ SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -184,7 +184,7 @@ public class PathsGenerator
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
-                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY));
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY))+ SafetyDistance;
 
                 list.Add(new CuttingLinePoint()
                 {
@@ -197,7 +197,7 @@ public class PathsGenerator
             var endXinMm = (moveRight ? XBlockSize / 2 : -XBlockSize / 2) * CmToMm;
             var endYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var endZinMm = MathF.Max(nominalHeightForFirstPass,
-                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY));
+                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY)) + SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -213,16 +213,10 @@ public class PathsGenerator
 
         var lastXInMm = list[^1].XPosInMm;
         var lastYInMm = list[^1].YPosInMm;
-        var lastZInMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
-            GetZFromArray(lastXInMm, lastYInMm, cutterArray, rX, rY));
+        var lastZInMm = MathF.Max(SupportSize * CmToMm,
+            GetZFromArray(lastXInMm, lastYInMm, cutterArray, rX, rY)) + SafetyDistance;
         ;
-
-        // list.Add(new CuttingLinePoint()
-        // {
-        //     XPosInMm = lastXInMm,
-        //     YPosInMm = lastYInMm,
-        //     ZPosInMm = lastZInMm,
-        // });
+        
 
         for (int i = 0; i < numberOfPathsOnSinglePlain + 2; ++i)
         {
@@ -230,8 +224,8 @@ public class PathsGenerator
             bool moveRight = i % 2 == 0;
             var startXinMm = (moveRight ? XBlockSize / 2 : -XBlockSize / 2) * CmToMm;
             var startYinMm = (numberOfPathsOnSinglePlain + 1 - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
-            var startZinMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
-                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+            var startZinMm = MathF.Max(SupportSize * CmToMm,
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY))+ SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -265,8 +259,8 @@ public class PathsGenerator
                     posXInMm -= radius * 0.1f;
                 }
 
-                posZInMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
-                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY));
+                posZInMm = MathF.Max(SupportSize * CmToMm,
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY))+ SafetyDistance;
                 list.Add(new CuttingLinePoint()
                 {
                     XPosInMm = posXInMm,
@@ -277,8 +271,8 @@ public class PathsGenerator
 
             var endXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
             var endYinMm = (numberOfPathsOnSinglePlain +1 - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
-            var endZinMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
-                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY));
+            var endZinMm = MathF.Max(SupportSize * CmToMm,
+                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY))+ SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {

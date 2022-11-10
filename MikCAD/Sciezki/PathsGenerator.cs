@@ -171,7 +171,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius * 0.1f;
+                    posXInMm += radius * 0.01f;
                 }
                 else
                 {
@@ -180,7 +180,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius * 0.1f;
+                    posXInMm -= radius * 0.01f;
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
@@ -247,7 +247,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius * 0.1f;
+                    posXInMm += radius * 0.01f;
                 }
                 else
                 {
@@ -256,7 +256,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius * 0.1f;
+                    posXInMm -= radius * 0.01f;
                 }
 
                 posZInMm = MathF.Max(SupportSize * CmToMm,
@@ -355,20 +355,20 @@ public class PathsGenerator
 
 
         int it = 0;
-        for (int i = -rX + 1; i < rX; i++)
+        for (int i = -4*rX + 1; i < 4*rX; i++)
         {
             var itt = 0;
-            for (int j = -rY + 1; j < rY; j++)
+            for (int j = -4*rY + 1; j < 4*rY; j++)
             {
-                if (posXArray + (int) (i / 1.9) >= 0
-                    && posXArray + (int) (i / 1.9) < _width
-                    && posYArray + (int) (j / 1.9) >= 0
-                    && posYArray + (int) (j / 1.9) < _height)
+                if (posXArray + (int) (i * dXInMmPerArrayElement) >= 0
+                    && posXArray + (int) (i * dXInMmPerArrayElement) < _width
+                    && posYArray + (int) (j * dYInMmPerArrayElement) >= 0
+                    && posYArray + (int) (j * dYInMmPerArrayElement) < _height)
                 {
                     //tu coś nie tak z tym dodawaniem
                     height = MathF.Max(height,
-                        HeightMap[posXArray + (int) (i / 1.9),
-                            posYArray + (int) (j / 1.9)] /*- cutterArray[it, itt]*/);
+                        HeightMap[posXArray + (int) (i * dXInMmPerArrayElement),
+                            posYArray + (int) (j * dYInMmPerArrayElement)] /*- cutterArray[it, itt]*/);
                 }
             }
         }

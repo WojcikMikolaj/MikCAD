@@ -1036,4 +1036,10 @@ public class BezierSurfaceC2 : CompositeObject, ISurface, IIntersectable
     public int TexWidth { get; private set; }
     public int TexHeight { get; private set; }
     public bool IgnoreBlack { get; set; }
+
+    public Vector3 GetValueAtPlusR(float u, float v, float radius)
+    {
+        (var pos, var du,var dv)  = GetPositionAndGradient(u, v);
+        return pos + radius * Vector3.Cross(du, dv).Normalized();
+    }
 }

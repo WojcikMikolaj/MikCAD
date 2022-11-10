@@ -49,7 +49,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     #endregion
 
-    private uint _xGridSizeInUnits = 18;
+    private uint _xGridSizeInUnits = 15;
 
     public uint XGridSizeInUnits
     {
@@ -64,7 +64,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _yGridSizeInUnits = 18;
+    private uint _yGridSizeInUnits = 15;
 
     public uint YGridSizeInUnits
     {
@@ -94,7 +94,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _xGridDivisions = 8000;
+    private uint _xGridDivisions = 2000;
 
     public uint XGridDivisions
     {
@@ -110,7 +110,7 @@ public class Simulator3C : INotifyPropertyChanged
         }
     }
 
-    private uint _yGridDivisions = 8000;
+    private uint _yGridDivisions = 2000;
 
     public uint YGridDivisions
     {

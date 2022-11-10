@@ -21,7 +21,7 @@ public class PathsGenerator
     public float XBlockSize { get; set; } = 15;
     public float YBlockSize { get; set; } = 15;
     public float ZBlockSize { get; set; } = 5;
-    public float SupportSize { get; set; } = 0;
+    public float SupportSize { get; set; } = 1.5f;
 
     public bool GenerateHeightmap { get; set; } = true;
 
@@ -136,7 +136,7 @@ public class PathsGenerator
 
         var distanceBetweenPaths = radius * 0.8f;
         var nominalHeightForFirstPass = ((ZBlockSize - SupportSize) / 2 + SupportSize) * CmToMm;
-        var numberOfPathsOnSinglePlain = (int)( XBlockSize * CmToMm / distanceBetweenPaths);
+        var numberOfPathsOnSinglePlain = (int) (XBlockSize * CmToMm / distanceBetweenPaths);
 
         var cutterArray = CalculateCutterArray(frez, radius);
         var rX = ConvertXInMmToTexX(radius);
@@ -149,7 +149,7 @@ public class PathsGenerator
             var startXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
             var startYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var startZinMm = MathF.Max(nominalHeightForFirstPass,
-                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY))+ SafetyDistance;
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY)) + SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -184,7 +184,7 @@ public class PathsGenerator
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
-                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY))+ SafetyDistance;
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY)) + SafetyDistance;
 
                 list.Add(new CuttingLinePoint()
                 {
@@ -216,7 +216,7 @@ public class PathsGenerator
         var lastZInMm = MathF.Max(SupportSize * CmToMm,
             GetZFromArray(lastXInMm, lastYInMm, cutterArray, rX, rY)) + SafetyDistance;
         ;
-        
+
 
         for (int i = 0; i < numberOfPathsOnSinglePlain + 2; ++i)
         {
@@ -225,7 +225,7 @@ public class PathsGenerator
             var startXinMm = (moveRight ? XBlockSize / 2 : -XBlockSize / 2) * CmToMm;
             var startYinMm = (numberOfPathsOnSinglePlain + 1 - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var startZinMm = MathF.Max(SupportSize * CmToMm,
-                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY))+ SafetyDistance;
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY)) + SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -260,7 +260,7 @@ public class PathsGenerator
                 }
 
                 posZInMm = MathF.Max(SupportSize * CmToMm,
-                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY))+ SafetyDistance;
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY)) + SafetyDistance;
                 list.Add(new CuttingLinePoint()
                 {
                     XPosInMm = posXInMm,
@@ -270,9 +270,9 @@ public class PathsGenerator
             }
 
             var endXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
-            var endYinMm = (numberOfPathsOnSinglePlain +1 - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
+            var endYinMm = (numberOfPathsOnSinglePlain + 1 - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
             var endZinMm = MathF.Max(SupportSize * CmToMm,
-                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY))+ SafetyDistance;
+                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY)) + SafetyDistance;
 
             list.Add(new CuttingLinePoint()
             {
@@ -337,10 +337,10 @@ public class PathsGenerator
         return xyZArray;
     }
 
-    private float GetZFromArray(float Xpos, float Ypos, float[,] cutterArray, int rX, int rY)
+    private float GetZFromArray(float xPosInMm, float yPosInMm, float[,] cutterArray, int rX, int rY)
     {
-        var posXArray = (int) ((Xpos + XBlockSize * CmToMm / 2) / dXInMmPerArrayElement);
-        var posYArray = (int) ((Ypos + YBlockSize * CmToMm / 2) / dYInMmPerArrayElement);
+        var posXArray = (int) ((xPosInMm + XBlockSize * CmToMm / 2) / dXInMmPerArrayElement);
+        var posYArray = (int) ((yPosInMm + YBlockSize * CmToMm / 2) / dYInMmPerArrayElement);
 
         var height = 0.0f;
         float heightInPoint = 0.0f;
@@ -360,13 +360,15 @@ public class PathsGenerator
             var itt = 0;
             for (int j = -rY + 1; j < rY; j++)
             {
-                if (posXArray + i >= 0
-                    && posXArray + i < _width
-                    && posYArray + j >= 0
-                    && posYArray + j < _height)
+                if (posXArray + (int) (i / 1.9) >= 0
+                    && posXArray + (int) (i / 1.9) < _width
+                    && posYArray + (int) (j / 1.9) >= 0
+                    && posYArray + (int) (j / 1.9) < _height)
                 {
                     //tu coś nie tak z tym dodawaniem
-                    height = MathF.Max(height, HeightMap[posXArray + i, posYArray + j] /*- cutterArray[it, itt]*/);
+                    height = MathF.Max(height,
+                        HeightMap[posXArray + (int) (i / 1.9),
+                            posYArray + (int) (j / 1.9)] /*- cutterArray[it, itt]*/);
                 }
             }
         }

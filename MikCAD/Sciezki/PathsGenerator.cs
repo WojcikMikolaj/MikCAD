@@ -136,7 +136,7 @@ public class PathsGenerator
 
         var distanceBetweenPaths = radius * 0.8f;
         var nominalHeightForFirstPass = ((ZBlockSize - SupportSize) / 2 + SupportSize) * CmToMm;
-        var numberOfPathsOnSinglePlain = (int) XBlockSize * CmToMm / distanceBetweenPaths;
+        var numberOfPathsOnSinglePlain = (int)( XBlockSize * CmToMm / distanceBetweenPaths);
 
         var cutterArray = CalculateCutterArray(frez, radius);
         var rX = ConvertXInMmToTexX(radius);

@@ -83,6 +83,12 @@ public partial class RigidBody
         set;
     } = true;
 
+    public bool IsGravityFlipped
+    {
+        get;
+        set;
+    }
+
     #endregion
 
     #region DrawProperties

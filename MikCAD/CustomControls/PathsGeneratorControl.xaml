@@ -20,11 +20,15 @@
                     <RowDefinition Height="30" />
                     <RowDefinition Height="30" />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0">Rozmiar X</Label>
                 <Label Grid.Row="1" Grid.Column="0">Rozmiar Y</Label>
                 <Label Grid.Row="2" Grid.Column="0">Rozmiar Z</Label>
                 <Label Grid.Row="3" Grid.Column="0">Grubość podstawki</Label>
+                <CheckBox Grid.Row="4" Grid.ColumnSpan="2" Margin="5,5,5,5"
+                          IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.GenerateHeightmap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Generuj heightmapę</CheckBox>
                 
                 <n:FloatUpDown Grid.Row="0" Grid.Column="1"
                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},

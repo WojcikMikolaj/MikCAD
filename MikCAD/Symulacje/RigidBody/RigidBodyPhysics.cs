@@ -55,7 +55,7 @@ public partial class RigidBody
         }
 
         //mam g;
-        var G = Q.Inverted() * GravityVector;
+        var G = Q.Inverted() * (IsGravityFlipped ? -GravityVector : GravityVector);
         float faceLength4ro = MathF.Pow((float) CubeEdgeLength, 4) * (float) CubeDensity;
         var integrationResult = (
             -1.0f / 2 * faceLength4ro * G.Y + 1.0f / 2 * faceLength4ro * G.Z,
@@ -98,7 +98,7 @@ public partial class RigidBody
 
         var f_k1 = f(Q, W);
         var g_k1 = g(Q, W);
-
+        //Powinno się normalizować (Q + przyrost) 
         var f_k2 = f(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
         var g_k2 = g(Q + IntegrationStep / 2.0f * g_k1, W + IntegrationStep * f_k1 / 2.0f);
 
@@ -111,7 +111,7 @@ public partial class RigidBody
         W1 = W + 1.0f / 6.0f * (f_k1 + 2 * f_k2 + 2 * f_k3 + f_k4) * IntegrationStep;
         Q1 = Q + 1.0f / 6.0f * (g_k1 + 2 * g_k2 + 2 * g_k3 + g_k4) * IntegrationStep;
         Q1.Normalize();
-
+    
         W = W1;
         Q = Q1;
         t += IntegrationStep;

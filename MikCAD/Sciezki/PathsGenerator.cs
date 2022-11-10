@@ -16,17 +16,21 @@ public class PathsGenerator
 {
     public PathsGeneratorControl PathsGeneratorControl;
     public static PathsGenerator Generator { get; private set; }
+    private uint runs = 0;
 
     public float XBlockSize { get; set; } = 15;
     public float YBlockSize { get; set; } = 15;
     public float ZBlockSize { get; set; } = 5;
-    public float SupportSize { get; set; } = 0f;
+    public float SupportSize { get; set; } = 0;
+
+    public bool GenerateHeightmap { get; set; } = true;
 
     private int _height = 1000;
     private int _width = 1000;
     private const int SamplesPerObjectCount = 500;
     private const float CmToMm = 10;
     private const float UnitsToCm = 1;
+    private const float SafetyDistance = 2;
 
     private float[,] HeightMap;
     private float dXPerArrayElement;
@@ -34,6 +38,7 @@ public class PathsGenerator
 
     private float dXInMmPerArrayElement;
     private float dYInMmPerArrayElement;
+
     public PathsGenerator()
     {
         Generator = this;
@@ -42,76 +47,89 @@ public class PathsGenerator
 
     public void GenerateRough(CutterType frez, uint radius)
     {
-        for (int i = 0; i < _width; ++i)
-        {
-            for (int j = 0; j < _height; ++j)
-            {
-                HeightMap[i, j] = SupportSize * CmToMm;
-            }
-        }
-
         dXPerArrayElement = XBlockSize / _width;
         //bo y jest zamieniony z z
         dZPerArrayElement = YBlockSize / _height;
         dXInMmPerArrayElement = dXPerArrayElement * CmToMm;
         dYInMmPerArrayElement = dZPerArrayElement * CmToMm;
 
-        foreach (var parameterizedObject in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
+        if (GenerateHeightmap || runs < 1)
         {
-            switch (parameterizedObject)
+            runs++;
+            for (int i = 0; i < _width; ++i)
             {
-                case BezierSurfaceC2 surf:
-                    float dU = surf.USize / SamplesPerObjectCount;
-                    float dV = surf.VSize / SamplesPerObjectCount;
-                    float u = 0;
-                    float v = 0;
+                for (int j = 0; j < _height; ++j)
+                {
+                    HeightMap[i, j] = SupportSize * CmToMm;
+                }
+            }
+
+            foreach (var parameterizedObject in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
+            {
+                switch (parameterizedObject)
+                {
+                    case BezierSurfaceC2 surf:
+                        float dU = surf.USize / SamplesPerObjectCount;
+                        float dV = surf.VSize / SamplesPerObjectCount;
+                        float u = 0;
+                        float v = 0;
 
 
-                    for (int i = 0; i < SamplesPerObjectCount; ++i)
-                    {
-                        v = 0;
-                        for (int j = 0; j < SamplesPerObjectCount; ++j)
+                        for (int i = 0; i < SamplesPerObjectCount; ++i)
                         {
-                            var pos = surf.GetValueAt(u, v);
-
-                            pos *= UnitsToCm;
-                            pos += (XBlockSize / 2, 0, YBlockSize / 2);
-
-                            var posXArray = (int) (pos.X / dXPerArrayElement);
-                            var posYArray = (int) (pos.Z / dZPerArrayElement);
-
-                            pos *= CmToMm;
-
-                            if (posXArray >= 0
-                                && posXArray < _width
-                                && posYArray >= 0
-                                && posYArray < _height)
+                            v = 0;
+                            for (int j = 0; j < SamplesPerObjectCount; ++j)
                             {
-                                if (HeightMap[posXArray, posYArray] < pos.Y)
+                                var pos = surf.GetValueAt(u, v);
+
+                                pos *= UnitsToCm;
+                                pos += (XBlockSize / 2, 0, YBlockSize / 2);
+
+                                var posXArray = (int) (pos.X / dXPerArrayElement);
+                                var posYArray = (int) (pos.Z / dZPerArrayElement);
+
+                                pos *= CmToMm;
+
+                                if (posXArray >= 0
+                                    && posXArray < _width
+                                    && posYArray >= 0
+                                    && posYArray < _height)
                                 {
-                                    HeightMap[posXArray, posYArray] = pos.Y;
+                                    if (HeightMap[posXArray, posYArray] < pos.Y)
+                                    {
+                                        HeightMap[posXArray, posYArray] = pos.Y;
+                                    }
                                 }
+
+                                v += dV;
                             }
 
-                            v += dV;
+                            u += dU;
                         }
 
-                        u += dU;
-                    }
-
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            SaveAsBitmap();
         }
 
-        SaveAsBitmap();
+        #region first_pass
 
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();
         list.Add(new CuttingLinePoint()
         {
-            XPosInMm = XBlockSize / 2 * CmToMm,
-            YPosInMm = YBlockSize / 2 * CmToMm,
+            XPosInMm = 0,
+            YPosInMm = 0,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
+        });
+
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = -XBlockSize / 2 * CmToMm,
+            YPosInMm = -YBlockSize / 2 * CmToMm,
             ZPosInMm = 2 * ZBlockSize * CmToMm,
         });
 
@@ -124,7 +142,7 @@ public class PathsGenerator
         var rY = ConvertYInMmToTexY(radius);
 
 
-        for (int i = 0; i < numberOfPathsOnSinglePlain; ++i)
+        for (int i = 0; i < numberOfPathsOnSinglePlain + 1; ++i)
         {
             bool moveRight = i % 2 == 0;
             var startXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
@@ -152,7 +170,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius*0.1f;
+                    posXInMm += radius * 0.1f;
                 }
                 else
                 {
@@ -161,7 +179,7 @@ public class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius*0.1f;
+                    posXInMm -= radius * 0.1f;
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
@@ -174,7 +192,102 @@ public class PathsGenerator
                     ZPosInMm = posZInMm
                 });
             }
+
+            var endXinMm = (moveRight ? XBlockSize / 2 : -XBlockSize / 2) * CmToMm;
+            var endYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
+            var endZinMm = MathF.Max(nominalHeightForFirstPass,
+                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY));
+
+            list.Add(new CuttingLinePoint()
+            {
+                XPosInMm = endXinMm,
+                YPosInMm = endYinMm,
+                ZPosInMm = endZinMm
+            });
         }
+
+        #endregion
+
+        #region second_pass
+
+        var lastXInMm = list[^1].XPosInMm;
+        var lastYInMm = list[^1].YPosInMm;
+        var lastZInMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
+            GetZFromArray(lastXInMm, lastYInMm, cutterArray, rX, rY));
+        ;
+
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = lastXInMm,
+            YPosInMm = lastYInMm,
+            ZPosInMm = lastZInMm,
+        });
+
+        for (int i = 0; i < numberOfPathsOnSinglePlain + 1; ++i)
+        {
+            bool moveRight = i % 2 == 0;
+            var startXinMm = (moveRight ? XBlockSize / 2 : -XBlockSize / 2) * CmToMm;
+            var startYinMm = (numberOfPathsOnSinglePlain - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
+            var startZinMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
+                GetZFromArray(startXinMm, startYinMm, cutterArray, rX, rY));
+
+            list.Add(new CuttingLinePoint()
+            {
+                XPosInMm = startXinMm,
+                YPosInMm = startYinMm,
+                ZPosInMm = startZinMm
+            });
+
+            var posXInMm = startXinMm;
+            var posYInMm = startYinMm;
+            var posZInMm = startZinMm;
+
+            while (true)
+            {
+                if (!moveRight)
+                {
+                    if (posXInMm + radius >= XBlockSize * CmToMm / 2)
+                    {
+                        break;
+                    }
+
+                    posXInMm += radius * 0.1f;
+                }
+                else
+                {
+                    if (posXInMm - radius <= -XBlockSize * CmToMm / 2)
+                    {
+                        break;
+                    }
+
+                    posXInMm -= radius * 0.1f;
+                }
+
+                posZInMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
+                    GetZFromArray(posXInMm, posYInMm, cutterArray, rX, rY));
+                list.Add(new CuttingLinePoint()
+                {
+                    XPosInMm = posXInMm,
+                    YPosInMm = posYInMm,
+                    ZPosInMm = posZInMm
+                });
+            }
+
+            var endXinMm = (moveRight ? -XBlockSize / 2 : XBlockSize / 2) * CmToMm;
+            var endYinMm = (numberOfPathsOnSinglePlain - i) * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
+            var endZinMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
+                GetZFromArray(endXinMm, endYinMm, cutterArray, rX, rY));
+
+            list.Add(new CuttingLinePoint()
+            {
+                XPosInMm = endXinMm,
+                YPosInMm = endYinMm,
+                ZPosInMm = endZinMm
+            });
+        }
+
+        #endregion
+
 
         CuttingLines cuttingLines = new CuttingLines()
         {

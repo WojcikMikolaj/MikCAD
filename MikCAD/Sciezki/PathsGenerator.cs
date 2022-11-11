@@ -434,9 +434,12 @@ public class PathsGenerator
                     && posYArray + (int) (j * dYInMmPerArrayElement * 4) >= 0
                     && posYArray + (int) (j * dYInMmPerArrayElement * 4) < _height)
                 {
-                    height = MathF.Max(height,
-                        HeightMap[posXArray + (int) (i * dXInMmPerArrayElement * 4),
-                            posYArray + (int) (j * dYInMmPerArrayElement * 4)]);
+                    if (i * i + j * j <= (2*rX+12) * (2*rX+12))
+                    {
+                        height = MathF.Max(height,
+                            HeightMap[posXArray + (int) (i * dXInMmPerArrayElement * 4),
+                                posYArray + (int) (j * dYInMmPerArrayElement * 4)]);
+                    }
                 }
             }
         }

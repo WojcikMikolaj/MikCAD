@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Speech.Synthesis.TtsEngine;
 using MikCAD.BezierSurfaces;
 using MikCAD.CustomControls;
 using MikCAD.Extensions;
+using MikCAD.Objects;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 
@@ -21,7 +23,7 @@ public class PathsGenerator
     public float XBlockSize { get; set; } = 15;
     public float YBlockSize { get; set; } = 15;
     public float ZBlockSize { get; set; } = 5;
-    public float SupportSize { get; set; } = 1.5f;
+    public float SupportSize { get; set; } = 1.85f;
 
     public bool IsGenerateHeightmap { get; set; } = true;
 
@@ -255,7 +257,7 @@ public class PathsGenerator
         var startYinMm = 0.0f;
         var startZinMm = 0.0f;
 
-        for (int i = 0; i < 2*numberOfPathsOnSinglePlain; ++i)
+        for (int i = 0; i < 2 * numberOfPathsOnSinglePlain; ++i)
         {
             if (moveBack)
             {
@@ -354,55 +356,53 @@ public class PathsGenerator
             YPosInMm = -YBlockSize / 2 * CmToMm,
             ZPosInMm = SupportSize * CmToMm,
         });
-        
+
         SavePath(frez, radius, list);
     }
 
     public void GenerateFlatEnvelope(CutterType frez, uint radius)
     {
-        GenerateHeightmap();
-
         var surfaces = new List<BezierSurfaceC2>();
-        
+        BezierSurfaceC2 supportSurface = null;
+
+        AddSupportSurface();
+
         foreach (var o in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
         {
             if (o is BezierSurfaceC2 surf)
             {
-                surfaces.Add(surf);
+                if (o != Scene.CurrentScene.ObjectsController.ParameterizedObjects.Last())
+                {
+                    surfaces.Add(surf);
+                }
+                else
+                {
+                    supportSurface = surf;
+                }
             }
         }
-        
+
         foreach (var o in surfaces)
         {
             switch (o)
             {
                 case BezierSurfaceC2 surf:
-                    float dU = surf.USize / 10;
-                    float dV = surf.VSize / 10;
-                    float u = 0;
-                    float v = 0;
 
-                    var decorated = new IntersectableDecorator(surf)
+                    var decorated = new IIntersectableDecorator(surf)
                     {
-                        DistanceFromSurface = 0.5f
+                        DistanceFromSurface = radius/CmToMm
                     };
 
-                    for (int i = 0; i < 10; ++i)
+                    var intersection = new Intersection(supportSurface, decorated)
                     {
-                        v = 0;
-                        for (int j = 0; j < 10; ++j)
-                        {
-                            var pos = decorated.GetValueAt(u, v);
-                            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
-                            {
-                                posX = pos.X,
-                                posY = pos.Y,
-                                posZ = pos.Z,
-                            });
-                            v += dV;
-                        }
+                        StartingPointsNumber = 1000,
+                        UseRandom = false
+                    };
 
-                        u += dU;
+                    var result = intersection.Intersect();
+                    if (result)
+                    {
+                        intersection.ShowC0();
                     }
 
                     break;
@@ -410,7 +410,7 @@ public class PathsGenerator
                     break;
             }
         }
-        
+
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();
 
         SavePath(frez, radius, list);
@@ -419,7 +419,7 @@ public class PathsGenerator
     public void GenerateDetailed(CutterType frez, uint radius)
     {
     }
-    
+
     private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list)
     {
         CuttingLines cuttingLines = new CuttingLines()
@@ -492,7 +492,7 @@ public class PathsGenerator
                     && posYArray + (int) (j * dYInMmPerArrayElement * 4) >= 0
                     && posYArray + (int) (j * dYInMmPerArrayElement * 4) < _height)
                 {
-                    if (i * i + j * j <= (2*rX+12) * (2*rX+12))
+                    if (i * i + j * j <= (2 * rX + 12) * (2 * rX + 12))
                     {
                         height = MathF.Max(height,
                             HeightMap[posXArray + (int) (i * dXInMmPerArrayElement * 4),
@@ -635,6 +635,15 @@ public class PathsGenerator
 
             SaveAsBitmap();
         }
+    }
+
+    private void AddSupportSurface()
+    {
+        MainWindow.current.LoadFile(@"C:\Users\mikow\Documents\CAD_CAM\PUSN\podstawka_18mm\support185.json", false);
+    }
+
+    private void RemoveSupportSurface()
+    {
     }
 
     private void SaveAsBitmap()

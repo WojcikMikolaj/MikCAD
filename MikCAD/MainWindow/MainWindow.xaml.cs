@@ -26,7 +26,7 @@ namespace MikCAD
             OpenTkControl.Start(mainSettings);
             scene = new Scene();
             scene.Initialise(400, 400);
-            LoadFile(@"C:\Users\mikow\Documents\CAD_CAM\PUSN\do_frezowania2.json");
+            LoadFile(@"C:\Users\mikow\Documents\CAD_CAM\PUSN\podstawka_18mm\185.json");
         }
 
         bool disabled=false;
@@ -46,6 +46,5 @@ namespace MikCAD
             scene.camera._width = (float)this.OpenTkControl.ActualWidth;
             scene.camera.UpdateProjectionMatrices();
         }
-
     }
 }

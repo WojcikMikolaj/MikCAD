@@ -80,19 +80,19 @@ public class Intersection : INotifyPropertyChanged
         //     });    
         // }
 
-        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-        {
-            posX = closestPoints.first.pos.X,
-            posY = closestPoints.first.pos.Y,
-            posZ = closestPoints.first.pos.Z,
-        });
-
-        Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-        {
-            posX = closestPoints.second.pos.X,
-            posY = closestPoints.second.pos.Y,
-            posZ = closestPoints.second.pos.Z,
-        });
+        // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
+        // {
+        //     posX = closestPoints.first.pos.X,
+        //     posY = closestPoints.first.pos.Y,
+        //     posZ = closestPoints.first.pos.Z,
+        // });
+        //
+        // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
+        // {
+        //     posX = closestPoints.second.pos.X,
+        //     posY = closestPoints.second.pos.Y,
+        //     posZ = closestPoints.second.pos.Z,
+        // });
 
 
         var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);

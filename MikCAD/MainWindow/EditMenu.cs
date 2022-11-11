@@ -76,14 +76,19 @@ public partial class MainWindow
         }
     }
 
-    private void LoadFile(string filename)
+    public void LoadFile(string filename, bool clearScene = true)
     {
         var loadResult =
             SharpSceneSerializer.SceneSerializer.Deserialize(filename,
                 Directory.GetCurrentDirectory() + @"\schema.json");
         if (loadResult.succeded)
         {
-            scene.ObjectsController.ClearScene();
+            scene.ObjectsController.SelectedObject = null;
+            if (clearScene)
+            {
+                scene.ObjectsController.ClearScene();
+            }
+
             foreach (var p in loadResult.scene.Points)
             {
                 scene.ObjectsController.AddObjectToScene((ParameterizedPoint) p);

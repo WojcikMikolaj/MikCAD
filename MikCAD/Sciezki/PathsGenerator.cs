@@ -30,7 +30,7 @@ public class PathsGenerator
     private const int SamplesPerObjectCount = 500;
     private const float CmToMm = 10;
     private const float UnitsToCm = 1;
-    private const float SafetyDistance = 2;
+    private const float SafetyDistance = 1;
 
     private float[,] HeightMap;
     private float dXPerArrayElement;
@@ -362,13 +362,13 @@ public class PathsGenerator
             {
                 if (posXArray + (int) (i * dXInMmPerArrayElement*4) >= 0
                     && posXArray + (int) (i * dXInMmPerArrayElement*4) < _width
-                    && posYArray + (int) (j * dYInMmPerArrayElement*4) >= 0
-                    && posYArray + (int) (j * dYInMmPerArrayElement*4) < _height)
+                    && posYArray + (int) (j * dYInMmPerArrayElement*2.2) >= 0
+                    && posYArray + (int) (j * dYInMmPerArrayElement*2.2) < _height)
                 {
                     //tu coś nie tak z tym dodawaniem
                     height = MathF.Max(height,
                         HeightMap[posXArray + (int) (i * dXInMmPerArrayElement*4),
-                            posYArray + (int) (j * dYInMmPerArrayElement*4)] /*- cutterArray[it, itt]*/);
+                            posYArray + (int) (j * dYInMmPerArrayElement*2.2)]);
                 }
             }
         }

@@ -98,6 +98,46 @@ public partial class PathsGeneratorControl : UserControl
         PathsGenerator.Generator.GenerateSupportFlatFinish(frez, diameter/2);
     }
 
+    private void GenerateFlatEnvelope(object sender, RoutedEventArgs e)
+    {
+        PathsGenerator.Generator.PathsGeneratorControl ??= this;
+        
+        CutterType frez;
+        uint diameter = 1; 
+        
+        if (radioFEF10.IsChecked.Value || radioFEF12.IsChecked.Value)
+        {
+            frez = CutterType.Flat;
+        }
+        else
+        {
+            frez = CutterType.Spherical;
+        }
+
+        if (radioFEF10.IsChecked.Value)
+        {
+            diameter = 10;
+        }
+        if (radioFEF12.IsChecked.Value)
+        {
+            diameter = 12;
+        }
+        if (radioFEK01.IsChecked.Value)
+        {
+            diameter = 1;
+        }
+        if (radioFEK08.IsChecked.Value)
+        {
+            diameter = 8;
+        }
+        if (radioFEK16.IsChecked.Value)
+        {
+            diameter = 16;
+        }
+        
+        PathsGenerator.Generator.GenerateFlatEnvelope(frez, diameter/2);
+    }
+    
     private void GenerateDetailed(object sender, RoutedEventArgs e)
     {
         PathsGenerator.Generator.PathsGeneratorControl ??= this;

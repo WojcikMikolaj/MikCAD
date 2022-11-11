@@ -358,6 +358,19 @@ public class PathsGenerator
         SavePath(frez, radius, list);
     }
 
+    public void GenerateFlatEnvelope(CutterType frez, uint radius)
+    {
+        GenerateHeightmap();
+        
+        List<CuttingLinePoint> list = new List<CuttingLinePoint>();
+        
+        SavePath(frez, radius, list);
+    }
+
+    public void GenerateDetailed(CutterType frez, uint radius)
+    {
+    }
+    
     private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list)
     {
         CuttingLines cuttingLines = new CuttingLines()
@@ -365,10 +378,6 @@ public class PathsGenerator
             points = list.ToArray()
         };
         cuttingLines.SaveFile(frez, radius);
-    }
-
-    public void GenerateDetailed(CutterType frez, uint radius)
-    {
     }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)

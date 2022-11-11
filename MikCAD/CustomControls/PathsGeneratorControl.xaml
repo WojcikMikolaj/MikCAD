@@ -108,6 +108,17 @@
                         <Button Click="GenerateSupportFlatFinish">Generuj</Button>
                     </StackPanel>
                 </GroupBox>
+                <GroupBox Header="Obwiednia">
+                    <StackPanel>
+                        <Label>Typ freza</Label>
+                        <RadioButton IsEnabled="False" x:Name="radioFEK16">K16</RadioButton>
+                        <RadioButton IsEnabled="False" x:Name="radioFEK08">K08</RadioButton>
+                        <RadioButton IsEnabled="False" x:Name="radioFEK01">K01</RadioButton>
+                        <RadioButton x:Name="radioFEF12">F12</RadioButton>
+                        <RadioButton x:Name="radioFEF10" IsChecked="True">F10</RadioButton>
+                        <Button Click="GenerateFlatEnvelope">Generuj</Button>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </GroupBox>
 

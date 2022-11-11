@@ -435,7 +435,7 @@ public class Simulator3C : INotifyPropertyChanged
 
         float rInUnits = ((float) CutterDiameterInMm / 2 * 0.1f);
 
-        block.CalculateSimulationParams(rInUnits);
+        block.CalculateSimulationParams(rInUnits, SphericalSelected);
 
         while (nextPointId < points.Length)
         {

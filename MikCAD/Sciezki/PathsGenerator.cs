@@ -361,9 +361,58 @@ public class PathsGenerator
     public void GenerateFlatEnvelope(CutterType frez, uint radius)
     {
         GenerateHeightmap();
+
+        var surfaces = new List<BezierSurfaceC2>();
+        
+        foreach (var o in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
+        {
+            if (o is BezierSurfaceC2 surf)
+            {
+                surfaces.Add(surf);
+            }
+        }
+        
+        foreach (var o in surfaces)
+        {
+            switch (o)
+            {
+                case BezierSurfaceC2 surf:
+                    float dU = surf.USize / 10;
+                    float dV = surf.VSize / 10;
+                    float u = 0;
+                    float v = 0;
+
+                    var decorated = new IntersectableDecorator(surf)
+                    {
+                        DistanceFromSurface = 0.5f
+                    };
+
+                    for (int i = 0; i < 10; ++i)
+                    {
+                        v = 0;
+                        for (int j = 0; j < 10; ++j)
+                        {
+                            var pos = surf.GetValueAt(u, v);
+                            Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+                            {
+                                posX = pos.X,
+                                posY = pos.Y,
+                                posZ = pos.Z,
+                            });
+                            v += dV;
+                        }
+
+                        u += dU;
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
         
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();
-        
+
         SavePath(frez, radius, list);
     }
 

@@ -771,7 +771,7 @@ public class Block : ParameterizedObject
     private float[] _xZArray;
     private float[,] _xyZArray;
 
-    public void CalculateSimulationParams(float rInUnits)
+    public void CalculateSimulationParams(float rInUnits, bool sphericalSelected)
     {
         _rInUnits = rInUnits;
         _rX = ConvertXUnitsToTexX(rInUnits);
@@ -800,7 +800,11 @@ public class Block : ParameterizedObject
             var itt = 0;
             for (int j = -_rY + 1; j < _rY; j++)
             {
-                _xyZArray[it, itt] = _xZArray[it] + _yZArray[itt];
+                if (sphericalSelected || i*i +j*j <= _rX*_rX)
+                {
+                    _xyZArray[it, itt] = _xZArray[it] + _yZArray[itt];
+                }
+
                 itt++;
             }
             it++;

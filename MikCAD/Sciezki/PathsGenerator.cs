@@ -225,7 +225,7 @@ public class PathsGenerator
     public void GenerateSupportFlatFinish(CutterType frez, uint radius)
     {
         GenerateHeightmap();
-        
+
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();
         list.Add(new CuttingLinePoint()
         {
@@ -254,20 +254,17 @@ public class PathsGenerator
         var startXinMm = 0.0f;
         var startYinMm = 0.0f;
         var startZinMm = 0.0f;
-        
-        for (int i = 0; i < numberOfPathsOnSinglePlain + 1; ++i)
+
+        for (int i = 0; i < 2*numberOfPathsOnSinglePlain; ++i)
         {
-            
             if (moveBack)
             {
-                
             }
             else
             {
                 moveRight = i % 2 == 0;
-                    
             }
-            
+
             startXinMm = (moveRight ? -XBlockSize / 2 * CmToMm - radius : XBlockSize / 2 * CmToMm + radius);
             if (i < numberOfPathsOnSinglePlain + 1)
             {
@@ -275,12 +272,13 @@ public class PathsGenerator
             }
             else
             {
-                
+                startYinMm = (numberOfPathsOnSinglePlain - (i - numberOfPathsOnSinglePlain)) * distanceBetweenPaths -
+                             (YBlockSize / 2) * CmToMm;
             }
 
             startZinMm = SupportSize * CmToMm;
             moveBack = false;
-            
+
             list.Add(new CuttingLinePoint()
             {
                 XPosInMm = startXinMm,
@@ -350,6 +348,13 @@ public class PathsGenerator
             }
         }
 
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = -XBlockSize / 2 * CmToMm - radius,
+            YPosInMm = -YBlockSize / 2 * CmToMm,
+            ZPosInMm = SupportSize * CmToMm,
+        });
+        
         SavePath(frez, radius, list);
     }
 
@@ -436,7 +441,7 @@ public class PathsGenerator
             }
         }
 
-        return height > Single.Epsilon + SupportSize*CmToMm;
+        return height > Single.Epsilon + SupportSize * CmToMm;
     }
 
     private float GetZFromArray(float xPosInMm, float yPosInMm, float[,] cutterArray, int rX, int rY)

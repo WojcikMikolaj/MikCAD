@@ -22,7 +22,7 @@ public class Simulator3C : INotifyPropertyChanged
 
     public bool IsAnimationRunning { get; private set; } = false;
 
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
     public bool IgnoreDepth { get; set; }
     public bool ShowLines { get; set; } = true;
     public bool ShowNormals { get; set; } = false;

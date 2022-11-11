@@ -30,39 +30,40 @@ public partial class MainWindow
 
             var points = new List<SharpSceneSerializer.DTOs.GeometryObjects.Point>();
             var geometry = new List<IGeometryObject>();
-            
+
             foreach (var o in objects)
             {
                 switch (o)
                 {
                     case ParameterizedPoint p:
-                        points.Add((SharpSceneSerializer.DTOs.GeometryObjects.Point)p);
+                        points.Add((SharpSceneSerializer.DTOs.GeometryObjects.Point) p);
                         break;
                     case Torus t:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.Torus)t);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.Torus) t);
                         break;
                     case BezierCurveC0 c0:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierC0)c0);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierC0) c0);
                         break;
                     case BezierCurveC2 c2:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierC2)c2);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierC2) c2);
                         break;
                     case InterpolatingBezierCurveC2 i2:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.InterpolatedC2)i2);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.InterpolatedC2) i2);
                         break;
                     case BezierSurfaceC0 s0:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0)s0);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0) s0);
                         break;
                     case BezierSurfaceC2 s2:
-                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2)s2);
+                        geometry.Add((SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2) s2);
                         break;
                 }
             }
+
             SharpSceneSerializer.DTOs.Scene sceneToSave = new SharpSceneSerializer.DTOs.Scene(points, geometry);
             SharpSceneSerializer.SceneSerializer.Serialize(sceneToSave, diag.FileName);
         }
     }
-    
+
     private void OnLoadCommand(object sender, RoutedEventArgs e)
     {
         FileDialog diag = new OpenFileDialog()
@@ -71,47 +72,54 @@ public partial class MainWindow
         };
         if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
         {
-            var loadResult= SharpSceneSerializer.SceneSerializer.Deserialize( diag.FileName,Directory.GetCurrentDirectory()+@"\schema.json");
-            if (loadResult.succeded)
+            LoadFile(diag.FileName);
+        }
+    }
+
+    private void LoadFile(string filename)
+    {
+        var loadResult =
+            SharpSceneSerializer.SceneSerializer.Deserialize(filename,
+                Directory.GetCurrentDirectory() + @"\schema.json");
+        if (loadResult.succeded)
+        {
+            scene.ObjectsController.ClearScene();
+            foreach (var p in loadResult.scene.Points)
             {
-                scene.ObjectsController.ClearScene();
-                foreach (var p in loadResult.scene.Points)
-                {
-                    scene.ObjectsController.AddObjectToScene((ParameterizedPoint) p);
-                }
-
-                foreach (var geometryObject in loadResult.scene.Geometry)
-                {
-                    scene.ObjectsController.SelectedObject = null;
-                    switch (geometryObject)
-                    {
-                        case BezierC0 bezierC0:
-                            scene.ObjectsController.AddObjectToScene((BezierCurveC0)bezierC0);
-                            break;
-                        case BezierC2 bezierC2:
-                            scene.ObjectsController.AddObjectToScene((BezierCurveC2)bezierC2);
-                            break;
-                        case BezierPatchC0 bezierPatchC0:
-                            break;
-                        case BezierPatchC2 bezierPatchC2:
-                            break;
-                        case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 bezierSurfaceC0:
-                            scene.ObjectsController.AddObjectToScene((BezierSurfaceC0) bezierSurfaceC0);
-                            break;
-                        case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 bezierSurfaceC2:
-                            scene.ObjectsController.AddObjectToScene((BezierSurfaceC2) bezierSurfaceC2);
-                            break;
-                        case InterpolatedC2 interpolatedC2:
-                            scene.ObjectsController.AddObjectToScene((InterpolatingBezierCurveC2)interpolatedC2);
-                            break;
-                        case SharpSceneSerializer.DTOs.GeometryObjects.Torus torus:
-                            scene.ObjectsController.AddObjectToScene((Torus)torus);
-                            break;
-                    }
-                }
-
-                scene.ObjectsController.SelectedObject = null;
+                scene.ObjectsController.AddObjectToScene((ParameterizedPoint) p);
             }
+
+            foreach (var geometryObject in loadResult.scene.Geometry)
+            {
+                scene.ObjectsController.SelectedObject = null;
+                switch (geometryObject)
+                {
+                    case BezierC0 bezierC0:
+                        scene.ObjectsController.AddObjectToScene((BezierCurveC0) bezierC0);
+                        break;
+                    case BezierC2 bezierC2:
+                        scene.ObjectsController.AddObjectToScene((BezierCurveC2) bezierC2);
+                        break;
+                    case BezierPatchC0 bezierPatchC0:
+                        break;
+                    case BezierPatchC2 bezierPatchC2:
+                        break;
+                    case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC0 bezierSurfaceC0:
+                        scene.ObjectsController.AddObjectToScene((BezierSurfaceC0) bezierSurfaceC0);
+                        break;
+                    case SharpSceneSerializer.DTOs.GeometryObjects.BezierSurfaceC2 bezierSurfaceC2:
+                        scene.ObjectsController.AddObjectToScene((BezierSurfaceC2) bezierSurfaceC2);
+                        break;
+                    case InterpolatedC2 interpolatedC2:
+                        scene.ObjectsController.AddObjectToScene((InterpolatingBezierCurveC2) interpolatedC2);
+                        break;
+                    case SharpSceneSerializer.DTOs.GeometryObjects.Torus torus:
+                        scene.ObjectsController.AddObjectToScene((Torus) torus);
+                        break;
+                }
+            }
+
+            scene.ObjectsController.SelectedObject = null;
         }
     }
 }

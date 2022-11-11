@@ -28,8 +28,10 @@
                 <Label Grid.Row="3" Grid.Column="0">Grubość podstawki</Label>
                 <CheckBox Grid.Row="4" Grid.ColumnSpan="2" Margin="5,5,5,5"
                           IsChecked="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
-                             Path=DataContext.IsGenerateHeightmap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">Generuj heightmapę</CheckBox>
-                
+                             Path=DataContext.IsGenerateHeightmap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    Generuj heightmapę
+                </CheckBox>
+
                 <n:FloatUpDown Grid.Row="0" Grid.Column="1"
                                Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
                              Path=DataContext.XBlockSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -62,33 +64,53 @@
                                MinValue="0"
                                StepSize="0.1" LargeStepSize="0.1"
                                FormatString="0.###" />
-            </Grid>    
+            </Grid>
         </GroupBox>
-        
+
         <GroupBox Header="Obróbka zgrubna">
             <StackPanel>
                 <Label>Typ freza</Label>
                 <RadioButton x:Name="radioRK16" IsChecked="True">K16</RadioButton>
-                <RadioButton x:Name="radioRK08">K08</RadioButton>
-                <RadioButton x:Name="radioRK01">K01</RadioButton>
-                <RadioButton x:Name="radioRF12">F12</RadioButton>
-                <RadioButton x:Name="radioRF10">F10</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioRK08">K08</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioRK01">K01</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioRF12">F12</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioRF10">F10</RadioButton>
                 <Button Click="GenerateRough">Generuj</Button>
             </StackPanel>
         </GroupBox>
-        
+
         <GroupBox Header="Frezowanie podstawki frezem płaskim">
             <StackPanel>
-                <Label>Typ freza</Label>
-                <RadioButton x:Name="radioSFK16">K16</RadioButton>
-                <RadioButton x:Name="radioSFK08">K08</RadioButton>
-                <RadioButton x:Name="radioSFK01">K01</RadioButton>
-                <RadioButton x:Name="radioSFF12" IsChecked="True">F12</RadioButton>
-                <RadioButton x:Name="radioSFF10">F10</RadioButton>
-                <Button Click="GenerateSupportFlatFinish">Generuj</Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">Flat eps</Label>
+                    <n:FloatUpDown Grid.Row="0" Grid.Column="1"
+                                   Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.FlatEps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   DisplayLength="13" IsReadOnly="False"
+                                   IsUpdateValueWhenLostFocus="True"
+                                   MinValue="0.01"
+                                   MaxValue="0.5"
+                                   StepSize="0.05" LargeStepSize="0.05"
+                                   FormatString="0.###" />
+                </Grid>
+                <GroupBox Header="Podstawka">
+                    <StackPanel>
+                        <Label>Typ freza</Label>
+                        <RadioButton IsEnabled="False" x:Name="radioSFK16">K16</RadioButton>
+                        <RadioButton IsEnabled="False" x:Name="radioSFK08">K08</RadioButton>
+                        <RadioButton IsEnabled="False" x:Name="radioSFK01">K01</RadioButton>
+                        <RadioButton x:Name="radioSFF12" IsChecked="True">F12</RadioButton>
+                        <RadioButton x:Name="radioSFF10">F10</RadioButton>
+                        <Button Click="GenerateSupportFlatFinish">Generuj</Button>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </GroupBox>
-        
+
         <GroupBox Header="Obróbka dokładna">
             <StackPanel>
                 <Label>Typ freza</Label>
@@ -100,7 +122,7 @@
                 <Button Click="GenerateDetailed">Generuj</Button>
             </StackPanel>
         </GroupBox>
-        
+
         <Expander Header="Debug">
         </Expander>
     </StackPanel>

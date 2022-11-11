@@ -392,7 +392,7 @@ public class PathsGenerator
                         v = 0;
                         for (int j = 0; j < 10; ++j)
                         {
-                            var pos = surf.GetValueAt(u, v);
+                            var pos = decorated.GetValueAt(u, v);
                             Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
                             {
                                 posX = pos.X,

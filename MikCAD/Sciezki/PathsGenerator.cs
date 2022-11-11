@@ -23,7 +23,7 @@ public class PathsGenerator
     public float ZBlockSize { get; set; } = 5;
     public float SupportSize { get; set; } = 1.5f;
 
-    public bool GenerateHeightmap { get; set; } = true;
+    public bool IsGenerateHeightmap { get; set; } = true;
 
     private int _height = 1000;
     private int _width = 1000;
@@ -47,75 +47,7 @@ public class PathsGenerator
 
     public void GenerateRough(CutterType frez, uint radius)
     {
-        dXPerArrayElement = XBlockSize / _width;
-        //bo y jest zamieniony z z
-        dZPerArrayElement = YBlockSize / _height;
-        dXInMmPerArrayElement = dXPerArrayElement * CmToMm;
-        dYInMmPerArrayElement = dZPerArrayElement * CmToMm;
-
-        if (GenerateHeightmap || runs < 1)
-        {
-            runs++;
-            for (int i = 0; i < _width; ++i)
-            {
-                for (int j = 0; j < _height; ++j)
-                {
-                    HeightMap[i, j] = SupportSize * CmToMm;
-                }
-            }
-
-            foreach (var parameterizedObject in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
-            {
-                switch (parameterizedObject)
-                {
-                    case BezierSurfaceC2 surf:
-                        float dU = surf.USize / SamplesPerObjectCount;
-                        float dV = surf.VSize / SamplesPerObjectCount;
-                        float u = 0;
-                        float v = 0;
-
-
-                        for (int i = 0; i < SamplesPerObjectCount; ++i)
-                        {
-                            v = 0;
-                            for (int j = 0; j < SamplesPerObjectCount; ++j)
-                            {
-                                var pos = surf.GetValueAt(u, v);
-
-                                pos *= UnitsToCm;
-                                pos += (XBlockSize / 2, 0, YBlockSize / 2);
-
-                                var posXArray = (int) (pos.X / dXPerArrayElement);
-                                //odwrócone, żeby się zgadzało na frezarce
-                                var posYArray = _height - (int) (pos.Z / dZPerArrayElement);
-
-                                pos *= CmToMm;
-
-                                if (posXArray >= 0
-                                    && posXArray < _width
-                                    && posYArray >= 0
-                                    && posYArray < _height)
-                                {
-                                    if (HeightMap[posXArray, posYArray] < pos.Y)
-                                    {
-                                        HeightMap[posXArray, posYArray] = pos.Y;
-                                    }
-                                }
-
-                                v += dV;
-                            }
-
-                            u += dU;
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            SaveAsBitmap();
-        }
+        GenerateHeightmap();
 
         #region first_pass
 
@@ -291,6 +223,41 @@ public class PathsGenerator
         };
         cuttingLines.SaveFile(frez, radius);
     }
+    
+    public void GenerateSupportFlatFinish(CutterType frez, uint radius)
+    {
+        List<CuttingLinePoint> list = new List<CuttingLinePoint>();
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = 0,
+            YPosInMm = 0,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
+        });
+
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = -XBlockSize / 2 * CmToMm - radius,
+            YPosInMm = -YBlockSize / 2 * CmToMm,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
+        });
+        
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = -XBlockSize / 2 * CmToMm - radius,
+            YPosInMm = -YBlockSize / 2 * CmToMm,
+            ZPosInMm = SupportSize * CmToMm,
+        });
+        
+        CuttingLines cuttingLines = new CuttingLines()
+        {
+            points = list.ToArray()
+        };
+        cuttingLines.SaveFile(frez, radius);
+    }
+
+    public void GenerateDetailed(CutterType frez, uint radius)
+    {
+    }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)
     {
@@ -355,33 +322,25 @@ public class PathsGenerator
 
 
         int it = 0;
-        for (int i = -rX + 1; i < rX; i++)
+        for (int i = -2*rX + 1; i < 2*rX; i++)
         {
             var itt = 0;
-            for (int j = -rY + 1; j < rY; j++)
+            for (int j = -2*rY + 1; j < 2*rY; j++)
             {
                 if (posXArray + (int) (i * dXInMmPerArrayElement*4) >= 0
                     && posXArray + (int) (i * dXInMmPerArrayElement*4) < _width
-                    && posYArray + (int) (j * dYInMmPerArrayElement*2.2) >= 0
-                    && posYArray + (int) (j * dYInMmPerArrayElement*2.2) < _height)
+                    && posYArray + (int) (j * dYInMmPerArrayElement*4) >= 0
+                    && posYArray + (int) (j * dYInMmPerArrayElement*4) < _height)
                 {
                     //tu coś nie tak z tym dodawaniem
                     height = MathF.Max(height,
                         HeightMap[posXArray + (int) (i * dXInMmPerArrayElement*4),
-                            posYArray + (int) (j * dYInMmPerArrayElement*2.2)]);
+                            posYArray + (int) (j * dYInMmPerArrayElement*4)]);
                 }
             }
         }
 
         return height;
-    }
-
-    public void GenerateSupportFlatFinish(CutterType frez, uint radius)
-    {
-    }
-
-    public void GenerateDetailed(CutterType frez, uint radius)
-    {
     }
 
     private int ConvertXInMmToTexX(float rInMm)
@@ -404,6 +363,79 @@ public class PathsGenerator
         return value * ((YBlockSize * CmToMm) / (float) _height);
     }
 
+    private void GenerateHeightmap()
+    {
+        dXPerArrayElement = XBlockSize / _width;
+        //bo y jest zamieniony z z
+        dZPerArrayElement = YBlockSize / _height;
+        dXInMmPerArrayElement = dXPerArrayElement * CmToMm;
+        dYInMmPerArrayElement = dZPerArrayElement * CmToMm;
+
+        if (IsGenerateHeightmap || runs < 1)
+        {
+            runs++;
+            for (int i = 0; i < _width; ++i)
+            {
+                for (int j = 0; j < _height; ++j)
+                {
+                    HeightMap[i, j] = SupportSize * CmToMm;
+                }
+            }
+
+            foreach (var parameterizedObject in Scene.CurrentScene.ObjectsController.ParameterizedObjects)
+            {
+                switch (parameterizedObject)
+                {
+                    case BezierSurfaceC2 surf:
+                        float dU = surf.USize / SamplesPerObjectCount;
+                        float dV = surf.VSize / SamplesPerObjectCount;
+                        float u = 0;
+                        float v = 0;
+
+
+                        for (int i = 0; i < SamplesPerObjectCount; ++i)
+                        {
+                            v = 0;
+                            for (int j = 0; j < SamplesPerObjectCount; ++j)
+                            {
+                                var pos = surf.GetValueAt(u, v);
+
+                                pos *= UnitsToCm;
+                                pos += (XBlockSize / 2, 0, YBlockSize / 2);
+
+                                var posXArray = (int) (pos.X / dXPerArrayElement);
+                                //odwrócone, żeby się zgadzało na frezarce
+                                var posYArray = _height - (int) (pos.Z / dZPerArrayElement);
+
+                                pos *= CmToMm;
+
+                                if (posXArray >= 0
+                                    && posXArray < _width
+                                    && posYArray >= 0
+                                    && posYArray < _height)
+                                {
+                                    if (HeightMap[posXArray, posYArray] < pos.Y)
+                                    {
+                                        HeightMap[posXArray, posYArray] = pos.Y;
+                                    }
+                                }
+
+                                v += dV;
+                            }
+
+                            u += dU;
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            SaveAsBitmap();
+        }
+    }
+    
     private void SaveAsBitmap()
     {
         DirectBitmap db = new DirectBitmap(_width, _height);

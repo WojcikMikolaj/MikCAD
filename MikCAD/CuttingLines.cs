@@ -48,6 +48,7 @@ public class CuttingLines
     public void SaveFile(CutterType frez, uint radius)
     {
         var fileExtensionBuilder = new StringBuilder();
+        var diameter = radius * 2;
         fileExtensionBuilder.Append(".");
         if (frez == CutterType.Flat)
         {
@@ -58,12 +59,12 @@ public class CuttingLines
             fileExtensionBuilder.Append("k");
         }
 
-        if (radius < 10)
+        if (diameter < 10)
         {
             fileExtensionBuilder.Append("0");
         }
 
-        fileExtensionBuilder.Append(radius);
+        fileExtensionBuilder.Append(diameter);
 
         var firstInstructionNumber = 3;
         List<string> lines = new List<string>();

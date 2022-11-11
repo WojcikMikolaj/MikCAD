@@ -23,7 +23,7 @@ public partial class PathsGeneratorControl : UserControl
         PathsGenerator.Generator.PathsGeneratorControl ??= this;
         
         CutterType frez;
-        uint radius = 1; 
+        uint diameter = 1; 
         
         if (radioRF10.IsChecked.Value || radioRF12.IsChecked.Value)
         {
@@ -36,26 +36,26 @@ public partial class PathsGeneratorControl : UserControl
 
         if (radioRF10.IsChecked.Value)
         {
-            radius = 10;
+            diameter = 10;
         }
         if (radioRF12.IsChecked.Value)
         {
-            radius = 12;
+            diameter = 12;
         }
         if (radioRK01.IsChecked.Value)
         {
-            radius = 1;
+            diameter = 1;
         }
         if (radioRK08.IsChecked.Value)
         {
-            radius = 8;
+            diameter = 8;
         }
         if (radioRK16.IsChecked.Value)
         {
-            radius = 16;
+            diameter = 16;
         }
 
-        PathsGenerator.Generator.GenerateRough(frez, radius);
+        PathsGenerator.Generator.GenerateRough(frez, diameter/2);
     }
 
     private void GenerateSupportFlatFinish(object sender, RoutedEventArgs e)
@@ -63,7 +63,7 @@ public partial class PathsGeneratorControl : UserControl
         PathsGenerator.Generator.PathsGeneratorControl ??= this;
         
         CutterType frez;
-        uint radius = 1; 
+        uint diameter = 1; 
         
         if (radioSFF10.IsChecked.Value || radioSFF12.IsChecked.Value)
         {
@@ -76,26 +76,26 @@ public partial class PathsGeneratorControl : UserControl
 
         if (radioSFF10.IsChecked.Value)
         {
-            radius = 10;
+            diameter = 10;
         }
         if (radioSFF12.IsChecked.Value)
         {
-            radius = 12;
+            diameter = 12;
         }
         if (radioSFK01.IsChecked.Value)
         {
-            radius = 1;
+            diameter = 1;
         }
         if (radioSFK08.IsChecked.Value)
         {
-            radius = 8;
+            diameter = 8;
         }
         if (radioSFK16.IsChecked.Value)
         {
-            radius = 16;
+            diameter = 16;
         }
         
-        PathsGenerator.Generator.GenerateSupportFlatFinish(frez, radius);
+        PathsGenerator.Generator.GenerateSupportFlatFinish(frez, diameter/2);
     }
 
     private void GenerateDetailed(object sender, RoutedEventArgs e)
@@ -103,7 +103,7 @@ public partial class PathsGeneratorControl : UserControl
         PathsGenerator.Generator.PathsGeneratorControl ??= this;
         
         CutterType frez;
-        uint radius = 1; 
+        uint diameter = 1; 
         
         if (radioDF10.IsChecked.Value || radioDF12.IsChecked.Value)
         {
@@ -116,25 +116,25 @@ public partial class PathsGeneratorControl : UserControl
 
         if (radioDF10.IsChecked.Value)
         {
-            radius = 10;
+            diameter = 10;
         }
         if (radioDF12.IsChecked.Value)
         {
-            radius = 12;
+            diameter = 12;
         }
         if (radioDK01.IsChecked.Value)
         {
-            radius = 1;
+            diameter = 1;
         }
         if (radioDK08.IsChecked.Value)
         {
-            radius = 8;
+            diameter = 8;
         }
         if (radioDK16.IsChecked.Value)
         {
-            radius = 16;
+            diameter = 16;
         }
         
-        PathsGenerator.Generator.GenerateDetailed(frez, radius);
+        PathsGenerator.Generator.GenerateDetailed(frez, diameter/2);
     }
 }

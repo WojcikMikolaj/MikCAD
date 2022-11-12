@@ -1,8 +1,10 @@
-﻿//#define GENERIC 
-
-#define SPECIALIZED
-#define DRAW
+﻿#define SPECIALIZED
+//#define GENERIC 
+//#define DRAW
 //#define SHOW_POINTS
+#define RACZKA
+#define CZUBEK
+#define SLOIK
 
 using System;
 using System.Collections.Generic;
@@ -394,12 +396,12 @@ public class PathsGenerator
         var pointsD = new List<Vector3>();
         var pointsDL = new List<Vector3>();
         var pointsGLL = new List<Vector3>();
-        var pointsSL = new List<Vector3>();
         var pointsGL = new List<Vector3>();
 #if SPECIALIZED
 
         #region raczka
 
+#if RACZKA
         {
             if (surfaces.Count >= 0)
             {
@@ -430,11 +432,11 @@ public class PathsGenerator
 #if DRAW
                     intersection.ShowC0Decorated(decorated);
 #endif
-                    
+
                     var it = 0;
                     foreach (var point in intersection.points)
                     {
-                        var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                        var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                         (p.Y, p.Z) = (-p.Z, p.Y);
                         if (it is >= 43 and <= 85)
                         {
@@ -445,6 +447,7 @@ public class PathsGenerator
                         {
                             pointsR.Add(p);
                         }
+
                         it++;
                     }
 
@@ -454,11 +457,14 @@ public class PathsGenerator
                 }
             }
         }
+#endif
 
         #endregion
 
+
         #region sloik
 
+#if SLOIK
         {
             if (surfaces.Count >= 2)
             {
@@ -492,7 +498,7 @@ public class PathsGenerator
                     var it = 0;
                     foreach (var point in intersection.points)
                     {
-                        var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                        var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                         (p.Y, p.Z) = (-p.Z, p.Y);
                         if (it is >= 368 and <= 425)
                         {
@@ -503,11 +509,12 @@ public class PathsGenerator
                         {
                             pointsD.Add(p);
                         }
-                        
+
                         if (it is >= 0 and <= 64)
                         {
                             pointsGL.Add(p);
                         }
+
                         it++;
                     }
 #if SHOW_POINTS
@@ -516,110 +523,63 @@ public class PathsGenerator
                 }
             }
         }
+#endif
 
         #endregion
+
+#if CZUBEK
 
         #region czubek
 
         {
             if (surfaces.Count >= 3)
             {
-                // //GORA PRAWO
-                // //1) u=2.8404841; v=1.865617;
-                // //2) u=3.0553267; v=1.3731587;
+                //GORA
+                //1) u=3.1762052; v=0.59365934;
+                //2) u=3.0921733; v=6.8938847;
                 {
-                    var u1 = 2.8404841f;
-                    var v1 = 1.865617f;
+                    var u1 = 3.1762052f;
+                    var v1 = 0.59365934f;
 
-                    var u2 = 3.0553267f;
-                    var v2 = 1.3731587f;
-
-                    var decorated = new IIntersectableDecorator(surfaces[2])
-                    {
-                        DistanceFromSurface = radius / CmToMm
-                    };
-                    var intersection = new Intersection(supportSurface, decorated)
-                    {
-                        StartingPointsNumber = 30000,
-                        MaxPointsNumber = 10000,
-                        NewtonMaxIterations = 1000,
-                        UseRandom = true,
-                        UseCursor = true
-                    };
-                    var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
-                        (decorated.GetValueAt(u2, v2), u2, v2), true);
-
-                    if (result)
-                    {
-#if DRAW
-                        intersection.ShowC0();
-#endif
-                        var it = 0;
-                        foreach (var point in intersection.points)
-                        {
-                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
-                            (p.Y, p.Z) = (-p.Z, p.Y);
-                            if (it is >= 52 and <= 87)
-                            {
-                                pointsSL.Add(p);
-                            }
-                            it++;
-                        }
-#if SHOW_POINTS
-                        intersection.ConvertToInterpolating();
-#endif
-                    }
-                }
-                //
-                //GORA LEWO
-                //1) u=3.4132; v=0.9082303;
-                //2) u=3.0791092; v=5.7197366;
-                {
-                    var u1 = 3.4132f;
-                    var v1 = 0.9082303f;
-
-                    var u2 = 3.0791092f;
-                    var v2 = 5.7197366f;
-
+                    var u2 = 3.0921733f;
+                    var v2 = 6.8938847f;
                     var decorated = new IIntersectableDecorator(surfaces[2])
                     {
                         DistanceFromSurface = radius / CmToMm
                     };
 
-                    var intersection = new Intersection(supportSurface, decorated)
+                    var intersection = new Intersection(supportSurface, surfaces[2])
                     {
-                        StartingPointsNumber = 30000,
-                        MaxPointsNumber = 10000,
-                        NewtonMaxIterations = 1000,
-                        UseRandom = true,
-                        UseCursor = true
                     };
                     var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
-                        (decorated.GetValueAt(u2, v2), u2, v2), true);
+                        (surfaces[2].GetValueAt(u2, v2), u2, v2), true);
 
                     if (result)
                     {
 #if DRAW
-                        intersection.ShowC0();
+                         intersection.ShowC0();
 #endif
                         var it = 0;
                         foreach (var point in intersection.points)
                         {
-                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                            var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
                             p.Z = SupportSize * CmToMm;
-                            if (it is >= 2 and <= 23)
+                            if (it is >= 54 and <=139)
                             {
                                 pointsGLL.Add(p);
                             }
-                            if (it is >= 25 and <= 33)
-                            {
-                                pointsGLL.Add(p);
-                            }
+
                             it++;
                         }
-#if SHOW_POINTS
-                        intersection.ConvertToInterpolating();
+                        pointsGLL.Add(new Vector3()
+                        {
+                            X = pointsGLL[^1].X,
+                            Y = pointsGLL[^1].Y + 1.5f*radius,
+                            Z = pointsGLL[^1].Z,
+                        });
+#if SHOW_POINTS         
+                         intersection.ConvertToInterpolating();
 #endif
                     }
                 }
@@ -658,20 +618,23 @@ public class PathsGenerator
                         var it = 0;
                         foreach (var point in intersection.points)
                         {
-                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                            var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
-                            if (it is >= 1 and <= 77)
+                            if (it is >= 0 and <= 77)
                             {
                                 pointsDL.Add(p);
                             }
+
                             if (it == 79)
                             {
-                                 pointsDL.Add(p);
+                                pointsDL.Add(p);
                             }
+
                             if (it == 91)
                             {
                                 pointsDL.Add(p);
                             }
+
                             // if (it is >= 89 and <= 91)
                             // {
                             //     pointsDL.Add(p);
@@ -685,17 +648,16 @@ public class PathsGenerator
                 }
             }
         }
-        
+
+        #endregion
+
         finalPoints.AddRange(pointsGL);
-        finalPoints.AddRange(pointsSL);
         finalPoints.AddRange(pointsGLL);
         finalPoints.AddRange(pointsDL);
         finalPoints.AddRange(pointsD);
         finalPoints.AddRange(pointsR);
         finalPoints.AddRange(pointsGR);
-
-        #endregion
-
+#endif
 #endif
         foreach (var surf in surfaces)
         {
@@ -751,11 +713,10 @@ public class PathsGenerator
 
 #endif
         }
-        
+
         SavePath(frez, radius, finalPoints);
     }
 
-    
 
     public void GenerateDetailed(CutterType frez, uint radius)
     {
@@ -769,7 +730,7 @@ public class PathsGenerator
         };
         cuttingLines.SaveFile(frez, radius);
     }
-    
+
     private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints)
     {
         var list = new List<CuttingLinePoint>();
@@ -777,6 +738,7 @@ public class PathsGenerator
         {
             list.Add(point);
         }
+
         SavePath(frez, radius, list);
     }
 

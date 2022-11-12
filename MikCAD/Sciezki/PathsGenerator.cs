@@ -510,7 +510,7 @@ public class PathsGenerator
                             pointsD.Add(p);
                         }
 
-                        if (it is >= 0 and <= 64)
+                        if (it is >= 1 and <= 64)
                         {
                             pointsGL.Add(p);
                         }

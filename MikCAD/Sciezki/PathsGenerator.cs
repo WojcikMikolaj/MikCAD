@@ -438,6 +438,7 @@ public class PathsGenerator
                     {
                         var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                         (p.Y, p.Z) = (-p.Z, p.Y);
+                        p.Z = SupportSize * CmToMm;
                         if (it is >= 43 and <= 85)
                         {
                             pointsR.Add(p);
@@ -496,10 +497,18 @@ public class PathsGenerator
                     intersection.ShowC0();
 #endif
                     var it = 0;
+                    var pom = decorated.GetValueAt(intersection.points[1].s, intersection.points[1].t) * CmToMm;
+                    pointsGL.Add(new Vector3()
+                    {
+                        X = pom.X + 1.0f * radius,
+                        Y = -pom.Z,
+                        Z = SupportSize * CmToMm
+                    });
                     foreach (var point in intersection.points)
                     {
                         var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                         (p.Y, p.Z) = (-p.Z, p.Y);
+                        p.Z = SupportSize * CmToMm;
                         if (it is >= 368 and <= 425)
                         {
                             pointsGR.Add(p);
@@ -517,6 +526,13 @@ public class PathsGenerator
 
                         it++;
                     }
+
+                    pointsGR.Add(new Vector3()
+                    {
+                        X = pointsGR[^1].X + 1.0f * radius,
+                        Y = pointsGR[^1].Y,
+                        Z = SupportSize * CmToMm,
+                    });
 #if SHOW_POINTS
                     intersection.ConvertToInterpolating();
 #endif
@@ -565,20 +581,21 @@ public class PathsGenerator
                             var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
                             p.Z = SupportSize * CmToMm;
-                            if (it is >= 54 and <=139)
+                            if (it is >= 54 and <= 139)
                             {
                                 pointsGLL.Add(p);
                             }
 
                             it++;
                         }
+
                         pointsGLL.Add(new Vector3()
                         {
                             X = pointsGLL[^1].X,
-                            Y = pointsGLL[^1].Y + 1.5f*radius,
-                            Z = pointsGLL[^1].Z,
+                            Y = pointsGLL[^1].Y + 1.5f * radius,
+                            Z = SupportSize * CmToMm
                         });
-#if SHOW_POINTS         
+#if SHOW_POINTS
                          intersection.ConvertToInterpolating();
 #endif
                     }
@@ -620,6 +637,7 @@ public class PathsGenerator
                         {
                             var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
+                            p.Z = SupportSize * CmToMm;
                             if (it is >= 0 and <= 77)
                             {
                                 pointsDL.Add(p);
@@ -651,12 +669,25 @@ public class PathsGenerator
 
         #endregion
 
+        finalPoints.Add(new Vector3()
+        {
+            X = 0,
+            Y = 0,
+            Z = 2 * ZBlockSize * CmToMm
+        });
+        var introPoint = pointsGL[0];
+        introPoint.X = XBlockSize / 2 * CmToMm + 2 * radius;
+        introPoint.Z = 2 * ZBlockSize * CmToMm;
+        finalPoints.Add(introPoint);
+        introPoint.Z = pointsGL[0].Z;
+        finalPoints.Add(introPoint);
         finalPoints.AddRange(pointsGL);
         finalPoints.AddRange(pointsGLL);
         finalPoints.AddRange(pointsDL);
         finalPoints.AddRange(pointsD);
         finalPoints.AddRange(pointsR);
         finalPoints.AddRange(pointsGR);
+        finalPoints.Add(pointsGL[0]);
 #endif
 #endif
         foreach (var surf in surfaces)

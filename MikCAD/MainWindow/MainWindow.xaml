@@ -11,6 +11,7 @@
         xmlns:customControls="clr-namespace:MikCAD.CustomControls"
         mc:Ignorable="d"
         Title="MikCAD" MinHeight="400" MinWidth="950"
+        Icon="/Icons/mikcad.ico"
         MouseLeftButtonUp="Image_OnMouseLeftButtonUp"
         PreviewMouseRightButtonUp="Image_OnMouseRightButtonUp"
         MouseLeave="Window_OnMouseLeave"

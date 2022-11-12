@@ -130,6 +130,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Remove="Textures\Heightmap.jpg" />
+    <None Remove="Icons\mikcad.ico" />
+    <Content Include="Icons\mikcad.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Icons\ptok.ico" />
+    <Content Include="Icons\ptok.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Icons\gerwazy.ico" />
+    <Content Include="Icons\gerwazy.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dirkster.NumericUpDownLib" Version="3.2.0" />

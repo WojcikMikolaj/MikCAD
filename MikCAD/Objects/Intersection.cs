@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using MikCAD.Annotations;
 using MikCAD.BezierCurves;
 using MikCAD.Objects.ParameterizedObjects;
+using MikCAD.Sciezki;
 using MikCAD.Utilities;
 using NumericUpDownLib;
 using OpenTK.Mathematics;
@@ -557,6 +558,28 @@ public class Intersection : INotifyPropertyChanged
             intersectionC0.ProcessObject(p);
         }
     }
+    
+    public void ShowC0Decorated(IIntersectableDecorator decorator)
+    {
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        var intersectionC0 = new IntersectionCurve();
+        intersectionC0.Name = "intersectionC0";
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(intersectionC0);
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+
+        foreach (var point in points)
+        {
+            var pos = decorator.GetValueAt(point.s, point.t);
+            var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z,
+            };
+            //Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+            intersectionC0.ProcessObject(p);
+        }
+    }
 
     #region Misc
 
@@ -663,17 +686,26 @@ public class Intersection : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public bool IntersectAndMoveDistance(float distanceFromSurface, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
+    public bool IntersectAndMoveDistance(IIntersectableDecorator decorated, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
     {
         var result = Intersect(first, second, arePointsProvided);
+        var newPoints = new List<IntersectionPoint>();
         if (result)
         {
-            foreach (var point in points)
+            foreach (var t in points)
             {
-                (var pos, var dU, var dV) = _secondObj.GetPositionAndGradient(point.s, point.t);
-                var normal = Vector3.Cross(dU.Normalized(), dV.Normalized()).Normalized();
-                point.pos += distanceFromSurface * (-normal);
+                var newPos = decorated.GetValueAt(t.s, t.t);
+                newPoints.Add(new IntersectionPoint()
+                {
+                    pos = newPos,
+                    u = t.u,
+                    v = t.v,
+                    s = t.s,
+                    t = t.t
+                });
             }
+
+            points = newPoints;
         }
 
         return result;

@@ -1,5 +1,5 @@
-﻿#define GENERIC 
-//#define SPECIALIZED
+﻿//#define GENERIC 
+#define SPECIALIZED
 
 using System;
 using System.Collections.Generic;
@@ -391,6 +391,34 @@ public class PathsGenerator
         {
             if (surfaces.Count >= 0)
             {
+                //punkty startowe
+                //1) u=2.3709621; v=4.4300275;
+                //2) u=3.1167536; v=5.4869013;
+                var u1 = 2.3709621f;
+                var v1 = 4.4300275f;
+
+                var u2 = 3.1167536f;
+                var v2 = 5.4869013f;
+
+                var decorated = new IIntersectableDecorator(surfaces[0])
+                {
+                    DistanceFromSurface = radius / CmToMm
+                };
+                var intersection = new Intersection(supportSurface, surfaces[0])
+                {
+                    StartingPointsNumber = 10000,
+                    MaxPointsNumber = 1000,
+                    UseRandom = true,
+                };
+                var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                    (surfaces[0].GetValueAt(u2, v2), u2, v2), true);
+
+                if (result)
+                {
+                    intersection.ShowC0Decorated(decorated);
+                    var points = intersection.points;
+                    intersection.ConvertToInterpolating();
+                }
             }
         }
 
@@ -572,19 +600,19 @@ public class PathsGenerator
             //     u += du;
             // }
 
-            var intersection = new Intersection(supportSurface, decorated)
+            var intersection = new Intersection(supportSurface, surf)
             {
-                StartingPointsNumber = 30000,
-                MaxPointsNumber = 10000,
+                StartingPointsNumber = 10000,
+                MaxPointsNumber = 1000,
                 NewtonMaxIterations = 1000,
                 UseRandom = true,
-                UseCursor = true
+                UseCursor = false
             };
 
-            var result = intersection.IntersectAndMoveDistance(radius/CmToMm);
+            var result = intersection.IntersectAndMoveDistance(decorated);
             if (result)
             {
-                intersection.ShowC0();
+                intersection.ShowC0Decorated(decorated);
             }
 
             break;

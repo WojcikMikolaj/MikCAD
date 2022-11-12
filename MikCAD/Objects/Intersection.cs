@@ -63,7 +63,7 @@ public class Intersection : INotifyPropertyChanged
         var startingPointsSecond = new List<(Vector3 pos, float u, float v)>();
         ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closestPoints;
         
-        if (ArePointsProvided)
+        if (!ArePointsProvided)
         {
             startingPointsFirst = UseRandom
                 ? _firstObj.GetRandomStartingPoints(StartingPointsNumber)

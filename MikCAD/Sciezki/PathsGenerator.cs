@@ -418,7 +418,7 @@ public class PathsGenerator
                     UseRandom = true,
                 };
                 var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
-                    (decorated.GetValueAt(u2, v2), u2, v2));
+                    (decorated.GetValueAt(u2, v2), u2, v2), true);
                 
                 if (result)
                 {
@@ -456,7 +456,7 @@ public class PathsGenerator
                 Scene.CurrentScene.ObjectsController._pointer.posY = 2.07f;
                 Scene.CurrentScene.ObjectsController._pointer.posZ = -5.94f;
                 var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
-                    (decorated.GetValueAt(u2, v2), u2, v2));
+                    (decorated.GetValueAt(u2, v2), u2, v2), true);
                 if (result)
                 {
                     intersection.ShowC0();

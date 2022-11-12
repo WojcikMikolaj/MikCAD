@@ -39,6 +39,16 @@ public struct CuttingLinePoint
     {
         return new Vector3(XPosInUnits, YPosInUnits, ZPosInUnits);
     }
+
+    public static implicit operator CuttingLinePoint(Vector3 posInMm)
+    {
+        return new CuttingLinePoint()
+        {
+            XPosInMm = posInMm.X,
+            YPosInMm = posInMm.Y,
+            ZPosInMm = posInMm.Z,
+        };
+    }
 }
 
 public class CuttingLines

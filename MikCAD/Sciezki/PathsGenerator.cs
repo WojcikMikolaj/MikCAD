@@ -1,7 +1,7 @@
 ﻿//#define GENERIC 
 
 #define SPECIALIZED
-//#define DRAW
+#define DRAW
 //#define SHOW_POINTS
 
 using System;
@@ -388,8 +388,14 @@ public class PathsGenerator
             }
         }
 
-        List<Point> finalPoints = new List<Point>();
-
+        var finalPoints = new List<Vector3>();
+        var pointsR = new List<Vector3>();
+        var pointsGR = new List<Vector3>();
+        var pointsD = new List<Vector3>();
+        var pointsDL = new List<Vector3>();
+        var pointsGLL = new List<Vector3>();
+        var pointsSL = new List<Vector3>();
+        var pointsGL = new List<Vector3>();
 #if SPECIALIZED
 
         #region raczka
@@ -424,7 +430,24 @@ public class PathsGenerator
 #if DRAW
                     intersection.ShowC0Decorated(decorated);
 #endif
-                    var points = intersection.points;
+                    
+                    var it = 0;
+                    foreach (var point in intersection.points)
+                    {
+                        var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                        (p.Y, p.Z) = (-p.Z, p.Y);
+                        if (it is >= 43 and <= 85)
+                        {
+                            pointsR.Add(p);
+                        }
+
+                        if (it is >= 98 and <= 146)
+                        {
+                            pointsR.Add(p);
+                        }
+                        it++;
+                    }
+
 #if SHOW_POINTS
                     intersection.ConvertToInterpolatingDecorated(decorated);
 #endif
@@ -466,6 +489,27 @@ public class PathsGenerator
 #if DRAW
                     intersection.ShowC0();
 #endif
+                    var it = 0;
+                    foreach (var point in intersection.points)
+                    {
+                        var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                        (p.Y, p.Z) = (-p.Z, p.Y);
+                        if (it is >= 368 and <= 425)
+                        {
+                            pointsGR.Add(p);
+                        }
+
+                        if (it is >= 120 and <= 289)
+                        {
+                            pointsD.Add(p);
+                        }
+                        
+                        if (it is >= 0 and <= 64)
+                        {
+                            pointsGL.Add(p);
+                        }
+                        it++;
+                    }
 #if SHOW_POINTS
                     intersection.ConvertToInterpolating();
 #endif
@@ -510,6 +554,17 @@ public class PathsGenerator
 #if DRAW
                         intersection.ShowC0();
 #endif
+                        var it = 0;
+                        foreach (var point in intersection.points)
+                        {
+                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                            (p.Y, p.Z) = (-p.Z, p.Y);
+                            if (it is >= 52 and <= 87)
+                            {
+                                pointsSL.Add(p);
+                            }
+                            it++;
+                        }
 #if SHOW_POINTS
                         intersection.ConvertToInterpolating();
 #endif
@@ -547,6 +602,22 @@ public class PathsGenerator
 #if DRAW
                         intersection.ShowC0();
 #endif
+                        var it = 0;
+                        foreach (var point in intersection.points)
+                        {
+                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                            (p.Y, p.Z) = (-p.Z, p.Y);
+                            p.Z = SupportSize * CmToMm;
+                            if (it is >= 2 and <= 23)
+                            {
+                                pointsGLL.Add(p);
+                            }
+                            if (it is >= 25 and <= 33)
+                            {
+                                pointsGLL.Add(p);
+                            }
+                            it++;
+                        }
 #if SHOW_POINTS
                         intersection.ConvertToInterpolating();
 #endif
@@ -584,6 +655,29 @@ public class PathsGenerator
 #if DRAW
                         intersection.ShowC0();
 #endif
+                        var it = 0;
+                        foreach (var point in intersection.points)
+                        {
+                            var p =decorated.GetValueAt(point.s, point.t)*CmToMm;
+                            (p.Y, p.Z) = (-p.Z, p.Y);
+                            if (it is >= 1 and <= 77)
+                            {
+                                pointsDL.Add(p);
+                            }
+                            if (it == 79)
+                            {
+                                 pointsDL.Add(p);
+                            }
+                            if (it == 91)
+                            {
+                                pointsDL.Add(p);
+                            }
+                            // if (it is >= 89 and <= 91)
+                            // {
+                            //     pointsDL.Add(p);
+                            // }
+                            it++;
+                        }
 #if SHOW_POINTS
                         intersection.ConvertToInterpolating();
 #endif
@@ -591,6 +685,14 @@ public class PathsGenerator
                 }
             }
         }
+        
+        finalPoints.AddRange(pointsGL);
+        finalPoints.AddRange(pointsSL);
+        finalPoints.AddRange(pointsGLL);
+        finalPoints.AddRange(pointsDL);
+        finalPoints.AddRange(pointsD);
+        finalPoints.AddRange(pointsR);
+        finalPoints.AddRange(pointsGR);
 
         #endregion
 
@@ -649,11 +751,11 @@ public class PathsGenerator
 
 #endif
         }
-
-        List<CuttingLinePoint> list = new List<CuttingLinePoint>();
-
-        SavePath(frez, radius, list);
+        
+        SavePath(frez, radius, finalPoints);
     }
+
+    
 
     public void GenerateDetailed(CutterType frez, uint radius)
     {
@@ -666,6 +768,16 @@ public class PathsGenerator
             points = list.ToArray()
         };
         cuttingLines.SaveFile(frez, radius);
+    }
+    
+    private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints)
+    {
+        var list = new List<CuttingLinePoint>();
+        foreach (var point in finalPoints)
+        {
+            list.Add(point);
+        }
+        SavePath(frez, radius, list);
     }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)

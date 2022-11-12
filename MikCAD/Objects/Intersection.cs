@@ -52,23 +52,34 @@ public class Intersection : INotifyPropertyChanged
     public bool Looped => _looped;
 
 
-    public bool Intersect()
+    public bool Intersect((Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool ArePointsProvided = false)
     {
         _looped = false;
 
         // var startingPointsFirst = _firstObj.GetStartingPoints();
         // var startingPointsSecond = _secondObj.GetStartingPoints();
 
-        var startingPointsFirst = UseRandom
-            ? _firstObj.GetRandomStartingPoints(StartingPointsNumber)
-            : _firstObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
-                (int) MathF.Sqrt(StartingPointsNumber));
-        var startingPointsSecond = UseRandom
-            ? _secondObj.GetRandomStartingPoints(StartingPointsNumber)
-            : _secondObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
-                (int) MathF.Sqrt(StartingPointsNumber));
-
-        var closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond, _selfIntersection);
+        var startingPointsFirst = new List<(Vector3 pos, float u, float v)>();
+        var startingPointsSecond = new List<(Vector3 pos, float u, float v)>();
+        ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closestPoints;
+        
+        if (ArePointsProvided)
+        {
+            startingPointsFirst = UseRandom
+                ? _firstObj.GetRandomStartingPoints(StartingPointsNumber)
+                : _firstObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
+                    (int) MathF.Sqrt(StartingPointsNumber));
+            startingPointsSecond = UseRandom
+                ? _secondObj.GetRandomStartingPoints(StartingPointsNumber)
+                : _secondObj.GetStartingPoints((int) MathF.Sqrt(StartingPointsNumber),
+                    (int) MathF.Sqrt(StartingPointsNumber));
+            closestPoints = FindClosestPoints(startingPointsFirst, startingPointsSecond, _selfIntersection);
+        }
+        else
+        {
+            closestPoints = (first, second);
+        }
+         
 
         // foreach (var p in startingPointsSecond)
         // {
@@ -80,19 +91,21 @@ public class Intersection : INotifyPropertyChanged
         //     });    
         // }
 
-        // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("first")
-        // {
-        //     posX = closestPoints.first.pos.X,
-        //     posY = closestPoints.first.pos.Y,
-        //     posZ = closestPoints.first.pos.Z,
-        // });
-        //
-        // Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint("second")
-        // {
-        //     posX = closestPoints.second.pos.X,
-        //     posY = closestPoints.second.pos.Y,
-        //     posZ = closestPoints.second.pos.Z,
-        // });
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(
+            new ParameterizedPoint($"first u={closestPoints.first.u}, v={closestPoints.first.v}")
+            {
+                posX = closestPoints.first.pos.X,
+                posY = closestPoints.first.pos.Y,
+                posZ = closestPoints.first.pos.Z,
+            });
+
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(
+            new ParameterizedPoint($"second u={closestPoints.second.u}, v={closestPoints.second.v}")
+            {
+                posX = closestPoints.second.pos.X,
+                posY = closestPoints.second.pos.Y,
+                posZ = closestPoints.second.pos.Z,
+            });
 
 
         var firstIntersectionPoint = FindFirstIntersectionPoint(closestPoints);
@@ -136,8 +149,9 @@ public class Intersection : INotifyPropertyChanged
             {
                 break;
             }
+
             it++;
-            
+
             lastPoint = FindNextPoint(lastPoint);
             if (lastPoint == null)
                 break;
@@ -159,8 +173,9 @@ public class Intersection : INotifyPropertyChanged
             {
                 break;
             }
+
             it++;
-            
+
             lastPoint = FindNextPoint(lastPoint, false);
             if (lastPoint == null)
                 break;

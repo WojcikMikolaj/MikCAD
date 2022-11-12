@@ -382,33 +382,144 @@ public class PathsGenerator
             }
         }
 
+        #region raczka
+
+        {
+        }
+
+        #endregion
+
+        #region sloik
+
+        {
+            //punkty startowe
+            //1) u=1.4388611; v=3,082061
+            //2) u=8.197167; v=1,1560346
+
+            if (surfaces.Count > 1)
+            {
+                //punkty startowe
+                //1) u=1.4388611; v=3.082061;
+                //2) u=8.197167; v=1.1560346;
+                var u1 = 1.4388611f;
+                var v1 = 3.082061f;
+
+                var u2 = 8.197167f;
+                var v2 = 1.1560346f;
+
+                var decorated = new IIntersectableDecorator(surfaces[1])
+                {
+                    DistanceFromSurface = radius / CmToMm
+                };
+                var intersection = new Intersection(supportSurface, decorated)
+                {
+                    StartingPointsNumber = 10000,
+                    MaxPointsNumber = 1000,
+                    UseRandom = true,
+                };
+                var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                    (decorated.GetValueAt(u2, v2), u2, v2));
+                
+                if (result)
+                {
+                    intersection.ShowC0();
+                }
+            }
+        }
+
+        #endregion
+
+        #region czubek
+
+        {
+            if (surfaces.Count > 2)
+            {//punkty startowe
+                //1) u=2.5; v=0.7;
+                //2) u=0.92; v=4.55;
+                var u1 = 2.5f;
+                var v1 = 0.7f;
+
+                var u2 = 0.92f;
+                var v2 = 4.55f;
+                var decorated = new IIntersectableDecorator(surfaces[2])
+                {
+                    DistanceFromSurface = radius / CmToMm
+                };
+                var intersection = new Intersection(supportSurface, decorated)
+                {
+                    StartingPointsNumber = 10000,
+                    MaxPointsNumber = 10000,
+                    UseRandom = false,
+                    UseCursor = true
+                };
+                Scene.CurrentScene.ObjectsController._pointer.posX = 0f;
+                Scene.CurrentScene.ObjectsController._pointer.posY = 2.07f;
+                Scene.CurrentScene.ObjectsController._pointer.posZ = -5.94f;
+                var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                    (decorated.GetValueAt(u2, v2), u2, v2));
+                if (result)
+                {
+                    intersection.ShowC0();
+                }
+            }
+        }
+
+        #endregion
+
         foreach (var o in surfaces)
         {
-            switch (o)
-            {
-                case BezierSurfaceC2 surf:
-
-                    var decorated = new IIntersectableDecorator(surf)
-                    {
-                        DistanceFromSurface = radius/CmToMm
-                    };
-
-                    var intersection = new Intersection(supportSurface, decorated)
-                    {
-                        StartingPointsNumber = 1000,
-                        UseRandom = false
-                    };
-
-                    var result = intersection.Intersect();
-                    if (result)
-                    {
-                        intersection.ShowC0();
-                    }
-
-                    break;
-                default:
-                    break;
-            }
+            //switch (o)
+            //{
+            //     case BezierSurfaceC2 surf:
+            //
+            //         var decorated = new IIntersectableDecorator(surf)
+            //         {
+            //             DistanceFromSurface = radius/CmToMm
+            //         };
+            //
+            //         // var du = decorated.USize / 10; 
+            //         // var dv = decorated.VSize / 10;
+            //         //
+            //         // var u = 0.0f;
+            //         // var v = 0.0f;
+            //         //
+            //         // for (int i = 0; i < 10; i++)
+            //         // {
+            //         //     v = 0;
+            //         //     for (int j = 0; j < 10; j++)
+            //         //     {
+            //         //         var pos = decorated.GetValueAt(u, v);
+            //         //         Scene.CurrentScene.ObjectsController.AddObjectToScene(new ParameterizedPoint()
+            //         //         {
+            //         //             posX = pos.X,
+            //         //             posY = pos.Y,
+            //         //             posZ = pos.Z
+            //         //         });
+            //         //         v += dv;
+            //         //     }
+            //         //
+            //         //     u += du;
+            //         // }
+            //         
+            //         var intersection = new Intersection(supportSurface, decorated)
+            //         {
+            //             StartingPointsNumber = 10000,
+            //             MaxPointsNumber = 10000,
+            //             NewtonMaxIterations = 10000,
+            //             UseRandom = false,
+            //             UseCursor = true
+            //         };
+            //
+            //         var result = intersection.Intersect();
+            //          if (result)
+            //          {
+            //              intersection.ShowC0();
+            //          }
+            //
+            //         break;
+            //     default:
+            //         break;
+            // }
         }
 
         List<CuttingLinePoint> list = new List<CuttingLinePoint>();

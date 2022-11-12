@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define GENERIC 
+//#define SPECIALIZED
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -381,25 +384,21 @@ public class PathsGenerator
                 }
             }
         }
-#if false
+#if SPECIALIZED
+
         #region raczka
-        
+
         {
             if (surfaces.Count >= 0)
             {
-                
             }
         }
-        
+
         #endregion
-        
+
         #region sloik
-        
+
         {
-            //punkty startowe
-            //1) u=1.4388611; v=3,082061
-            //2) u=8.197167; v=1,1560346
-        
             if (surfaces.Count >= 2)
             {
                 //punkty startowe
@@ -407,10 +406,10 @@ public class PathsGenerator
                 //2) u=8.197167; v=1.1560346;
                 var u1 = 1.4388611f;
                 var v1 = 3.082061f;
-        
+
                 var u2 = 8.197167f;
                 var v2 = 1.1560346f;
-        
+
                 var decorated = new IIntersectableDecorator(surfaces[1])
                 {
                     DistanceFromSurface = radius / CmToMm
@@ -423,56 +422,124 @@ public class PathsGenerator
                 };
                 var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
                     (decorated.GetValueAt(u2, v2), u2, v2), true);
-                
+
                 if (result)
                 {
                     intersection.ShowC0();
                 }
             }
         }
-        
+
         #endregion
-        
+
         #region czubek
-        
+
         {
             if (surfaces.Count >= 3)
-            {//punkty startowe
+            {
+                // //GORA PRAWO
+                // //1) u=2.8404841; v=1.865617;
+                // //2) u=3.0553267; v=1.3731587;
+                {
+                    var u1 = 2.8404841f;
+                    var v1 = 1.865617f;
+
+                    var u2 = 3.0553267f;
+                    var v2 = 1.3731587f;
+
+                    var decorated = new IIntersectableDecorator(surfaces[2])
+                    {
+                        DistanceFromSurface = radius / CmToMm
+                    };
+                    var intersection = new Intersection(supportSurface, decorated)
+                    {
+                        StartingPointsNumber = 30000,
+                        MaxPointsNumber = 10000,
+                        NewtonMaxIterations = 1000,
+                        UseRandom = true,
+                        UseCursor = true
+                    };
+                    var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                        (decorated.GetValueAt(u2, v2), u2, v2), true);
+
+                    if (result)
+                    {
+                        intersection.ShowC0();
+                    }
+                }
+                //
+                //GORA LEWO
+                //1) u=3.4132; v=0.9082303;
+                //2) u=3.0791092; v=5.7197366;
+                {
+                    var u1 = 3.4132f;
+                    var v1 = 0.9082303f;
+
+                    var u2 = 3.0791092f;
+                    var v2 = 5.7197366f;
+
+                    var decorated = new IIntersectableDecorator(surfaces[2])
+                    {
+                        DistanceFromSurface = radius / CmToMm
+                    };
+
+                    var intersection = new Intersection(supportSurface, decorated)
+                    {
+                        StartingPointsNumber = 30000,
+                        MaxPointsNumber = 10000,
+                        NewtonMaxIterations = 1000,
+                        UseRandom = true,
+                        UseCursor = true
+                    };
+                    var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                        (decorated.GetValueAt(u2, v2), u2, v2), true);
+
+                    if (result)
+                    {
+                        intersection.ShowC0();
+                    }
+                }
+                //DOL
                 //1) u=2.5; v=0.7;
                 //2) u=0.92; v=4.55;
-                var u1 = 2.5f;
-                var v1 = 0.7f;
-        
-                var u2 = 0.92f;
-                var v2 = 4.55f;
-                var decorated = new IIntersectableDecorator(surfaces[2])
                 {
-                    DistanceFromSurface = radius / CmToMm
-                };
-                var intersection = new Intersection(supportSurface, decorated)
-                {
-                    StartingPointsNumber = 10000,
-                    MaxPointsNumber = 10000,
-                    UseRandom = false,
-                    UseCursor = true
-                };
-                Scene.CurrentScene.ObjectsController._pointer.posX = 0f;
-                Scene.CurrentScene.ObjectsController._pointer.posY = 2.07f;
-                Scene.CurrentScene.ObjectsController._pointer.posZ = -5.94f;
-                var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
-                    (decorated.GetValueAt(u2, v2), u2, v2), true);
-                if (result)
-                {
-                    intersection.ShowC0();
+                    var u1 = 2.5f;
+                    var v1 = 0.7f;
+
+                    var u2 = 0.92f;
+                    var v2 = 4.55f;
+
+                    var decorated = new IIntersectableDecorator(surfaces[2])
+                    {
+                        DistanceFromSurface = radius / CmToMm
+                    };
+
+                    var intersection = new Intersection(supportSurface, decorated)
+                    {
+                        StartingPointsNumber = 10000,
+                        MaxPointsNumber = 10000,
+                        UseRandom = false,
+                        UseCursor = true
+                    };
+                    Scene.CurrentScene.ObjectsController._pointer.posX = 0f;
+                    Scene.CurrentScene.ObjectsController._pointer.posY = 2.07f;
+                    Scene.CurrentScene.ObjectsController._pointer.posZ = -5.94f;
+                    var result = intersection.Intersect((supportSurface.GetValueAt(u1, v1), u1, v1),
+                        (decorated.GetValueAt(u2, v2), u2, v2), true);
+                    if (result)
+                    {
+                        intersection.ShowC0();
+                    }
                 }
             }
         }
-        
+
         #endregion
+
 #endif
         foreach (var surf in surfaces)
         {
-#if true
+#if GENERIC
             var decorated = new IIntersectableDecorator(surf)
             {
                 DistanceFromSurface = radius / CmToMm
@@ -507,14 +574,14 @@ public class PathsGenerator
 
             var intersection = new Intersection(supportSurface, decorated)
             {
-                StartingPointsNumber = 10000,
+                StartingPointsNumber = 30000,
                 MaxPointsNumber = 10000,
                 NewtonMaxIterations = 1000,
                 UseRandom = true,
-                UseCursor = false
+                UseCursor = true
             };
 
-            var result = intersection.Intersect();
+            var result = intersection.IntersectAndMoveDistance(radius/CmToMm);
             if (result)
             {
                 intersection.ShowC0();

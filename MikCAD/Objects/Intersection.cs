@@ -662,4 +662,20 @@ public class Intersection : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
+    public bool IntersectAndMoveDistance(float distanceFromSurface, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
+    {
+        var result = Intersect(first, second, arePointsProvided);
+        if (result)
+        {
+            foreach (var point in points)
+            {
+                (var pos, var dU, var dV) = _secondObj.GetPositionAndGradient(point.s, point.t);
+                var normal = Vector3.Cross(dU.Normalized(), dV.Normalized()).Normalized();
+                point.pos += distanceFromSurface * (-normal);
+            }
+        }
+
+        return result;
+    }
 }

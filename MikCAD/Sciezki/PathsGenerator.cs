@@ -1,5 +1,8 @@
 ﻿//#define GENERIC 
+
 #define SPECIALIZED
+//#define DRAW
+//#define SHOW_POINTS
 
 using System;
 using System.Collections.Generic;
@@ -384,6 +387,9 @@ public class PathsGenerator
                 }
             }
         }
+
+        List<Point> finalPoints = new List<Point>();
+
 #if SPECIALIZED
 
         #region raczka
@@ -415,9 +421,13 @@ public class PathsGenerator
 
                 if (result)
                 {
+#if DRAW
                     intersection.ShowC0Decorated(decorated);
+#endif
                     var points = intersection.points;
-                    intersection.ConvertToInterpolating();
+#if SHOW_POINTS
+                    intersection.ConvertToInterpolatingDecorated(decorated);
+#endif
                 }
             }
         }
@@ -453,7 +463,12 @@ public class PathsGenerator
 
                 if (result)
                 {
+#if DRAW
                     intersection.ShowC0();
+#endif
+#if SHOW_POINTS
+                    intersection.ConvertToInterpolating();
+#endif
                 }
             }
         }
@@ -492,7 +507,12 @@ public class PathsGenerator
 
                     if (result)
                     {
+#if DRAW
                         intersection.ShowC0();
+#endif
+#if SHOW_POINTS
+                        intersection.ConvertToInterpolating();
+#endif
                     }
                 }
                 //
@@ -524,7 +544,12 @@ public class PathsGenerator
 
                     if (result)
                     {
+#if DRAW
                         intersection.ShowC0();
+#endif
+#if SHOW_POINTS
+                        intersection.ConvertToInterpolating();
+#endif
                     }
                 }
                 //DOL
@@ -556,7 +581,12 @@ public class PathsGenerator
                         (decorated.GetValueAt(u2, v2), u2, v2), true);
                     if (result)
                     {
+#if DRAW
                         intersection.ShowC0();
+#endif
+#if SHOW_POINTS
+                        intersection.ConvertToInterpolating();
+#endif
                     }
                 }
             }

@@ -505,10 +505,11 @@ public class Intersection : INotifyPropertyChanged
         Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
 
+        var it = 0;
         foreach (var point in points)
         {
             var pos = _firstObj.GetValueAt(point.u, point.v);
-            var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+            var p = new ParameterizedPoint($"{it++}; u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
             {
                 posX = pos.X,
                 posY = pos.Y,
@@ -537,6 +538,28 @@ public class Intersection : INotifyPropertyChanged
         // }
     }
 
+    public void ConvertToInterpolatingDecorated(IIntersectableDecorator decorator)
+    {
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+        var interpolating = new InterpolatingBezierCurveC2();
+        Scene.CurrentScene.ObjectsController.AddObjectToScene(interpolating);
+        Scene.CurrentScene.ObjectsController.SelectedObject = null;
+
+        var it = 0;
+        foreach (var point in points)
+        {
+            var pos = decorator.GetValueAt(point.s, point.t);
+            var p = new ParameterizedPoint($"{it++}; u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
+            {
+                posX = pos.X,
+                posY = pos.Y,
+                posZ = pos.Z,
+            };
+            Scene.CurrentScene.ObjectsController.AddObjectToScene(p);
+            interpolating.ProcessObject(p);
+        }
+    }
+    
     public void ShowC0()
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;

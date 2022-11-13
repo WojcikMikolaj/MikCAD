@@ -538,7 +538,7 @@ public class Intersection : INotifyPropertyChanged
         // }
     }
 
-    public void ConvertToInterpolatingDecorated(IIntersectableDecorator decorator)
+    public void ConvertToInterpolatingDecorated(IIntersectableDecoratorStage2 decoratorStage2)
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
         var interpolating = new InterpolatingBezierCurveC2();
@@ -548,7 +548,7 @@ public class Intersection : INotifyPropertyChanged
         var it = 0;
         foreach (var point in points)
         {
-            var pos = decorator.GetValueAt(point.s, point.t);
+            var pos = decoratorStage2.GetValueAt(point.s, point.t);
             var p = new ParameterizedPoint($"{it++}; u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
             {
                 posX = pos.X,
@@ -582,7 +582,7 @@ public class Intersection : INotifyPropertyChanged
         }
     }
     
-    public void ShowC0Decorated(IIntersectableDecorator decorator)
+    public void ShowC0Decorated(IIntersectableDecoratorStage2 decoratorStage2)
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
         var intersectionC0 = new IntersectionCurve();
@@ -592,7 +592,7 @@ public class Intersection : INotifyPropertyChanged
 
         foreach (var point in points)
         {
-            var pos = decorator.GetValueAt(point.s, point.t);
+            var pos = decoratorStage2.GetValueAt(point.s, point.t);
             var p = new ParameterizedPoint($"u:{point.u}; v:{point.v}; s:{point.s}; t:{point.t}")
             {
                 posX = pos.X,
@@ -709,7 +709,7 @@ public class Intersection : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public bool IntersectAndMoveDistance(IIntersectableDecorator decorated, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
+    public bool IntersectAndMoveDistance(IIntersectableDecoratorStage2 decorated, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
     {
         var result = Intersect(first, second, arePointsProvided);
         var newPoints = new List<IntersectionPoint>();

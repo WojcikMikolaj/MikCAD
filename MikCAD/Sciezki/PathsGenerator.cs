@@ -22,7 +22,7 @@ using OpenTK.Mathematics;
 
 namespace MikCAD.Sciezki;
 
-public class PathsGenerator
+public partial class PathsGenerator
 {
     public PathsGeneratorControl PathsGeneratorControl;
     public static PathsGenerator Generator { get; private set; }
@@ -414,7 +414,7 @@ public class PathsGenerator
                 var u2 = 3.1167536f;
                 var v2 = 5.4869013f;
 
-                var decorated = new IIntersectableDecorator(surfaces[0])
+                var decorated = new IIntersectableDecoratorStage2(surfaces[0])
                 {
                     DistanceFromSurface = radius / CmToMm
                 };
@@ -478,7 +478,7 @@ public class PathsGenerator
                 var u2 = 8.197167f;
                 var v2 = 1.1560346f;
 
-                var decorated = new IIntersectableDecorator(surfaces[1])
+                var decorated = new IIntersectableDecoratorStage2(surfaces[1])
                 {
                     DistanceFromSurface = radius / CmToMm
                 };
@@ -559,7 +559,7 @@ public class PathsGenerator
 
                     var u2 = 3.0921733f;
                     var v2 = 6.8938847f;
-                    var decorated = new IIntersectableDecorator(surfaces[2])
+                    var decorated = new IIntersectableDecoratorStage2(surfaces[2])
                     {
                         DistanceFromSurface = radius / CmToMm
                     };
@@ -610,7 +610,7 @@ public class PathsGenerator
                     var u2 = 0.92f;
                     var v2 = 4.55f;
 
-                    var decorated = new IIntersectableDecorator(surfaces[2])
+                    var decorated = new IIntersectableDecoratorStage2(surfaces[2])
                     {
                         DistanceFromSurface = radius / CmToMm
                     };
@@ -693,7 +693,7 @@ public class PathsGenerator
         foreach (var surf in surfaces)
         {
 #if GENERIC
-            var decorated = new IIntersectableDecorator(surf)
+            var decorated = new IIntersectableDecoratorStage2(surf)
             {
                 DistanceFromSurface = radius / CmToMm
             };
@@ -749,9 +749,7 @@ public class PathsGenerator
     }
 
 
-    public void GenerateDetailed(CutterType frez, uint radius)
-    {
-    }
+    
 
     private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list)
     {

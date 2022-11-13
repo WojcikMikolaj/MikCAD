@@ -125,11 +125,11 @@
         <GroupBox Header="Obróbka dokładna">
             <StackPanel>
                 <Label>Typ freza</Label>
-                <RadioButton x:Name="radioDK16">K16</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioDK16">K16</RadioButton>
                 <RadioButton x:Name="radioDK08" IsChecked="True">K08</RadioButton>
-                <RadioButton x:Name="radioDK01">K01</RadioButton>
-                <RadioButton x:Name="radioDF12">F12</RadioButton>
-                <RadioButton x:Name="radioDF10">F10</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioDK01">K01</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioDF12">F12</RadioButton>
+                <RadioButton IsEnabled="False" x:Name="radioDF10">F10</RadioButton>
                 <Button Click="GenerateDetailed">Generuj</Button>
             </StackPanel>
         </GroupBox>

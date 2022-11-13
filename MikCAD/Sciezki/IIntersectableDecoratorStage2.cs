@@ -5,14 +5,14 @@ using OpenTK.Mathematics;
 namespace MikCAD.Sciezki;
 
 // ReSharper disable once InconsistentNaming
-public class IIntersectableDecorator : IIntersectable
+public class IIntersectableDecoratorStage2 : IIntersectable
 {
     public IIntersectable Intersectable { get; }
 
     public float DistanceFromSurface { get; set; }
     public float Delta { get; set; } = 0.001f;
 
-    public IIntersectableDecorator(BezierSurfaceC2 surfaceC2)
+    public IIntersectableDecoratorStage2(BezierSurfaceC2 surfaceC2)
     {
         Intersectable = surfaceC2;
     }

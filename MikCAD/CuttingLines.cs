@@ -118,7 +118,7 @@ public class CuttingLines
 {
     public CuttingLinePoint[] points { get; init; }
 
-    public void SaveFile(CutterType frez, uint radius)
+    public void SaveFile(CutterType frez, uint radius, bool optimize = true)
     {
         var fileExtensionBuilder = new StringBuilder();
         var diameter = radius * 2;
@@ -142,7 +142,7 @@ public class CuttingLines
         var firstInstructionNumber = 3;
         List<string> lines = new List<string>();
 
-        var punktyWynikowe = PathOptimizer.OptimizePaths(points.ToList(), 0.001f);
+        var punktyWynikowe = PathOptimizer.OptimizePaths(points.ToList(), 0.001f, optimize);
 
         StringBuilder instruction = new StringBuilder();
         foreach (var point in punktyWynikowe)

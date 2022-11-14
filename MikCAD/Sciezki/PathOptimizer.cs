@@ -6,9 +6,13 @@ namespace MikCAD.Sciezki;
 
 public static class PathOptimizer
 {
-    public static List<CuttingLinePoint> OptimizePaths(List<CuttingLinePoint> points, float epsilon)
+    public static List<CuttingLinePoint> OptimizePaths(List<CuttingLinePoint> points, float epsilon, bool fullOptimize)
     {
         var punktyPoPierwszymPrzebiegu = FirstPass(points, epsilon);
+        if (!fullOptimize)
+        {
+            return punktyPoPierwszymPrzebiegu;
+        }
         var punktyPoDrugimPrzebiegu = SecondPass(punktyPoPierwszymPrzebiegu, epsilon);
         return punktyPoDrugimPrzebiegu;
     }

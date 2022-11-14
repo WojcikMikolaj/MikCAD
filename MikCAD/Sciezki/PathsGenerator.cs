@@ -236,15 +236,15 @@ public partial class PathsGenerator
     {
         GenerateHeightmap();
 
-        List<CuttingLinePoint> list = new List<CuttingLinePoint>();
-        list.Add(new CuttingLinePoint()
+        List<CuttingLinePoint> finalList = new List<CuttingLinePoint>();
+        finalList.Add(new CuttingLinePoint()
         {
             XPosInMm = 0,
             YPosInMm = 0,
             ZPosInMm = 2 * ZBlockSize * CmToMm,
         });
 
-        list.Add(new CuttingLinePoint()
+        finalList.Add(new CuttingLinePoint()
         {
             XPosInMm = -XBlockSize / 2 * CmToMm - radius,
             YPosInMm = -YBlockSize / 2 * CmToMm,
@@ -267,6 +267,7 @@ public partial class PathsGenerator
 
         for (int i = 0; i < 2 * numberOfPathsOnSinglePlain; ++i)
         {
+            List<CuttingLinePoint> list = new List<CuttingLinePoint>();
             if (moveBack)
             {
             }
@@ -356,16 +357,27 @@ public partial class PathsGenerator
                     ZPosInMm = endZinMm
                 });
             }
+
+            if (list.Count > 2)
+            {
+                finalList.Add(list[0]);
+                finalList.Add(list[^2]);
+                finalList.Add(list[^1]);
+            }
+            else
+            {
+                finalList.AddRange(list);
+            }
         }
 
-        list.Add(new CuttingLinePoint()
+        finalList.Add(new CuttingLinePoint()
         {
             XPosInMm = -XBlockSize / 2 * CmToMm - radius,
             YPosInMm = -YBlockSize / 2 * CmToMm,
             ZPosInMm = SupportSize * CmToMm,
         });
 
-        SavePath(frez, radius, list);
+        SavePath(frez, radius, finalList, false);
     }
 
     public void GenerateFlatEnvelope(CutterType frez, uint radius)
@@ -745,22 +757,20 @@ public partial class PathsGenerator
 #endif
         }
 
-        SavePath(frez, radius, finalPoints);
+        SavePath(frez, radius, finalPoints, false);
     }
 
 
-    
-
-    private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list)
+    private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list, bool optimize = true)
     {
         CuttingLines cuttingLines = new CuttingLines()
         {
             points = list.ToArray()
         };
-        cuttingLines.SaveFile(frez, radius);
+        cuttingLines.SaveFile(frez, radius, optimize);
     }
 
-    private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints)
+    private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints, bool optimize = true)
     {
         var list = new List<CuttingLinePoint>();
         foreach (var point in finalPoints)
@@ -768,7 +778,7 @@ public partial class PathsGenerator
             list.Add(point);
         }
 
-        SavePath(frez, radius, list);
+        SavePath(frez, radius, list, optimize);
     }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)

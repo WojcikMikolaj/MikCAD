@@ -153,7 +153,7 @@ public partial class PathsGenerator
                 nextIter: ;
             }
 
-            SavePath(frez, radius, finalPoints);
+            SavePath(frez, radius, finalPoints, false);
         }
 #endif
 

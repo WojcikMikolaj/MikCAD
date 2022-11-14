@@ -64,4 +64,22 @@ public class IIntersectableDecoratorStage2 : IIntersectable
     public float VSize => Intersectable.VSize;
     public Intersection Intersection { get; set; }
     public bool IgnoreBlack { get; set; }
+
+    public Vector3 GetNormal(float u, float v)
+    {
+        (var pos, var dU, var dV) = Intersectable.GetPositionAndGradient(u, v);
+
+        var normal = Vector3.Cross(dU.Normalized(), dV.Normalized()).Normalized();
+        if(float.IsNaN(normal.X) 
+           || float.IsInfinity(normal.X)
+           || float.IsNaN(normal.Y)
+           || float.IsInfinity(normal.Y)
+           || float.IsNaN(normal.Z)
+           || float.IsInfinity(normal.Z))
+        {
+            normal = Vector3.Zero;
+        }
+        //return (pos + DistanceFromSurface * (-normal), GetUDerivativeAt(u,v), GetVDerivativeAt(u,v));
+        return -normal;
+    }
 }

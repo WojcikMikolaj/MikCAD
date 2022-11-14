@@ -53,7 +53,8 @@ public class Intersection : INotifyPropertyChanged
     public bool Looped => _looped;
 
 
-    public bool Intersect((Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool ArePointsProvided = false)
+    public bool Intersect((Vector3 pos, float u, float v) first = default,
+        (Vector3 pos, float u, float v) second = default, bool ArePointsProvided = false)
     {
         _looped = false;
 
@@ -63,7 +64,7 @@ public class Intersection : INotifyPropertyChanged
         var startingPointsFirst = new List<(Vector3 pos, float u, float v)>();
         var startingPointsSecond = new List<(Vector3 pos, float u, float v)>();
         ((Vector3 pos, float u, float v) first, (Vector3 pos, float u, float v) second) closestPoints;
-        
+
         if (!ArePointsProvided)
         {
             startingPointsFirst = UseRandom
@@ -80,7 +81,7 @@ public class Intersection : INotifyPropertyChanged
         {
             closestPoints = (first, second);
         }
-         
+
 
         // foreach (var p in startingPointsSecond)
         // {
@@ -559,7 +560,7 @@ public class Intersection : INotifyPropertyChanged
             interpolating.ProcessObject(p);
         }
     }
-    
+
     public void ShowC0()
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
@@ -581,7 +582,7 @@ public class Intersection : INotifyPropertyChanged
             intersectionC0.ProcessObject(p);
         }
     }
-    
+
     public void ShowC0Decorated(IIntersectableDecoratorStage2 decoratorStage2)
     {
         Scene.CurrentScene.ObjectsController.SelectedObject = null;
@@ -709,7 +710,9 @@ public class Intersection : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public bool IntersectAndMoveDistance(IIntersectableDecoratorStage2 decorated, (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default, bool arePointsProvided = false)
+    public bool IntersectAndMoveDistance(IIntersectableDecoratorStage2 decorated,
+        (Vector3 pos, float u, float v) first = default, (Vector3 pos, float u, float v) second = default,
+        bool arePointsProvided = false)
     {
         var result = Intersect(first, second, arePointsProvided);
         var newPoints = new List<IntersectionPoint>();

@@ -30,7 +30,7 @@ public partial class PathsGenerator
 
     public float XBlockSize { get; set; } = 15;
     public float YBlockSize { get; set; } = 15;
-    public float ZBlockSize { get; set; } = 5;
+    public float ZBlockSize { get; set; } = 4;
     public float SupportSize { get; set; } = 1.85f;
 
     public bool IsGenerateHeightmap { get; set; } = true;
@@ -42,7 +42,7 @@ public partial class PathsGenerator
     private const int SamplesPerObjectCount = 500;
     private const float CmToMm = 10;
     private const float UnitsToCm = 1;
-    private const float SafetyDistance = 1;
+    private const float SafetyDistance = 5;
 
     private float[,] HeightMap;
     private float dXPerArrayElement;
@@ -157,7 +157,7 @@ public partial class PathsGenerator
 
         var lastXInMm = list[^1].XPosInMm;
         var lastYInMm = list[^1].YPosInMm;
-        var lastZInMm = MathF.Max(SupportSize * CmToMm,
+        var lastZInMm = MathF.Max(SupportSize * CmToMm + SafetyDistance,
             GetZFromArray(lastXInMm, lastYInMm, cutterArray, rX, rY)) + SafetyDistance;
         ;
 
@@ -1000,6 +1000,6 @@ public partial class PathsGenerator
             }
         }
 
-        db.BitmapToImageSource().Save("heightmap.bmp");
+        //db.BitmapToImageSource().Save("heightmap.bmp");
     }
 }

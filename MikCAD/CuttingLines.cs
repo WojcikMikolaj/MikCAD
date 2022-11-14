@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using MikCAD.Sciezki;
 using MikCAD.Utilities;
 using OpenTK.Mathematics;
 
@@ -22,6 +24,10 @@ public struct CuttingLinePoint
     public float XPosInUnits { get; set; } = Single.NaN;
     public float YPosInUnits { get; set; } = Single.NaN;
     public float ZPosInUnits { get; set; } = Single.NaN;
+
+    public bool WriteX { get; set; } = true;
+    public bool WriteY { get; set; } = true;
+    public bool WriteZ { get; set; } = true;
 
     public int InstructionNumber { get; init; } = -1;
 
@@ -48,6 +54,63 @@ public struct CuttingLinePoint
             YPosInMm = posInMm.Y,
             ZPosInMm = posInMm.Z,
         };
+    }
+
+    public float DistanceSquaredTo(CuttingLinePoint other)
+    {
+        return Vector3.DistanceSquared(this.ToVector3(), other.ToVector3());
+    }
+
+    public enum WritePos
+    {
+        None = -1,
+        X = 0,
+        Y = 1,
+        Z = 2,
+        Xy = 3,
+        Xz = 4,
+        Yz = 5,
+        Xyz = 6,
+    }
+
+    public WritePos GetWritePos()
+    {
+        if (WriteX && WriteY && WriteZ)
+        {
+            return WritePos.Xyz;
+        }
+
+        if (WriteX && WriteY)
+        {
+            return WritePos.Xy;
+        }
+        
+        if (WriteX && WriteZ)
+        {
+            return WritePos.Xz;
+        }
+        
+        if (WriteY && WriteZ)
+        {
+            return WritePos.Yz;
+        }
+
+        if (WriteX)
+        {
+            return WritePos.X;
+        }
+        
+        if (WriteY)
+        {
+            return WritePos.Y;
+        }
+        
+        if (WriteZ)
+        {
+            return WritePos.Z;
+        }
+
+        return WritePos.None;
     }
 }
 
@@ -78,18 +141,39 @@ public class CuttingLines
 
         var firstInstructionNumber = 3;
         List<string> lines = new List<string>();
-        foreach (var point in points)
+
+        var punktyWynikowe = PathOptimizer.OptimizePaths(points.ToList(), 0.001f);
+
+        StringBuilder instruction = new StringBuilder();
+        foreach (var point in punktyWynikowe)
         {
-            lines.Add(
-                $"N{firstInstructionNumber++}G01" +
-                $"X{point.XPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}" +
-                $"Y{point.YPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}" +
-                $"Z{point.ZPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            instruction.Clear();
+
+            instruction.Append($"N{firstInstructionNumber++}G01");
+            if (point.WriteX)
+            {
+                instruction.Append(
+                    $"X{point.XPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (point.WriteY)
+            {
+                instruction.Append(
+                    $"Y{point.YPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (point.WriteZ)
+            {
+                instruction.Append(
+                    $"Z{point.ZPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            lines.Add(instruction.ToString());
         }
 
         SaveFileDialog diag = new SaveFileDialog()
         {
-            Filter = $"{fileExtensionBuilder}|*{fileExtensionBuilder}"
+            Filter = $@"{fileExtensionBuilder}|*{fileExtensionBuilder}"
         };
         try
         {

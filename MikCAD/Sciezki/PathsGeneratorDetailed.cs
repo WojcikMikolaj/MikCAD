@@ -1,14 +1,15 @@
 ﻿//#define DRAW
 //#define SHOW_POINTS
-#define RACZKA
+//#define RACZKA
 //#define CZUBEK
-//#define SLOIK
+#define SLOIK
 
 
 using System.Collections.Generic;
 using System.Numerics;
 using MikCAD.BezierSurfaces;
 using MikCAD.Extensions;
+using MikCAD.Objects;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace MikCAD.Sciezki;
@@ -97,6 +98,18 @@ public partial class PathsGenerator
             {
                 DistanceFromSurface = radius / CmToMm
             };
+            var detailedR = new IIntersectableDecoratorStage2(surfaces[0])
+            {
+                DistanceFromSurface = radius / CmToMm
+            };
+
+            var intersect = new Intersection(surfaces[1], surfaces[0]);
+            //var intersect = new Intersection(detailed, detailedR);
+            if (intersect.Intersect())
+            {
+                //intersect.ShowC0();
+                //intersect.ShowC0DecoratedDecorated(detailedR, detailed);
+            }
             var samplesPerParam = 100;
 
             var u = 0.0f;

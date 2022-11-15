@@ -985,7 +985,7 @@ public partial class PathsGenerator
                 }
             }
 
-            SaveAsBitmap();
+            //SaveAsBitmap();
         }
     }
 

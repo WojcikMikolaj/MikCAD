@@ -1,8 +1,8 @@
 ﻿//#define DRAW
 //#define SHOW_POINTS
 //#define RACZKA
-//#define CZUBEK
-#define SLOIK
+#define CZUBEK
+//#define SLOIK
 
 
 using System.Collections.Generic;
@@ -246,7 +246,7 @@ public partial class PathsGenerator
             var finalPoints = new List<Vector3>();
             var lines = new List<List<Vector3>>();
 
-            var detailed = new IIntersectableDecoratorStage2(surfaces[2])
+            var detailed = new IIntersectableDecoratorStage3(surfaces[2])
             {
                 DistanceFromSurface = radius / CmToMm
             };
@@ -258,6 +258,7 @@ public partial class PathsGenerator
             var dU = detailed.USize / samplesPerParam;
             var dV = detailed.VSize / samplesPerParam;
 
+            detailed.Sample(20,20);
 
             for (int i = 0; i < samplesPerParam; i++)
             {
@@ -270,10 +271,9 @@ public partial class PathsGenerator
                     {
                         (point.Y, point.Z) = (-point.Z, point.Y);
                         point *= CmToMm;
-                        
                         if (point.Z >= SupportSize*CmToMm - 0.1)
                         {
-                            points.Add(point);
+                            points.Add(point);   
                         }
                         else
                         {
@@ -293,7 +293,7 @@ public partial class PathsGenerator
                 nextIter: ;
             }
 
-            SavePath(frez, radius, finalPoints);
+            SavePath(frez, radius, finalPoints, false);
         }
 #endif
 

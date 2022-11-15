@@ -96,11 +96,11 @@ public partial class PathsGenerator
 
             var detailed = new IIntersectableDecoratorStage3(surfaces[1])
             {
-                //DistanceFromSurface = radius / CmToMm
+                DistanceFromSurface = radius / CmToMm
             };
             var detailedR = new IIntersectableDecoratorStage3(surfaces[0])
             {
-                //DistanceFromSurface = radius / CmToMm
+                DistanceFromSurface = radius / CmToMm
             };
             {
                 int uSamplesCount = 100;
@@ -147,11 +147,11 @@ public partial class PathsGenerator
             if (intersect.Intersect())
             {
                 intersect.ShowC0();
-                intersect.ConvertToInterpolating();
+                //intersect.ConvertToInterpolating();
             }
             if (intersectN.Intersect())
             {
-                //intersectN.ShowC0();
+                intersectN.ShowC0();
                 //intersectN.ConvertToInterpolating();
             }
             var samplesPerParam = 100;

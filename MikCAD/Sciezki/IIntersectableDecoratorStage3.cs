@@ -37,14 +37,14 @@ public class IIntersectableDecoratorStage3 : IIntersectable
     {
         var pos = GetValueAt(u, v);
         var posUDelta = GetValueAt(u + Delta, v);
-        return (posUDelta - pos) / (Delta * USize);
+        return (posUDelta - pos) / (Delta);
     }
 
     public Vector3 GetVDerivativeAt(float u, float v)
     {
         var pos = GetValueAt(u, v);
         var posVDelta = GetValueAt(u, v + Delta);
-        return (posVDelta - pos) / (Delta * VSize);
+        return (posVDelta - pos) / (Delta);
     }
 
     public (Vector3 pos, Vector3 dU, Vector3 dV) GetPositionAndGradient(float u, float v)
@@ -53,7 +53,7 @@ public class IIntersectableDecoratorStage3 : IIntersectable
         var posUDelta = GetValueAt(u + Delta, v);
         var posVDelta = GetValueAt(u, v + Delta);
 
-        return (pos, (posUDelta - pos) / (Delta * USize), (posVDelta - pos) / (Delta * VSize));
+        return (pos, (posUDelta - pos) / (Delta), (posVDelta - pos) / (Delta ));
     }
 
     public bool IsUWrapped => Intersectable.IsUWrapped;

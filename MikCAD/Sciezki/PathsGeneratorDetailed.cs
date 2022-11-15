@@ -102,58 +102,79 @@ public partial class PathsGenerator
             {
                 DistanceFromSurface = radius / CmToMm
             };
-            {
-                int uSamplesCount = 100;
-                int vSamplesCount = 100;
-                
-                float uu = 0;
-                float vv = 0;
-
-                float ddU = surfaces[1].USize / uSamplesCount;
-                float ddV = surfaces[1].VSize / vSamplesCount;
-
-                for (int i = 0; i < uSamplesCount; i++)
-                {
-                    vv = 0;
-                    for (int j = 0; j < vSamplesCount; j++)
-                    {
-                        var org = surfaces[1].GetPositionAndGradient(uu, vv);
-                        var ext = detailed.GetPositionAndGradient(uu, vv);
-                        var deltaPos = (org.pos - ext.pos).Length;
-                        var deltadU = (org.dU - ext.dU).Length;
-                        var deltadV = (org.dV - ext.dV).Length;
-                        vv += ddV;
-                    }
-
-                    uu += ddU;
-                }
-            }
-            //detailed.Sample(20,20);
-            //detailedR.Sample(20,20);
             
-            var intersectN = new Intersection(surfaces[1], surfaces[0])
+            var detailedD = new IIntersectableDecoratorStage3(surfaces[2])
+            {
+                DistanceFromSurface = radius / CmToMm
+            };
+
+            //Przecięcie z górną częścią rączki
+            // u1 = 8.440287f; v1 = 5.3860373f;
+            // u2 = 0.28591698f; v2 = 7.5931625f;
+            var intersectUp = new Intersection(detailed, detailedR)
+            {
+                MaxPointsNumber = 100,
+                StartingPointsNumber = 10000,
+                NewtonMaxIterations = 10000
+            };
+            
+            var u1 = 8.440287f;
+            var v1 = 5.3860373f;
+            
+            var u2 = 0.28591698f;
+            var v2 = 7.5931625f;
+            if (intersectUp.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
+                    (detailedR.GetValueAt(u2,v2),u2,v2),true))
+            {
+                intersectUp.ShowC0();
+            }
+            
+            //Przecięcie z dolną częścią rączki
+            // u1 = 8.309978f; v1 = 3.2709327f;
+            // u2 = 0.24050847f; v2 = 0.511595f;
+            
+            var intersectDown = new Intersection(detailed, detailedR)
             {
                 UseCursor = true,
-                MaxPointsNumber = 10000,
-                StartingPointsNumber = 1000,
+                MaxPointsNumber = 100,
+                StartingPointsNumber = 10000,
+                NewtonMaxIterations = 10000
             };
-            var intersect = new Intersection(detailed, detailedR)
+            
+            u1 = 8.309978f;
+            v1 = 3.2709327f;
+            
+            u2 = 0.24050847f;
+            v2 = 0.511595f;
+            
+            if (intersectDown.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
+                    (detailedR.GetValueAt(u2,v2),u2,v2),true))
+            {
+                intersectDown.ShowC0();
+            }
+            
+            //Przecięcie z dziubkiem
+            // u1 = 8.309978f; v1 = 3.2709327f;
+            // u2 = 0.24050847f; v2 = 0.511595f;
+            var intersectLeft = new Intersection(detailed, detailedD)
             {
                 UseCursor = true,
                 MaxPointsNumber = 10000,
                 StartingPointsNumber = 10000,
                 NewtonMaxIterations = 10000
             };
-            if (intersect.Intersect())
+
+            u1 = 8.309978f;
+            v1 = 3.2709327f;
+            
+            u2 = 0.24050847f;
+            v2 = 0.511595f;
+            
+            if (intersectDown.Intersect())
             {
-                intersect.ShowC0();
-                //intersect.ConvertToInterpolating();
+                intersectDown.ShowC0();
             }
-            if (intersectN.Intersect())
-            {
-                intersectN.ShowC0();
-                //intersectN.ConvertToInterpolating();
-            }
+           
             var samplesPerParam = 100;
 
             var u = 0.0f;

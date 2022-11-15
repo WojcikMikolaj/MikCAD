@@ -154,27 +154,42 @@ public partial class PathsGenerator
             }
             
             //Przecięcie z dziubkiem
-            // u1 = 8.309978f; v1 = 3.2709327f;
-            // u2 = 0.24050847f; v2 = 0.511595f;
+            // u1 = 2.566685f; v1 = 4.3139234f;
+            // u2 = 3.96224f; v2 = 0.8268527f;
             var intersectLeft = new Intersection(detailed, detailedD)
             {
-                UseCursor = true,
                 MaxPointsNumber = 10000,
                 StartingPointsNumber = 10000,
                 NewtonMaxIterations = 10000
             };
 
-            u1 = 8.309978f;
-            v1 = 3.2709327f;
+            u1 = 2.566685f;
+            v1 = 4.3139234f;
             
-            u2 = 0.24050847f;
-            v2 = 0.511595f;
+            u2 = 3.96224f;
+            v2 = 0.8268527f;
             
-            if (intersectDown.Intersect())
+            if (intersectLeft.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
+                    (detailedD.GetValueAt(u2,v2),u2,v2),true))
             {
-                intersectDown.ShowC0();
+                intersectLeft.ShowC0();
             }
            
+            // //Samo przecięcia rączki
+            // var intersectSelf = new Intersection(detailedR, detailedR)
+            // {
+            //     UseCursor = true,
+            //     MaxPointsNumber = 10000,
+            //     StartingPointsNumber = 10000,
+            //     NewtonMaxIterations = 10000,
+            // };
+            //
+            // if (intersectSelf.Intersect())
+            // {
+            //     intersectSelf.ShowC0();
+            // }
+            
+            
             var samplesPerParam = 100;
 
             var u = 0.0f;

@@ -1,8 +1,8 @@
 ﻿//#define DRAW
 //#define SHOW_POINTS
 //#define RACZKA
-#define CZUBEK
-//#define SLOIK
+//#define CZUBEK
+#define SLOIK
 
 
 using System.Collections.Generic;
@@ -127,6 +127,7 @@ public partial class PathsGenerator
                     (detailedR.GetValueAt(u2,v2),u2,v2),true))
             {
                 intersectUp.ShowC0();
+                intersectUp.ConvertToInterpolating();
             }
             
             //Przecięcie z dolną częścią rączki
@@ -205,6 +206,12 @@ public partial class PathsGenerator
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
+                    if (intersectUp.IsInside(u, v)
+                        || intersectDown.IsInside(u,v)
+                        || intersectLeft.IsInside(u,v))
+                    {
+                        break;
+                    }
                     var point = detailed.GetValueAt(u, v);
                     if (point.isFinite())
                     {

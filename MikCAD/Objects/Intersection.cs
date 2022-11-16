@@ -736,4 +736,59 @@ public class Intersection : INotifyPropertyChanged
 
         return result;
     }
+
+    public bool IsInside(float u, float v)
+    {
+        if (Looped)
+        {
+            int intersectionsCount = 0;
+
+            var lastPoint = points[0];
+            var mintU = points[0].u;
+            var maxtU = points[0].u;
+            var mintV = points[0].v;
+            var maxtV = points[0].v;
+
+            for (int i = 1; i < points.Count - 1; i++)
+            {
+                 var p = points[i];
+                //
+                //  var minU = MathF.Min(lastPoint.u, p.u);
+                //  var maxU = MathF.Max(lastPoint.u, p.u);
+                //
+                //  var minV = MathF.Min(lastPoint.v, p.v);
+                //  var maxV = MathF.Max(lastPoint.v, p.v);
+                //
+                //  var dUperV = (maxU - minU)/(maxV - minV);
+                //
+                //  var vAtu = minU + dUperV * (v - minV);
+                //
+                //  if ( minV <= v
+                //      &&  maxV >= v
+                //      && vAtu <= v)
+                //  {
+                //      intersectionsCount++;
+                //  }
+                // lastPoint = p;
+
+                mintU = MathF.Min(mintU, p.u);
+                maxtU = MathF.Max(maxtU, p.u);
+                
+                mintV = MathF.Min(mintV, p.v);
+                maxtV = MathF.Max(maxtV, p.v);
+            }
+
+            if (u >= mintU
+                && u <= maxtU
+                && v >= mintV
+                && v <= maxtV)
+            {
+                return true;
+            }
+            
+            //return intersectionsCount % 2 != 0;
+        }
+
+        return false;
+    }
 }

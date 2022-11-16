@@ -127,7 +127,7 @@ public partial class PathsGenerator
                     (detailedR.GetValueAt(u2,v2),u2,v2),true))
             {
                 intersectUp.ShowC0();
-                intersectUp.ConvertToInterpolating();
+                //intersectUp.ConvertToInterpolating();
             }
             
             //Przecięcie z dolną częścią rączki
@@ -137,7 +137,7 @@ public partial class PathsGenerator
             var intersectDown = new Intersection(detailed, detailedR)
             {
                 UseCursor = true,
-                MaxPointsNumber = 100,
+                MaxPointsNumber = 200,
                 StartingPointsNumber = 10000,
                 NewtonMaxIterations = 10000
             };
@@ -152,6 +152,7 @@ public partial class PathsGenerator
                     (detailedR.GetValueAt(u2,v2),u2,v2),true))
             {
                 intersectDown.ShowC0();
+                //intersectDown.ConvertToInterpolating();
             }
             
             //Przecięcie z dziubkiem
@@ -174,23 +175,9 @@ public partial class PathsGenerator
                     (detailedD.GetValueAt(u2,v2),u2,v2),true))
             {
                 intersectLeft.ShowC0();
+               // intersectLeft.ConvertToInterpolating();
             }
-           
-            // //Samo przecięcia rączki
-            // var intersectSelf = new Intersection(detailedR, detailedR)
-            // {
-            //     UseCursor = true,
-            //     MaxPointsNumber = 10000,
-            //     StartingPointsNumber = 10000,
-            //     NewtonMaxIterations = 10000,
-            // };
-            //
-            // if (intersectSelf.Intersect())
-            // {
-            //     intersectSelf.ShowC0();
-            // }
-            
-            
+
             var samplesPerParam = 100;
 
             var u = 0.0f;

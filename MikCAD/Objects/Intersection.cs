@@ -739,7 +739,7 @@ public class Intersection : INotifyPropertyChanged
 
     public bool IsInside(float u, float v)
     {
-        if (Looped)
+     //   if (Looped)
         {
             int intersectionsCount = 0;
 

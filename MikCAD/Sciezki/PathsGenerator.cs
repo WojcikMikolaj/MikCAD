@@ -228,7 +228,10 @@ public partial class PathsGenerator
 
         #endregion
 
-
+        list.Add(list[2]);
+        list.Add(list[1]);
+        list.Add(list[0]);
+        
         SavePath(frez, radius, list);
     }
 
@@ -376,6 +379,9 @@ public partial class PathsGenerator
             YPosInMm = -YBlockSize / 2 * CmToMm,
             ZPosInMm = SupportSize * CmToMm,
         });
+        
+        finalList.Add(finalList[1]);
+        finalList.Add(finalList[0]);
 
         SavePath(frez, radius, finalList, false);
     }
@@ -700,6 +706,9 @@ public partial class PathsGenerator
         finalPoints.AddRange(pointsR);
         finalPoints.AddRange(pointsGR);
         finalPoints.Add(pointsGL[0]);
+        finalPoints.Add(finalPoints[2]);
+        finalPoints.Add(finalPoints[1]);
+        finalPoints.Add(finalPoints[0]);
 #endif
 #endif
         foreach (var surf in surfaces)

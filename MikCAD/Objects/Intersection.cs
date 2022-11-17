@@ -739,7 +739,7 @@ public class Intersection : INotifyPropertyChanged
 
     public bool IsInside(float u, float v)
     {
-     //   if (Looped)
+        //   if (Looped)
         {
             int intersectionsCount = 0;
 
@@ -751,29 +751,31 @@ public class Intersection : INotifyPropertyChanged
 
             for (int i = 1; i < points.Count - 1; i++)
             {
-                 var p = points[i];
+                var p = points[i];
+
+                // var minU = MathF.Min(lastPoint.u, p.u);
+                // var maxU = MathF.Max(lastPoint.u, p.u);
                 //
-                //  var minU = MathF.Min(lastPoint.u, p.u);
-                //  var maxU = MathF.Max(lastPoint.u, p.u);
+                // var minV = MathF.Min(lastPoint.v, p.v);
+                // var maxV = MathF.Max(lastPoint.v, p.v);
                 //
-                //  var minV = MathF.Min(lastPoint.v, p.v);
-                //  var maxV = MathF.Max(lastPoint.v, p.v);
+                // var dU = (maxU - minU);
+                // var dV = (maxV - minV);
                 //
-                //  var dUperV = (maxU - minU)/(maxV - minV);
+                // var UAtv = minU + dU / dV * (v - mintV);
                 //
-                //  var vAtu = minU + dUperV * (v - minV);
+                // if (minV <= v
+                //     && maxV >= v
+                //     && UAtv >= u)
+                // {
+                //     intersectionsCount++;
+                // }
                 //
-                //  if ( minV <= v
-                //      &&  maxV >= v
-                //      && vAtu <= v)
-                //  {
-                //      intersectionsCount++;
-                //  }
                 // lastPoint = p;
 
                 mintU = MathF.Min(mintU, p.u);
                 maxtU = MathF.Max(maxtU, p.u);
-                
+
                 mintV = MathF.Min(mintV, p.v);
                 maxtV = MathF.Max(maxtV, p.v);
             }
@@ -785,7 +787,7 @@ public class Intersection : INotifyPropertyChanged
             {
                 return true;
             }
-            
+
             //return intersectionsCount % 2 != 0;
         }
 

@@ -178,7 +178,7 @@ public partial class PathsGenerator
                // intersectLeft.ConvertToInterpolating();
             }
 
-            var samplesPerParam = 100;
+            var samplesPerParam = 110;
 
             var u = 0.0f;
             var v = 0.0f;
@@ -225,6 +225,11 @@ public partial class PathsGenerator
                 }
                 finalPoints.AddRange(points);
                 nextIter: ;
+                if (i == 42)
+                {
+                    points.Reverse();
+                    finalPoints.AddRange(points);
+                }
             }
 
             SavePath(frez, radius, finalPoints, false);

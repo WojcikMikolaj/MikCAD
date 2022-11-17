@@ -228,9 +228,24 @@ public partial class PathsGenerator
 
         #endregion
 
-        list.Add(list[2]);
-        list.Add(list[1]);
+        // list.Add(list[3]);
+        // list.Add(list[2]);
+        // list.Add(list[1]);
         list.Add(list[0]);
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = -XBlockSize / 2 * CmToMm,
+            YPosInMm = -YBlockSize / 2 * CmToMm,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
+        });
+        list.Add(new CuttingLinePoint()
+        {
+            XPosInMm = 0,
+            YPosInMm = 0,
+            ZPosInMm = 2 * ZBlockSize * CmToMm,
+        });
+
+        
         
         SavePath(frez, radius, list);
     }

@@ -31,7 +31,7 @@ public static class PathOptimizer
             var lastPoint = points[0];
             punktyWynikowe.Add(points[0]);
             
-            for (int i = 0; i < points.Count;)
+            for (int i = 0; i < points.Count-3;)
             {
                 if (points[i].DistanceSquaredTo(lastPoint) < epsilon)
                 {
@@ -67,6 +67,9 @@ public static class PathOptimizer
                 lastPoint = pkt;
                 i++;
             }
+            punktyWynikowe.Add(points[^3]);
+            punktyWynikowe.Add(points[^2]);
+            punktyWynikowe.Add(points[^1]);
         }
         return punktyWynikowe;
     }

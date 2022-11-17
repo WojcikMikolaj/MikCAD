@@ -186,7 +186,8 @@ public partial class PathsGenerator
             var dU = detailed.USize / samplesPerParam;
             var dV = detailed.VSize / samplesPerParam;
 
-
+            var mod = 0;
+            
             for (int i = 0; i < samplesPerParam; i++)
             {
                 v = 0.0f;
@@ -219,7 +220,7 @@ public partial class PathsGenerator
                 }
 
                 u += dU;
-                if (i % 2 == 1)
+                if ((i + mod) % 2 == 1)
                 {
                     points.Reverse();
                 }
@@ -229,6 +230,28 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                     finalPoints.AddRange(points);
+                    mod++;
+                }
+
+                if (i == 103)
+                {
+                    points.Reverse();
+                    finalPoints.AddRange(points);
+                    mod++;
+                }
+                
+                if (i == 104)
+                {
+                    points.Reverse();
+                    finalPoints.AddRange(points);
+                    mod++;
+                }
+                
+                if (i == 105)
+                {
+                    points.Reverse();
+                    finalPoints.AddRange(points);
+                    mod++;
                 }
             }
 

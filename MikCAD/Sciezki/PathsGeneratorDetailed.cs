@@ -3,8 +3,7 @@
 
 #define RACZKA
 //#define CZUBEK
-
-//#define SLOIK
+#define SLOIK
 
 
 using System.Collections.Generic;
@@ -114,25 +113,28 @@ public partial class PathsGenerator
             // intersectLeft.ConvertToInterpolating();
         }
 
+        var finalPoints = new List<Vector3>();
+        
         #region raczka
 
 #if RACZKA
         {
-            var finalPoints = new List<Vector3>();
+            var finalRPoints = new List<Vector3>();
             var lines = new List<List<Vector3>>();
 
             var samplesPerParam = 100;
 
-            var u = 0f;
-
+            //var u = 0f;
+            
+            
             var dU = detailedR.USize / samplesPerParam;
             var dV = detailedR.VSize / samplesPerParam;
+            var u = detailedR.USize / 2 + 6*dU;
 
-
-            for (int i = 0; i < samplesPerParam; i++)
+            for (int i = samplesPerParam/2+6; i < samplesPerParam; i++)
             {
-                var v = intersectDown.GetVOnULine(u);
-                var endv = intersectUp.GetVOnULine(u); 
+                var v = intersectDown.GetVOnULineSecondObject(u);
+                var endv = intersectUp.GetVOnULineSecondObject(u); 
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
@@ -142,7 +144,7 @@ public partial class PathsGenerator
                         (point.Y, point.Z) = (-point.Z, point.Y);
                         point *= CmToMm;
 
-                        if (point.Z >= SupportSize * CmToMm - 0.1)
+                        if (point.Z >= SupportSize * CmToMm)
                         {
                             points.Add(point);
                         }
@@ -150,8 +152,11 @@ public partial class PathsGenerator
                         {
                         }
                     }
-
                     v += dV;
+                    if (v > endv)
+                    {
+                        break;
+                    }
                 }
 
                 u += dU;
@@ -159,12 +164,15 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                 }
+                finalRPoints.AddRange(points);
 
-                finalPoints.AddRange(points);
-                nextIter: ;
             }
-
-            SavePath(frez, radius, finalPoints, false);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            AddMoveFromAndToCenter(finalRPoints);
+            finalPoints.AddRange(finalRPoints);
         }
 #endif
 
@@ -449,7 +457,7 @@ public partial class PathsGenerator
                     Z = p.pos.Y
                 };
                 point *= CmToMm;
-                if (point.Z >= SupportSize * CmToMm - 0.1)
+                if (point.Z > SupportSize * CmToMm)
                 {
                     if (!useHelp)
                     {
@@ -487,7 +495,7 @@ public partial class PathsGenerator
                     Z = p.pos.Y
                 };
                 point *= CmToMm;
-                if (point.Z >= SupportSize * CmToMm - 0.1)
+                if (point.Z > SupportSize * CmToMm)
                 {
                     if (!useHelp)
                     {
@@ -526,7 +534,7 @@ public partial class PathsGenerator
                     Z = p.pos.Y
                 };
                 point *= CmToMm;
-                if (point.Z >= SupportSize * CmToMm - 0.1)
+                if (point.Z > SupportSize * CmToMm)
                 {
                     if (!useHelp)
                     {
@@ -552,7 +560,7 @@ public partial class PathsGenerator
             AddMoveFromAndToCenter(interLeftPointsHelp);
             mainPartFinalPoints.AddRange(interLeftPointsHelp);
             
-            SavePath(frez, radius, mainPartFinalPoints, false);
+            finalPoints.AddRange(mainPartFinalPoints);
         }
 #endif
 
@@ -564,20 +572,14 @@ public partial class PathsGenerator
         {
             var finalPoints = new List<Vector3>();
             var lines = new List<List<Vector3>>();
-
-            var detailed = new IIntersectableDecoratorStage3(surfaces[2])
-            {
-                DistanceFromSurface = radius / CmToMm
-            };
+            
             var samplesPerParam = 100;
 
             var u = 0.0f;
             var v = 0.0f;
 
-            var dU = detailed.USize / samplesPerParam;
-            var dV = detailed.VSize / samplesPerParam;
-
-            detailed.Sample(20,20);
+            var dU = detailedD.USize / samplesPerParam;
+            var dV = detailedD.VSize / samplesPerParam;
 
             for (int i = 0; i < samplesPerParam; i++)
             {
@@ -585,7 +587,7 @@ public partial class PathsGenerator
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
-                    var point = detailed.GetValueAt(u, v);
+                    var point = detailedD.GetValueAt(u, v);
                     if (point.isFinite())
                     {
                         (point.Y, point.Z) = (-point.Z, point.Y);
@@ -611,12 +613,14 @@ public partial class PathsGenerator
                 finalPoints.AddRange(points);
                 nextIter: ;
             }
-
+            
+            AddMoveFromAndToCenter(finalPoints);
             SavePath(frez, radius, finalPoints, false);
         }
 #endif
 
         #endregion
+        SavePath(frez, radius,finalPoints, false);
     }
 
     private void AddMoveFromAndToCenter(List<Vector3> list)

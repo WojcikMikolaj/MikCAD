@@ -793,4 +793,17 @@ public class Intersection : INotifyPropertyChanged
 
         return false;
     }
+
+    public float GetVOnULineSecondObject(float u)
+    {
+        foreach (var p in points)
+        {
+            if (Math.Abs(p.s - u) < 0.1f)
+            {
+                return p.t;
+            }
+        }
+
+        return float.NaN;
+    }
 }

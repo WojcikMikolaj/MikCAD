@@ -449,7 +449,7 @@ public partial class PathsGenerator
 
                 var decorated = new IIntersectableDecoratorStage2(surfaces[0])
                 {
-                    DistanceFromSurface = radius / CmToMm
+                    DistanceFromSurface = radius *1.1f / CmToMm
                 };
                 var intersection = new Intersection(supportSurface, surfaces[0])
                 {

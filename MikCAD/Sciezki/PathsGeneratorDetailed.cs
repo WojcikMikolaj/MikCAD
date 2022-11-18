@@ -7,6 +7,7 @@
 
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using MikCAD.BezierSurfaces;
 using MikCAD.Extensions;
@@ -438,7 +439,122 @@ public partial class PathsGenerator
 
             AddMoveFromAndToCenter(leftPart);
             mainPartFinalPoints.AddRange(leftPart);
+            
+            bool useHelp = false;
+            bool exitOnBrake = false;
+            var interDownPoints = new List<Vector3>();
+            foreach (var p in intersectDown.points)
+            {
+                var point = new Vector3()
+                {
+                    X = p.pos.X,
+                    Y = -p.pos.Z,
+                    Z = p.pos.Y
+                };
+                point *= CmToMm;
+                if (point.Z >= SupportSize * CmToMm - 0.1)
+                {
+                    if (!useHelp)
+                    {
 
+                    }
+                    else
+                    {
+                        exitOnBrake = true;
+                        interDownPoints.Add(point);
+                    }
+                }
+                else
+                {
+                    if (exitOnBrake)
+                    {
+                        break;
+                    }
+                    useHelp = true;
+                    continue;
+                }
+            }
+            AddMoveFromAndToCenter(interDownPoints);
+            mainPartFinalPoints.AddRange(interDownPoints);
+            
+            useHelp = false;
+            exitOnBrake = false;
+            var interUpPoints = new List<Vector3>();
+            var interUpPointsHelp = new List<Vector3>();
+            foreach (var p in intersectUp.points)
+            {
+                var point = new Vector3()
+                {
+                    X = p.pos.X,
+                    Y = -p.pos.Z,
+                    Z = p.pos.Y
+                };
+                point *= CmToMm;
+                if (point.Z >= SupportSize * CmToMm - 0.1)
+                {
+                    if (!useHelp)
+                    {
+                        interUpPoints.Add(point);
+                    }
+                    else
+                    {
+                        exitOnBrake = true;
+                        interUpPointsHelp.Add(point);
+                    }
+                }
+                else
+                {
+                    if (exitOnBrake)
+                    {
+                        break;
+                    }
+                    useHelp = true;
+                    continue;
+                }
+            }
+            interUpPointsHelp.AddRange(interUpPoints);
+            AddMoveFromAndToCenter(interUpPointsHelp);
+            mainPartFinalPoints.AddRange(interUpPointsHelp);
+            
+            useHelp = false;
+            exitOnBrake = false;
+            var interLeftPoints = new List<Vector3>();
+            var interLeftPointsHelp = new List<Vector3>();
+            foreach (var p in intersectLeft.points)
+            {
+                var point = new Vector3()
+                {
+                    X = p.pos.X,
+                    Y = -p.pos.Z,
+                    Z = p.pos.Y
+                };
+                point *= CmToMm;
+                if (point.Z >= SupportSize * CmToMm - 0.1)
+                {
+                    if (!useHelp)
+                    {
+                        interLeftPoints.Add(point);
+                    }
+                    else
+                    {
+                        exitOnBrake = true;
+                        interLeftPointsHelp.Add(point);
+                    }
+                }
+                else
+                {
+                    if (exitOnBrake)
+                    {
+                        break;
+                    }
+                    useHelp = true;
+                    continue;
+                }
+            }
+            interLeftPointsHelp.AddRange(interLeftPoints);
+            AddMoveFromAndToCenter(interLeftPointsHelp);
+            mainPartFinalPoints.AddRange(interLeftPointsHelp);
+            
             SavePath(frez, radius, mainPartFinalPoints, false);
         }
 #endif

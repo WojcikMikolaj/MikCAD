@@ -123,13 +123,58 @@ public partial class PathsGenerator
             var lines = new List<List<Vector3>>();
 
             var samplesPerParam = 100;
-
-            //var u = 0f;
-            
             
             var dU = detailedR.USize / samplesPerParam;
             var dV = detailedR.VSize / samplesPerParam;
-            var u = detailedR.USize / 2 + 6*dU;
+            var u = 0f;
+
+            for (int i = 0; i < samplesPerParam/2; i++)
+            {
+                var v = intersectDown.GetVOnULineSecondObject(u);
+                var endv = intersectUp.GetVOnULineSecondObject(u); 
+                var points = new List<Vector3>();
+                for (int j = 0; j < samplesPerParam; j++)
+                {
+                    var point = detailedR.GetValueAt(u, v);
+                    if (point.isFinite())
+                    {
+                        (point.Y, point.Z) = (-point.Z, point.Y);
+                        point *= CmToMm;
+
+                        if (point.Z >= SupportSize * CmToMm)
+                        {
+                            points.Add(point);
+                        }
+                        else
+                        {
+                        }
+                    }
+                    v += dV;
+                    if (v > endv)
+                    {
+                        break;
+                    }
+                }
+
+                u += dU;
+                if (i % 2 == 1)
+                {
+                    points.Reverse();
+                }
+                finalRPoints.AddRange(points);
+
+            }
+            finalRPoints.RemoveAt(finalRPoints.Count-1);
+            finalRPoints.RemoveAt(finalRPoints.Count-1);
+            finalRPoints.RemoveAt(finalRPoints.Count-1);
+            AddMoveFromAndToCenter(finalRPoints);
+            finalPoints.AddRange(finalRPoints);
+            
+            
+            finalRPoints = new List<Vector3>();
+            dU = detailedR.USize / samplesPerParam;
+            dV = detailedR.VSize / samplesPerParam;
+            u = detailedR.USize / 2 + 6*dU;
 
             for (int i = samplesPerParam/2+6; i < samplesPerParam; i++)
             {

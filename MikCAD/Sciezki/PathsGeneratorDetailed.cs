@@ -91,7 +91,7 @@ public partial class PathsGenerator
 
 #if SLOIK
         {
-            var finalPoints = new List<Vector3>();
+            var mainPartFinalPoints = new List<Vector3>();
             var lines = new List<List<Vector3>>();
 
             var detailed = new IIntersectableDecoratorStage3(surfaces[1])
@@ -224,38 +224,94 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                 }
-                finalPoints.AddRange(points);
+                mainPartFinalPoints.AddRange(points);
                 nextIter: ;
                 if (i == 42)
                 {
                     points.Reverse();
-                    finalPoints.AddRange(points);
+                    mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
 
                 if (i == 103)
                 {
                     points.Reverse();
-                    finalPoints.AddRange(points);
+                    mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
                 
                 if (i == 104)
                 {
                     points.Reverse();
-                    finalPoints.AddRange(points);
+                    mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
                 
                 if (i == 105)
                 {
                     points.Reverse();
-                    finalPoints.AddRange(points);
+                    mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
             }
 
-            SavePath(frez, radius, finalPoints, false);
+
+            var middleRightPart = new List<Vector3>();
+            u = 6f;
+            mod = 0;
+            
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                v =3f;
+                var points = new List<Vector3>();
+                for (int j = 0; j < samplesPerParam; j++)
+                {
+                    var point = detailed.GetValueAt(u, v);
+                    if (intersectDown.IsInside(u, v))
+                    {
+                        v += dV;
+                        continue;
+                    }
+                    if (intersectUp.IsInside(u, v))
+                    {
+                        break;
+                    }
+                    if (point.isFinite())
+                    {
+                        (point.Y, point.Z) = (-point.Z, point.Y);
+                        point *= CmToMm;
+
+                        if (point.Z >= SupportSize * CmToMm - 0.1)
+                        {
+                            points.Add(point);
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    v += dV;
+                    if (v > 6)
+                    {
+                        break;
+                    }
+                    
+                }
+                if ((i + mod) % 2 == 1)
+                {
+                    points.Reverse();
+                }
+                middleRightPart.AddRange(points);
+                
+                u += dU;
+                if (u > 8.5f)
+                {
+                    break;
+                }
+            }
+            
+            
+            SavePath(frez, radius, middleRightPart, false);
         }
 #endif
 

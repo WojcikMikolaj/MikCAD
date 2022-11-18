@@ -2,6 +2,7 @@
 //#define SHOW_POINTS
 //#define RACZKA
 //#define CZUBEK
+
 #define SLOIK
 
 
@@ -86,7 +87,7 @@ public partial class PathsGenerator
 #endif
 
         #endregion
-        
+
         #region sloik
 
 #if SLOIK
@@ -102,7 +103,7 @@ public partial class PathsGenerator
             {
                 DistanceFromSurface = radius / CmToMm
             };
-            
+
             var detailedD = new IIntersectableDecoratorStage3(surfaces[2])
             {
                 DistanceFromSurface = radius / CmToMm
@@ -117,23 +118,23 @@ public partial class PathsGenerator
                 StartingPointsNumber = 10000,
                 NewtonMaxIterations = 10000
             };
-            
+
             var u1 = 8.440287f;
             var v1 = 5.3860373f;
-            
+
             var u2 = 0.28591698f;
             var v2 = 7.5931625f;
             if (intersectUp.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
-                    (detailedR.GetValueAt(u2,v2),u2,v2),true))
+                    (detailedR.GetValueAt(u2, v2), u2, v2), true))
             {
                 intersectUp.ShowC0();
                 //intersectUp.ConvertToInterpolating();
             }
-            
+
             //Przecięcie z dolną częścią rączki
             // u1 = 8.309978f; v1 = 3.2709327f;
             // u2 = 0.24050847f; v2 = 0.511595f;
-            
+
             var intersectDown = new Intersection(detailed, detailedR)
             {
                 UseCursor = true,
@@ -141,20 +142,20 @@ public partial class PathsGenerator
                 StartingPointsNumber = 10000,
                 NewtonMaxIterations = 10000
             };
-            
+
             u1 = 8.309978f;
             v1 = 3.2709327f;
-            
+
             u2 = 0.24050847f;
             v2 = 0.511595f;
-            
+
             if (intersectDown.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
-                    (detailedR.GetValueAt(u2,v2),u2,v2),true))
+                    (detailedR.GetValueAt(u2, v2), u2, v2), true))
             {
                 intersectDown.ShowC0();
                 //intersectDown.ConvertToInterpolating();
             }
-            
+
             //Przecięcie z dziubkiem
             // u1 = 2.566685f; v1 = 4.3139234f;
             // u2 = 3.96224f; v2 = 0.8268527f;
@@ -167,15 +168,15 @@ public partial class PathsGenerator
 
             u1 = 2.566685f;
             v1 = 4.3139234f;
-            
+
             u2 = 3.96224f;
             v2 = 0.8268527f;
-            
+
             if (intersectLeft.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
-                    (detailedD.GetValueAt(u2,v2),u2,v2),true))
+                    (detailedD.GetValueAt(u2, v2), u2, v2), true))
             {
                 intersectLeft.ShowC0();
-               // intersectLeft.ConvertToInterpolating();
+                // intersectLeft.ConvertToInterpolating();
             }
 
             var samplesPerParam = 110;
@@ -187,7 +188,7 @@ public partial class PathsGenerator
             var dV = detailed.VSize / samplesPerParam;
 
             var mod = 0;
-            
+
             for (int i = 0; i < samplesPerParam; i++)
             {
                 v = 0.0f;
@@ -195,24 +196,24 @@ public partial class PathsGenerator
                 for (int j = 0; j < samplesPerParam; j++)
                 {
                     if (intersectUp.IsInside(u, v)
-                        || intersectDown.IsInside(u,v)
-                        || intersectLeft.IsInside(u,v))
+                        || intersectDown.IsInside(u, v)
+                        || intersectLeft.IsInside(u, v))
                     {
                         break;
                     }
+
                     var point = detailed.GetValueAt(u, v);
                     if (point.isFinite())
                     {
                         (point.Y, point.Z) = (-point.Z, point.Y);
                         point *= CmToMm;
-                        
-                        if (point.Z >= SupportSize*CmToMm - 0.1)
+
+                        if (point.Z >= SupportSize * CmToMm - 0.1)
                         {
                             points.Add(point);
                         }
                         else
                         {
-                            
                         }
                     }
 
@@ -224,6 +225,7 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                 }
+
                 mainPartFinalPoints.AddRange(points);
                 nextIter: ;
                 if (i == 42)
@@ -239,14 +241,14 @@ public partial class PathsGenerator
                     mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
-                
+
                 if (i == 104)
                 {
                     points.Reverse();
                     mainPartFinalPoints.AddRange(points);
                     mod++;
                 }
-                
+
                 if (i == 105)
                 {
                     points.Reverse();
@@ -255,68 +257,194 @@ public partial class PathsGenerator
                 }
             }
 
+            AddMoveFromAndToCenter(mainPartFinalPoints);
 
             var middleRightPart = new List<Vector3>();
-            u = 6f;
+            u = 0f;
             mod = 0;
-            
+
             for (int i = 0; i < samplesPerParam; i++)
             {
-                v =3f;
-                var points = new List<Vector3>();
-                for (int j = 0; j < samplesPerParam; j++)
+                if (i >= 97)
                 {
-                    var point = detailed.GetValueAt(u, v);
-                    if (intersectDown.IsInside(u, v))
+                    v = 3f;
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam; j++)
                     {
+                        var point = detailed.GetValueAt(u, v);
+                        if (intersectDown.IsInside(u, v))
+                        {
+                            v += dV;
+                            continue;
+                        }
+
+                        if (intersectUp.IsInside(u, v))
+                        {
+                            break;
+                        }
+
+                        if (point.isFinite())
+                        {
+                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            point *= CmToMm;
+
+                            if (point.Z >= SupportSize * CmToMm - 0.1)
+                            {
+                                points.Add(point);
+                            }
+                            else
+                            {
+                            }
+                        }
+
                         v += dV;
-                        continue;
-                    }
-                    if (intersectUp.IsInside(u, v))
-                    {
-                        break;
-                    }
-                    if (point.isFinite())
-                    {
-                        (point.Y, point.Z) = (-point.Z, point.Y);
-                        point *= CmToMm;
-
-                        if (point.Z >= SupportSize * CmToMm - 0.1)
+                        if (v > 6)
                         {
-                            points.Add(point);
-                        }
-                        else
-                        {
-
+                            break;
                         }
                     }
-                    v += dV;
-                    if (v > 6)
+
+                    if ((i + mod) % 2 == 1)
                     {
-                        break;
+                        points.Reverse();
                     }
-                    
+
+                    middleRightPart.AddRange(points);
                 }
-                if ((i + mod) % 2 == 1)
-                {
-                    points.Reverse();
-                }
-                middleRightPart.AddRange(points);
-                
+
                 u += dU;
                 if (u > 8.5f)
                 {
                     break;
                 }
             }
-            
-            
-            SavePath(frez, radius, middleRightPart, false);
+
+            AddMoveFromAndToCenter(middleRightPart);
+            mainPartFinalPoints.AddRange(middleRightPart);
+
+
+            var upRightPart = new List<Vector3>();
+            u = 0f;
+            mod = 0;
+
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                if (i >= 97)
+                {
+                    v = 6f;
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam; j++)
+                    {
+                        var point = detailed.GetValueAt(u, v);
+                        if (intersectUp.IsInside(u, v))
+                        {
+                            v += dV;
+                            continue;
+                        }
+
+                        if (point.isFinite())
+                        {
+                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            point *= CmToMm;
+
+                            if (point.Z >= SupportSize * CmToMm - 0.1)
+                            {
+                                points.Add(point);
+                            }
+                            else
+                            {
+                            }
+                        }
+
+                        v += dV;
+                        if (v > detailed.VSize)
+                        {
+                            break;
+                        }
+                    }
+
+                    if ((i + mod) % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    upRightPart.AddRange(points);
+                }
+
+                u += dU;
+                if (u > 8.55f)
+                {
+                    break;
+                }
+            }
+
+            AddMoveFromAndToCenter(upRightPart);
+            mainPartFinalPoints.AddRange(upRightPart);
+
+            var leftPart = new List<Vector3>();
+            u = 0f;
+            mod = 0;
+
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                if (i >= 32)
+                {
+                    v = 4.4f;
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam; j++)
+                    {
+                        var point = detailed.GetValueAt(u, v);
+                        if (intersectLeft.IsInside(u, v))
+                        {
+                            v += dV;
+                            continue;
+                        }
+
+                        if (point.isFinite())
+                        {
+                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            point *= CmToMm;
+
+                            if (point.Z >= SupportSize * CmToMm - 0.1)
+                            {
+                                points.Add(point);
+                            }
+                            else
+                            {
+                            }
+                        }
+
+                        v += dV;
+                        if (v > detailed.VSize)
+                        {
+                            break;
+                        }
+                    }
+
+                    if ((i + mod) % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    leftPart.AddRange(points);
+                }
+
+                u += dU;
+                if (u > 6f)
+                {
+                    break;
+                }
+            }
+
+            AddMoveFromAndToCenter(leftPart);
+            mainPartFinalPoints.AddRange(leftPart);
+
+            SavePath(frez, radius, mainPartFinalPoints, false);
         }
 #endif
 
         #endregion
-        
+
         #region sloik
 
 #if CZUBEK
@@ -376,5 +504,28 @@ public partial class PathsGenerator
 #endif
 
         #endregion
+    }
+
+    private void AddMoveFromAndToCenter(List<Vector3> list)
+    {
+        list.Insert(0, new Vector3()
+        {
+            X = 0,
+            Y = 0,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Insert(1, new Vector3()
+        {
+            X = list[1].X,
+            Y = list[1].Y,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Add(new Vector3()
+        {
+            X = list[^1].X,
+            Y = list[^1].Y,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Add(list[0]);
     }
 }

@@ -141,7 +141,7 @@ public partial class PathsGenerator
                         var point = detailedR.GetValueAt(u, v);
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                             point *= CmToMm;
 
                             // var l = -1;
@@ -206,7 +206,7 @@ public partial class PathsGenerator
                     var point = detailedR.GetValueAt(u, v);
                     if (point.isFinite())
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y);
+                        (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                         point *= CmToMm;
 
                         if (point.Z >= SupportSize * CmToMm)
@@ -278,7 +278,7 @@ public partial class PathsGenerator
                     var point = detailed.GetValueAt(u, v);
                     if (point.isFinite())
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y);
+                        (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                         point *= CmToMm;
 
                         if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -358,7 +358,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -417,7 +417,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -475,7 +475,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -674,7 +674,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -724,7 +724,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -773,7 +773,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -822,7 +822,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                (point.Y, point.Z) = (-point.Z, point.Y-radius/CmToMm);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {

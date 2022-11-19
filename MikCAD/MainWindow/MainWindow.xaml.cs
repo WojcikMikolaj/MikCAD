@@ -26,7 +26,7 @@ namespace MikCAD
             OpenTkControl.Start(mainSettings);
             scene = new Scene();
             scene.Initialise(400, 400);
-            LoadFile(@"C:\Users\mikow\Documents\CAD_CAM\PUSN\podstawka_18mm\cosv2.json");
+            LoadFile(@"C:\Users\mikow\Documents\CAD_CAM\PUSN\podstawka_18mm\cccc.json");
         }
 
         bool disabled=false;

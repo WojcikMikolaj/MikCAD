@@ -52,10 +52,10 @@ public partial class PathsGenerator
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-        
+
         var u1 = 8.440287f;
         var v1 = 5.3860373f;
-        
+
         var u2 = 0.28591698f;
         var v2 = 7.5931625f;
         if (intersectUp.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
@@ -64,11 +64,11 @@ public partial class PathsGenerator
             intersectUp.ShowC0();
             //intersectUp.ConvertToInterpolating();
         }
-        
+
         //Przecięcie z dolną częścią rączki
         // u1 = 8.309978f; v1 = 3.2709327f;
         // u2 = 0.24050847f; v2 = 0.511595f;
-        
+
         var intersectDown = new Intersection(detailed, detailedR)
         {
             UseCursor = true,
@@ -76,20 +76,20 @@ public partial class PathsGenerator
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-        
+
         u1 = 8.309978f;
         v1 = 3.2709327f;
-        
+
         u2 = 0.24050847f;
         v2 = 0.511595f;
-        
+
         if (intersectDown.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
                 (detailedR.GetValueAt(u2, v2), u2, v2), true))
         {
             intersectDown.ShowC0();
             //intersectDown.ConvertToInterpolating();
         }
-        
+
         //Przecięcie z dziubkiem
         // u1 = 5.3068123f; v1 = 5.462653f;
         // u2 = 2.431608f; v2 = 0.07239506f;
@@ -99,21 +99,21 @@ public partial class PathsGenerator
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-        
+
         u1 = 5.3068123f;
         v1 = 5.462653f;
-        
+
         u2 = 2.431608f;
         v2 = 0.07239506f;
-        
-        
+
+
         if (intersectLeft.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
                 (detailedD.GetValueAt(u2, v2), u2, v2), true))
         {
             intersectLeft.ShowC0();
             // intersectLeft.ConvertToInterpolating();
         }
-        
+
         var finalPoints = new List<Vector3>();
 
         #region raczka
@@ -656,7 +656,8 @@ public partial class PathsGenerator
             var dV = detailedD.VSize / samplesPerParam;
 
 
-            for (int i = 0; i < samplesPerParam ; i++)
+            //gora
+            for (int i = 0; i < samplesPerParam; i++)
             {
                 if (i > samplesPerParam / 2)
                 {
@@ -665,7 +666,7 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
                     {
-                        if (v >= startv)
+                        if (v >= startv + 0.15f)
                         {
                             var point = new Vector3();
 
@@ -689,7 +690,6 @@ public partial class PathsGenerator
                     }
 
 
-                 
                     if (i % 2 == 1)
                     {
                         points.Reverse();
@@ -698,12 +698,16 @@ public partial class PathsGenerator
                     finalDPoints.AddRange(points);
                     nextIter: ;
                 }
+
                 u += dU;
             }
-            AddMoveFromAndToCenter(finalDPoints);
 
+            AddMoveFromAndToCenter(finalDPoints);
+            finalPoints.AddRange(finalDPoints);
+
+            finalDPoints.Clear();
             u = 0;
-            for (int i = 0; i < samplesPerParam ; i++)
+            for (int i = 0; i < samplesPerParam; i++)
             {
                 if (i <= samplesPerParam / 2)
                 {
@@ -712,7 +716,7 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
                     {
-                        if (v >= startv)
+                        if (v >= startv + 0.03f)
                         {
                             var point = new Vector3();
 
@@ -736,7 +740,6 @@ public partial class PathsGenerator
                     }
 
 
-                 
                     if (i % 2 == 1)
                     {
                         points.Reverse();
@@ -745,8 +748,108 @@ public partial class PathsGenerator
                     finalDPoints.AddRange(points);
                     nextIter: ;
                 }
+
                 u += dU;
             }
+
+            AddMoveFromAndToCenter(finalDPoints);
+            finalPoints.AddRange(finalDPoints);
+
+            finalDPoints.Clear();
+            u = 0;
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                if (i > samplesPerParam / 2)
+                {
+                    var v = 0.0f;
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam; j++)
+                    {
+                        if (j > 65)
+                        {
+                            var point = new Vector3();
+
+                            point = detailedD.GetValueAt(u, v);
+
+                            if (point.isFinite())
+                            {
+                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                point *= CmToMm;
+                                if (point.Z >= SupportSize * CmToMm - 0.1)
+                                {
+                                    points.Add(point);
+                                }
+                                else
+                                {
+                                }
+                            }
+                        }
+
+                        v += dV;
+                    }
+
+
+                    if (i % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    finalDPoints.AddRange(points);
+                    nextIter: ;
+                }
+
+                u += dU;
+            }
+
+            AddMoveFromAndToCenter(finalDPoints);
+            finalPoints.AddRange(finalDPoints);
+
+            finalDPoints.Clear();
+            u = 0;
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                if (i <= samplesPerParam / 2)
+                {
+                    var v = 0.0f;
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam; j++)
+                    {
+                        if (j > 70 && (i > 45 || j < 95))
+                        {
+                            var point = new Vector3();
+
+                            point = detailedD.GetValueAt(u, v);
+
+                            if (point.isFinite())
+                            {
+                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                point *= CmToMm;
+                                if (point.Z >= SupportSize * CmToMm - 0.1)
+                                {
+                                    points.Add(point);
+                                }
+                                else
+                                {
+                                }
+                            }
+                        }
+
+                        v += dV;
+                    }
+
+
+                    if (i % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    finalDPoints.AddRange(points);
+                    nextIter: ;
+                }
+
+                u += dU;
+            }
+
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
         }

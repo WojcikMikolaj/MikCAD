@@ -2,7 +2,7 @@
 //#define SHOW_POINTS
 
 #define RACZKA
-//#define CZUBEK
+#define CZUBEK
 #define SLOIK
 
 
@@ -52,10 +52,10 @@ public partial class PathsGenerator
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-
+        
         var u1 = 8.440287f;
         var v1 = 5.3860373f;
-
+        
         var u2 = 0.28591698f;
         var v2 = 7.5931625f;
         if (intersectUp.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
@@ -64,11 +64,11 @@ public partial class PathsGenerator
             intersectUp.ShowC0();
             //intersectUp.ConvertToInterpolating();
         }
-
+        
         //Przecięcie z dolną częścią rączki
         // u1 = 8.309978f; v1 = 3.2709327f;
         // u2 = 0.24050847f; v2 = 0.511595f;
-
+        
         var intersectDown = new Intersection(detailed, detailedR)
         {
             UseCursor = true,
@@ -76,45 +76,46 @@ public partial class PathsGenerator
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-
+        
         u1 = 8.309978f;
         v1 = 3.2709327f;
-
+        
         u2 = 0.24050847f;
         v2 = 0.511595f;
-
+        
         if (intersectDown.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
                 (detailedR.GetValueAt(u2, v2), u2, v2), true))
         {
             intersectDown.ShowC0();
             //intersectDown.ConvertToInterpolating();
         }
-
+        
         //Przecięcie z dziubkiem
-        // u1 = 2.566685f; v1 = 4.3139234f;
-        // u2 = 3.96224f; v2 = 0.8268527f;
+        // u1 = 5.3068123f; v1 = 5.462653f;
+        // u2 = 2.431608f; v2 = 0.07239506f;
         var intersectLeft = new Intersection(detailed, detailedD)
         {
-            MaxPointsNumber = 10000,
+            MaxPointsNumber = 200,
             StartingPointsNumber = 10000,
             NewtonMaxIterations = 10000
         };
-
-        u1 = 2.566685f;
-        v1 = 4.3139234f;
-
-        u2 = 3.96224f;
-        v2 = 0.8268527f;
-
+        
+        u1 = 5.3068123f;
+        v1 = 5.462653f;
+        
+        u2 = 2.431608f;
+        v2 = 0.07239506f;
+        
+        
         if (intersectLeft.Intersect((detailed.GetValueAt(u1, v1), u1, v1),
                 (detailedD.GetValueAt(u2, v2), u2, v2), true))
         {
             intersectLeft.ShowC0();
             // intersectLeft.ConvertToInterpolating();
         }
-
-        var finalPoints = new List<Vector3>();
         
+        var finalPoints = new List<Vector3>();
+
         #region raczka
 
 #if RACZKA
@@ -123,20 +124,19 @@ public partial class PathsGenerator
             var lines = new List<List<Vector3>>();
 
             var samplesPerParam = 100;
-            
+
             var dU = detailedR.USize / samplesPerParam;
             var dV = detailedR.VSize / samplesPerParam;
             var u = 0f;
 
-            for (int i = 0; i < samplesPerParam/2; i++)
+            for (int i = 0; i < samplesPerParam / 2; i++)
             {
                 var v = intersectDown.GetVOnULineSecondObject(u);
-                var endv = intersectUp.GetVOnULineSecondObject(u); 
+                var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
-                    
-                    if (i<samplesPerParam/12||((j < 45 || j>65)&&(j < 13 || j > 30)))
+                    if (i < samplesPerParam / 12 || ((j < 45 || j > 65) && (j < 13 || j > 30)))
                     {
                         var point = detailedR.GetValueAt(u, v);
                         if (point.isFinite())
@@ -180,25 +180,26 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                 }
-                finalRPoints.AddRange(points);
 
+                finalRPoints.AddRange(points);
             }
-            finalRPoints.RemoveAt(finalRPoints.Count-1);
-            finalRPoints.RemoveAt(finalRPoints.Count-1);
-            finalRPoints.RemoveAt(finalRPoints.Count-1);
+
+            finalRPoints.RemoveAt(finalRPoints.Count - 1);
+            finalRPoints.RemoveAt(finalRPoints.Count - 1);
+            finalRPoints.RemoveAt(finalRPoints.Count - 1);
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
-            
-            
+
+
             finalRPoints = new List<Vector3>();
             dU = detailedR.USize / samplesPerParam;
             dV = detailedR.VSize / samplesPerParam;
-            u = detailedR.USize / 2 + 6*dU;
+            u = detailedR.USize / 2 + 6 * dU;
 
-            for (int i = samplesPerParam/2+6; i < samplesPerParam; i++)
+            for (int i = samplesPerParam / 2 + 6; i < samplesPerParam; i++)
             {
                 var v = intersectDown.GetVOnULineSecondObject(u);
-                var endv = intersectUp.GetVOnULineSecondObject(u); 
+                var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
@@ -216,6 +217,7 @@ public partial class PathsGenerator
                         {
                         }
                     }
+
                     v += dV;
                     if (v > endv)
                     {
@@ -228,9 +230,10 @@ public partial class PathsGenerator
                 {
                     points.Reverse();
                 }
-                finalRPoints.AddRange(points);
 
+                finalRPoints.AddRange(points);
             }
+
             finalRPoints.RemoveAt(0);
             finalRPoints.RemoveAt(0);
             finalRPoints.RemoveAt(0);
@@ -508,7 +511,7 @@ public partial class PathsGenerator
 
             AddMoveFromAndToCenter(leftPart);
             mainPartFinalPoints.AddRange(leftPart);
-            
+
             bool useHelp = false;
             bool exitOnBrake = false;
             var interDownPoints = new List<Vector3>();
@@ -525,7 +528,6 @@ public partial class PathsGenerator
                 {
                     if (!useHelp)
                     {
-
                     }
                     else
                     {
@@ -539,13 +541,14 @@ public partial class PathsGenerator
                     {
                         break;
                     }
+
                     useHelp = true;
                     continue;
                 }
             }
             //AddMoveFromAndToCenter(interDownPoints);
             //mainPartFinalPoints.AddRange(interDownPoints);
-            
+
             useHelp = false;
             exitOnBrake = false;
             var interUpPoints = new List<Vector3>();
@@ -577,18 +580,20 @@ public partial class PathsGenerator
                     {
                         break;
                     }
+
                     useHelp = true;
                     continue;
                 }
             }
+
             interUpPointsHelp.AddRange(interUpPoints);
             //AddMoveFromAndToCenter(interUpPointsHelp);
             //mainPartFinalPoints.AddRange(interUpPointsHelp);
-            
+
             interUpPointsHelp.AddRange(interDownPoints);
             AddMoveFromAndToCenter(interUpPointsHelp);
             mainPartFinalPoints.AddRange(interUpPointsHelp);
-            
+
             useHelp = false;
             exitOnBrake = false;
             var interLeftPoints = new List<Vector3>();
@@ -620,14 +625,16 @@ public partial class PathsGenerator
                     {
                         break;
                     }
+
                     useHelp = true;
                     continue;
                 }
             }
+
             interLeftPointsHelp.AddRange(interLeftPoints);
             AddMoveFromAndToCenter(interLeftPointsHelp);
             mainPartFinalPoints.AddRange(interLeftPointsHelp);
-            
+
             finalPoints.AddRange(mainPartFinalPoints);
         }
 #endif
@@ -638,57 +645,116 @@ public partial class PathsGenerator
 
 #if CZUBEK
         {
-            var finalPoints = new List<Vector3>();
+            var finalDPoints = new List<Vector3>();
             var lines = new List<List<Vector3>>();
-            
+
             var samplesPerParam = 100;
 
             var u = 0.0f;
-            var v = 0.0f;
 
             var dU = detailedD.USize / samplesPerParam;
             var dV = detailedD.VSize / samplesPerParam;
 
-            for (int i = 0; i < samplesPerParam; i++)
+
+            for (int i = 0; i < samplesPerParam ; i++)
             {
-                v = 0.0f;
-                var points = new List<Vector3>();
-                for (int j = 0; j < samplesPerParam; j++)
+                if (i > samplesPerParam / 2)
                 {
-                    var point = detailedD.GetValueAt(u, v);
-                    if (point.isFinite())
+                    var v = 0.0f;
+                    var startv = intersectLeft.GetVOnULineSecondObject(u);
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y);
-                        point *= CmToMm;
-                        if (point.Z >= SupportSize*CmToMm - 0.1)
+                        if (v >= startv)
                         {
-                            points.Add(point);   
+                            var point = new Vector3();
+
+                            point = detailedD.GetValueAt(u, v);
+
+                            if (point.isFinite())
+                            {
+                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                point *= CmToMm;
+                                if (point.Z >= SupportSize * CmToMm - 0.1)
+                                {
+                                    points.Add(point);
+                                }
+                                else
+                                {
+                                }
+                            }
                         }
-                        else
-                        {
-                            
-                        }
+
+                        v += dV;
                     }
 
-                    v += dV;
-                }
 
-                u += dU;
-                if (i % 2 == 1)
-                {
-                    points.Reverse();
+                 
+                    if (i % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    finalDPoints.AddRange(points);
+                    nextIter: ;
                 }
-                finalPoints.AddRange(points);
-                nextIter: ;
+                u += dU;
             }
-            
-            AddMoveFromAndToCenter(finalPoints);
-            SavePath(frez, radius, finalPoints, false);
+            AddMoveFromAndToCenter(finalDPoints);
+
+            u = 0;
+            for (int i = 0; i < samplesPerParam ; i++)
+            {
+                if (i <= samplesPerParam / 2)
+                {
+                    var v = 0.0f;
+                    var startv = intersectLeft.GetVOnULineSecondObject(u);
+                    var points = new List<Vector3>();
+                    for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
+                    {
+                        if (v >= startv)
+                        {
+                            var point = new Vector3();
+
+                            point = detailedD.GetValueAt(u, v);
+
+                            if (point.isFinite())
+                            {
+                                (point.Y, point.Z) = (-point.Z, point.Y);
+                                point *= CmToMm;
+                                if (point.Z >= SupportSize * CmToMm - 0.1)
+                                {
+                                    points.Add(point);
+                                }
+                                else
+                                {
+                                }
+                            }
+                        }
+
+                        v += dV;
+                    }
+
+
+                 
+                    if (i % 2 == 1)
+                    {
+                        points.Reverse();
+                    }
+
+                    finalDPoints.AddRange(points);
+                    nextIter: ;
+                }
+                u += dU;
+            }
+            AddMoveFromAndToCenter(finalDPoints);
+            finalPoints.AddRange(finalDPoints);
         }
 #endif
 
         #endregion
-        SavePath(frez, radius,finalPoints, false);
+
+        SavePath(frez, radius, finalPoints, false);
     }
 
     private void AddMoveFromAndToCenter(List<Vector3> list)

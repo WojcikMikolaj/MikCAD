@@ -664,7 +664,7 @@ public partial class PathsGenerator
                     var v = 0.0f;
                     var startv = intersectLeft.GetVOnULineSecondObject(u);
                     var points = new List<Vector3>();
-                    for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
+                    for (int j = 0; j < 52; j++)
                     {
                         if (v >= startv + 0.15f)
                         {
@@ -714,7 +714,7 @@ public partial class PathsGenerator
                     var v = 0.0f;
                     var startv = intersectLeft.GetVOnULineSecondObject(u);
                     var points = new List<Vector3>();
-                    for (int j = 0; j < samplesPerParam * 4.3f / 8; j++)
+                    for (int j = 0; j < 52; j++)
                     {
                         if (v >= startv + 0.03f)
                         {

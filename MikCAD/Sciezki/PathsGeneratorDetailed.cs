@@ -765,7 +765,7 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < samplesPerParam; j++)
                     {
-                        if (j > 65)
+                        if (j > 70)
                         {
                             var point = new Vector3();
 

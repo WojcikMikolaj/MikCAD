@@ -135,20 +135,39 @@ public partial class PathsGenerator
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
-                    var point = detailedR.GetValueAt(u, v);
-                    if (point.isFinite())
+                    
+                    if (i<samplesPerParam/12||((j < 45 || j>65)&&(j < 13 || j > 30)))
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y);
-                        point *= CmToMm;
+                        var point = detailedR.GetValueAt(u, v);
+                        if (point.isFinite())
+                        {
+                            (point.Y, point.Z) = (-point.Z, point.Y);
+                            point *= CmToMm;
 
-                        if (point.Z >= SupportSize * CmToMm)
-                        {
-                            points.Add(point);
-                        }
-                        else
-                        {
+                            // var l = -1;
+                            // for (int k = 0; k < points.Count; k++)
+                            // {
+                            //     if (Vector3.DistanceSquared(points[k], point) < 0.06f)
+                            //     {
+                            //         l = k;
+                            //     }
+                            // }
+                            //
+                            // if (l != -1)
+                            // {
+                            //     points.RemoveRange(l, points.Count - l);
+                            // }
+
+                            if (point.Z >= SupportSize * CmToMm)
+                            {
+                                points.Add(point);
+                            }
+                            else
+                            {
+                            }
                         }
                     }
+
                     v += dV;
                     if (v > endv)
                     {
@@ -524,8 +543,8 @@ public partial class PathsGenerator
                     continue;
                 }
             }
-            AddMoveFromAndToCenter(interDownPoints);
-            mainPartFinalPoints.AddRange(interDownPoints);
+            //AddMoveFromAndToCenter(interDownPoints);
+            //mainPartFinalPoints.AddRange(interDownPoints);
             
             useHelp = false;
             exitOnBrake = false;
@@ -563,6 +582,10 @@ public partial class PathsGenerator
                 }
             }
             interUpPointsHelp.AddRange(interUpPoints);
+            //AddMoveFromAndToCenter(interUpPointsHelp);
+            //mainPartFinalPoints.AddRange(interUpPointsHelp);
+            
+            interUpPointsHelp.AddRange(interDownPoints);
             AddMoveFromAndToCenter(interUpPointsHelp);
             mainPartFinalPoints.AddRange(interUpPointsHelp);
             

@@ -131,7 +131,7 @@ public partial class PathsGenerator
 
             for (int i = 0; i < samplesPerParam / 2; i++)
             {
-                var v = intersectDown.GetVOnULineSecondObject(u);
+                var v = intersectDown.GetVOnULineSecondObject(u)+0.05f;
                 var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
@@ -199,7 +199,7 @@ public partial class PathsGenerator
 
             for (int i = samplesPerParam / 2 + 6; i < samplesPerParam; i++)
             {
-                var v = intersectDown.GetVOnULineSecondObject(u);
+                var v = intersectDown.GetVOnULineSecondObject(u)+0.05f;
                 var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
@@ -472,7 +472,7 @@ public partial class PathsGenerator
             {
                 if (i >= 32)
                 {
-                    v = 4.4f;
+                    v = 5f;
                     var points = new List<Vector3>();
                     for (int j = 0; j < samplesPerParam; j++)
                     {
@@ -614,7 +614,7 @@ public partial class PathsGenerator
                 {
                     X = p.pos.X,
                     Y = -p.pos.Z,
-                    Z = p.pos.Y
+                    Z = p.pos.Y+0.01f
                 };
                 point *= CmToMm;
                 if (point.Z > SupportSize * CmToMm)
@@ -643,7 +643,7 @@ public partial class PathsGenerator
 
             interLeftPointsHelp.AddRange(interLeftPoints);
             AddMoveFromAndToCenter(interLeftPointsHelp);
-            //mainPartFinalPoints.AddRange(interLeftPointsHelp);
+            mainPartFinalPoints.AddRange(interLeftPointsHelp);
 
             finalPoints.AddRange(mainPartFinalPoints);
         }
@@ -726,7 +726,7 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < 52; j++)
                     {
-                        if (v >= startv + 0.03f)
+                        if (v >= startv + 0.05f)
                         {
                             var point = new Vector3();
 

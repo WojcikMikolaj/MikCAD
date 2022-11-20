@@ -866,6 +866,17 @@ public partial class PathsGenerator
 
         #endregion
 
+        for (int i = 0; i < finalPoints.Count; i++)
+        {
+            if (finalPoints[i].Z < SupportSize * CmToMm + 0.02f)
+            {
+                finalPoints[i] = finalPoints[i] with
+                {
+                    Z = SupportSize * CmToMm + 0.02f
+                };
+            }
+        }
+        
         SavePath(frez, radius, finalPoints, false);
     }
 

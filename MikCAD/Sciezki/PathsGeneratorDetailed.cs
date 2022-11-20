@@ -136,6 +136,7 @@ public partial class PathsGenerator
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
                 {
+                    //if(j>0)
                     if (i < samplesPerParam / 12 || ((j < 45 || j > 65) && (j < 13 || j > 30)))
                     {
                         var point = detailedR.GetValueAt(u, v);
@@ -169,7 +170,7 @@ public partial class PathsGenerator
                     }
 
                     v += dV;
-                    if (v > endv)
+                    if (v > endv-0.1f)
                     {
                         break;
                     }
@@ -219,7 +220,7 @@ public partial class PathsGenerator
                     }
 
                     v += dV;
-                    if (v > endv)
+                    if (v > endv-0.03f)
                     {
                         break;
                     }
@@ -235,17 +236,17 @@ public partial class PathsGenerator
             }
 
             finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
-            finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
+            // finalRPoints.RemoveAt(0);
             
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
@@ -395,7 +396,7 @@ public partial class PathsGenerator
                 }
 
                 u += dU;
-                if (u > 8.5f)
+                if (u > 8.55f)
                 {
                     break;
                 }
@@ -642,7 +643,7 @@ public partial class PathsGenerator
 
             interLeftPointsHelp.AddRange(interLeftPoints);
             AddMoveFromAndToCenter(interLeftPointsHelp);
-            mainPartFinalPoints.AddRange(interLeftPointsHelp);
+            //mainPartFinalPoints.AddRange(interLeftPointsHelp);
 
             finalPoints.AddRange(mainPartFinalPoints);
         }
@@ -650,7 +651,7 @@ public partial class PathsGenerator
 
         #endregion
 
-        #region sloik
+        #region dziubek
 
 #if CZUBEK
         {

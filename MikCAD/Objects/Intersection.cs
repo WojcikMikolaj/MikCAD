@@ -737,7 +737,7 @@ public class Intersection : INotifyPropertyChanged
         return result;
     }
 
-    public bool IsInside(float u, float v)
+    public bool IsInside(float u, float v, float epsilon=0.03f )
     {
         //   if (Looped)
         {
@@ -749,45 +749,27 @@ public class Intersection : INotifyPropertyChanged
             var mintV = points[0].v;
             var maxtV = points[0].v;
 
-            for (int i = 1; i < points.Count - 1; i++)
+            var startV = float.MaxValue;
+            var endV = float.MinValue;
+
+            for (int i = 0; i < points.Count; i++)
             {
                 var p = points[i];
+                if (Math.Abs(p.u - u) < epsilon)
+                {
+                    if (p.v < startV)
+                    {
+                        startV = p.v;
+                    }
 
-                // var minU = MathF.Min(lastPoint.u, p.u);
-                // var maxU = MathF.Max(lastPoint.u, p.u);
-                //
-                // var minV = MathF.Min(lastPoint.v, p.v);
-                // var maxV = MathF.Max(lastPoint.v, p.v);
-                //
-                // var dU = (maxU - minU);
-                // var dV = (maxV - minV);
-                //
-                // var UAtv = minU + dU / dV * (v - mintV);
-                //
-                // if (minV <= v
-                //     && maxV >= v
-                //     && UAtv >= u)
-                // {
-                //     intersectionsCount++;
-                // }
-                //
-                // lastPoint = p;
-
-                mintU = MathF.Min(mintU, p.u);
-                maxtU = MathF.Max(maxtU, p.u);
-
-                mintV = MathF.Min(mintV, p.v);
-                maxtV = MathF.Max(maxtV, p.v);
+                    if (p.v > endV)
+                    {
+                        endV = p.v;
+                    }
+                }
             }
 
-            if (u >= mintU
-                && u <= maxtU
-                && v >= mintV
-                && v <= maxtV)
-            {
-                return true;
-            }
-
+            return v <= endV && v >= startV;
             //return intersectionsCount % 2 != 0;
         }
 

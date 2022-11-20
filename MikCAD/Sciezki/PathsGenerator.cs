@@ -449,7 +449,7 @@ public partial class PathsGenerator
 
                 var decorated = new IIntersectableDecoratorStage2(surfaces[0])
                 {
-                    DistanceFromSurface = radius *1.1f / CmToMm
+                    DistanceFromSurface = radius *1.2f / CmToMm
                 };
                 var intersection = new Intersection(supportSurface, surfaces[0])
                 {
@@ -533,7 +533,7 @@ public partial class PathsGenerator
                     var pom = decorated.GetValueAt(intersection.points[1].s, intersection.points[1].t) * CmToMm;
                     pointsGL.Add(new Vector3()
                     {
-                        X = pom.X + 1.0f * radius,
+                        X = pom.X + 1.2f * radius,
                         Y = -pom.Z,
                         Z = SupportSize * CmToMm
                     });
@@ -562,7 +562,7 @@ public partial class PathsGenerator
 
                     pointsGR.Add(new Vector3()
                     {
-                        X = pointsGR[^1].X + 1.0f * radius,
+                        X = pointsGR[^1].X + 1.2f * radius,
                         Y = pointsGR[^1].Y,
                         Z = SupportSize * CmToMm,
                     });

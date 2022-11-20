@@ -158,7 +158,7 @@ public partial class PathsGenerator
                             //     points.RemoveRange(l, points.Count - l);
                             // }
 
-                            if (point.Z >= SupportSize * CmToMm)
+                            if (point.Z >= SupportSize * CmToMm- 0.1)
                             {
                                 points.Add(point);
                             }
@@ -209,7 +209,7 @@ public partial class PathsGenerator
                         (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
                         point *= CmToMm;
 
-                        if (point.Z >= SupportSize * CmToMm)
+                        if (point.Z >= SupportSize * CmToMm -0.05)
                         {
                             points.Add(point);
                         }
@@ -238,6 +238,15 @@ public partial class PathsGenerator
             finalRPoints.RemoveAt(0);
             finalRPoints.RemoveAt(0);
             finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            finalRPoints.RemoveAt(0);
+            
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
         }

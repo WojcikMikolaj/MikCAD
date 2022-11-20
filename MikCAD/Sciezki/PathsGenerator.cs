@@ -1,6 +1,6 @@
 ﻿#define SPECIALIZED
 //#define GENERIC 
-//#define DRAW
+#define DRAW
 //#define SHOW_POINTS
 #define RACZKA
 #define CZUBEK
@@ -245,8 +245,7 @@ public partial class PathsGenerator
             ZPosInMm = 2 * ZBlockSize * CmToMm,
         });
 
-        
-        
+
         SavePath(frez, radius, list);
     }
 
@@ -394,7 +393,7 @@ public partial class PathsGenerator
             YPosInMm = -YBlockSize / 2 * CmToMm,
             ZPosInMm = SupportSize * CmToMm,
         });
-        
+
         finalList.Add(finalList[1]);
         finalList.Add(finalList[0]);
 
@@ -449,7 +448,7 @@ public partial class PathsGenerator
 
                 var decorated = new IIntersectableDecoratorStage2(surfaces[0])
                 {
-                    DistanceFromSurface = radius *1.2f / CmToMm
+                    DistanceFromSurface = radius * 1.2f / CmToMm
                 };
                 var intersection = new Intersection(supportSurface, surfaces[0])
                 {
@@ -477,7 +476,7 @@ public partial class PathsGenerator
                             pointsR.Add(p);
                         }
 
-                        if (it is >= 98 and <= 146)
+                        if (it is >= 98 and <= 144)
                         {
                             pointsR.Add(p);
                         }
@@ -542,7 +541,7 @@ public partial class PathsGenerator
                         var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                         (p.Y, p.Z) = (-p.Z, p.Y);
                         p.Z = SupportSize * CmToMm;
-                        if (it is >= 368 and <= 425)
+                        if (it is >= 370 and <= 425)
                         {
                             pointsGR.Add(p);
                         }
@@ -552,7 +551,7 @@ public partial class PathsGenerator
                             pointsD.Add(p);
                         }
 
-                        if (it is >= 1 and <= 64)
+                        if (it is >= 1 and <= 49)
                         {
                             pointsGL.Add(p);
                         }
@@ -562,7 +561,7 @@ public partial class PathsGenerator
 
                     pointsGR.Add(new Vector3()
                     {
-                        X = pointsGR[^1].X + 1.2f * radius,
+                        X = pointsGL[0].X,
                         Y = pointsGR[^1].Y,
                         Z = SupportSize * CmToMm,
                     });
@@ -614,7 +613,7 @@ public partial class PathsGenerator
                             var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
                             p.Z = SupportSize * CmToMm;
-                            if (it is >= 54 and <= 139)
+                            if (it is >= 59 and <= 120)
                             {
                                 pointsGLL.Add(p);
                             }
@@ -668,28 +667,11 @@ public partial class PathsGenerator
                         var it = 0;
                         foreach (var point in intersection.points)
                         {
-                            var p = decorated.GetValueAt(point.s, point.t) * CmToMm;
+                            var p = supportSurface.GetValueAt(point.u, point.v) * CmToMm;
                             (p.Y, p.Z) = (-p.Z, p.Y);
                             p.Z = SupportSize * CmToMm;
-                            if (it is >= 0 and <= 77)
-                            {
-                                pointsDL.Add(p);
-                            }
+                            pointsDL.Add(p);
 
-                            if (it == 79)
-                            {
-                                pointsDL.Add(p);
-                            }
-
-                            if (it == 91)
-                            {
-                                pointsDL.Add(p);
-                            }
-
-                            // if (it is >= 89 and <= 91)
-                            // {
-                            //     pointsDL.Add(p);
-                            // }
                             it++;
                         }
 #if SHOW_POINTS

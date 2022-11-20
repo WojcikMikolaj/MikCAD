@@ -300,8 +300,9 @@ public partial class PathsGenerator
             }
             else
             {
-                startYinMm = (numberOfPathsOnSinglePlain - (i - numberOfPathsOnSinglePlain)) * distanceBetweenPaths -
-                             (YBlockSize / 2) * CmToMm;
+                startYinMm =
+                    (numberOfPathsOnSinglePlain - (i - numberOfPathsOnSinglePlain)) * distanceBetweenPaths -
+                    (YBlockSize / 2) * CmToMm;
             }
 
             startZinMm = SupportSize * CmToMm;
@@ -343,12 +344,16 @@ public partial class PathsGenerator
 
                 if (ObjectInRadius(posXInMm, posYInMm, rX, rY))
                 {
-                    list.Add(new CuttingLinePoint()
+                    if (i != 2 && i!=8 && i!=16)
                     {
-                        XPosInMm = startXinMm,
-                        YPosInMm = startYinMm,
-                        ZPosInMm = startZinMm + 0.02f
-                    });
+                        list.Add(new CuttingLinePoint()
+                        {
+                            XPosInMm = startXinMm,
+                            YPosInMm = startYinMm,
+                            ZPosInMm = startZinMm + 0.02f
+                        });
+                    }
+
                     moveBack = true;
                     break;
                 }
@@ -361,6 +366,13 @@ public partial class PathsGenerator
                 });
             }
 
+            if (i == 3 || i==9 || i==17)
+            {
+                list.RemoveAt(0);
+                list.RemoveAt(list.Count-1);
+                list.Reverse();
+            }
+            
             if (!moveBack)
             {
                 var endXinMm = (moveRight ? XBlockSize / 2 * CmToMm + radius : -XBlockSize / 2 * CmToMm - radius);

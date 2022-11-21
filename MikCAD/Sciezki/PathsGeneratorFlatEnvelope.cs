@@ -304,6 +304,9 @@ public partial class PathsGenerator
 
                             it++;
                         }
+                        pointsDL.RemoveAt(pointsDL.Count-1);
+                        pointsDL.RemoveAt(pointsDL.Count-1);
+                        pointsDL.RemoveAt(pointsDL.Count-1);
 #endif
 #if SHOW_POINTS
                         intersection.ConvertToInterpolating();

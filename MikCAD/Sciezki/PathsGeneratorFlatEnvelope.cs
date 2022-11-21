@@ -172,7 +172,7 @@ public partial class PathsGenerator
                             pointsGR.Add(p);
                         }
 
-                        if (it is >= 120 and <= 289)
+                        if (it is >= 110 and <= 289)
                         {
                             pointsD.Add(p);
                         }

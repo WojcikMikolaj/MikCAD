@@ -131,7 +131,7 @@ public partial class PathsGenerator
 
             for (int i = 0; i < samplesPerParam / 2; i++)
             {
-                var v = intersectDown.GetVOnULineSecondObject(u)+0.05f;
+                var v = intersectDown.GetVOnULineSecondObject(u) + 0.05f;
                 var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
@@ -142,7 +142,7 @@ public partial class PathsGenerator
                         var point = detailedR.GetValueAt(u, v);
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                            (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                             point *= CmToMm;
 
                             // var l = -1;
@@ -159,7 +159,7 @@ public partial class PathsGenerator
                             //     points.RemoveRange(l, points.Count - l);
                             // }
 
-                            if (point.Z >= SupportSize * CmToMm- 0.1)
+                            if (point.Z >= SupportSize * CmToMm - 0.1)
                             {
                                 points.Add(point);
                             }
@@ -170,7 +170,7 @@ public partial class PathsGenerator
                     }
 
                     v += dV;
-                    if (v > endv-0.1f)
+                    if (v > endv - 0.1f)
                     {
                         break;
                     }
@@ -199,7 +199,7 @@ public partial class PathsGenerator
 
             for (int i = samplesPerParam / 2 + 6; i < samplesPerParam; i++)
             {
-                var v = intersectDown.GetVOnULineSecondObject(u)+0.05f;
+                var v = intersectDown.GetVOnULineSecondObject(u) + 0.05f;
                 var endv = intersectUp.GetVOnULineSecondObject(u);
                 var points = new List<Vector3>();
                 for (int j = 0; j < samplesPerParam; j++)
@@ -207,10 +207,10 @@ public partial class PathsGenerator
                     var point = detailedR.GetValueAt(u, v);
                     if (point.isFinite())
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                        (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                         point *= CmToMm;
 
-                        if (point.Z >= SupportSize * CmToMm -0.05)
+                        if (point.Z >= SupportSize * CmToMm - 0.05)
                         {
                             points.Add(point);
                         }
@@ -220,7 +220,7 @@ public partial class PathsGenerator
                     }
 
                     v += dV;
-                    if (v > endv-0.03f)
+                    if (v > endv - 0.03f)
                     {
                         break;
                     }
@@ -247,7 +247,7 @@ public partial class PathsGenerator
             // finalRPoints.RemoveAt(0);
             // finalRPoints.RemoveAt(0);
             // finalRPoints.RemoveAt(0);
-            
+
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
         }
@@ -288,7 +288,7 @@ public partial class PathsGenerator
                     var point = detailed.GetValueAt(u, v);
                     if (point.isFinite())
                     {
-                        (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                        (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                         point *= CmToMm;
 
                         if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -368,7 +368,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                            (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -427,7 +427,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                            (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -485,7 +485,7 @@ public partial class PathsGenerator
 
                         if (point.isFinite())
                         {
-                            (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                            (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                             point *= CmToMm;
 
                             if (point.Z >= SupportSize * CmToMm - 0.1)
@@ -614,7 +614,7 @@ public partial class PathsGenerator
                 {
                     X = p.pos.X,
                     Y = -p.pos.Z,
-                    Z = p.pos.Y+0.01f
+                    Z = p.pos.Y + 0.01f
                 };
                 point *= CmToMm;
                 if (point.Z > SupportSize * CmToMm)
@@ -684,7 +684,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                                (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -734,7 +734,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                                (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -783,7 +783,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                                (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -832,7 +832,7 @@ public partial class PathsGenerator
 
                             if (point.isFinite())
                             {
-                                (point.Y, point.Z) = (-point.Z, point.Y/*-radius/CmToMm*/);
+                                (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
                                 point *= CmToMm;
                                 if (point.Z >= SupportSize * CmToMm - 0.1)
                                 {
@@ -867,26 +867,26 @@ public partial class PathsGenerator
             //finalPoints.Clear();
             var kolko = new List<Vector3>()
             {
-                new Vector3(-1.22f*CmToMm, -5.1f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-0.55f*CmToMm, -5.1f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-0.55f*CmToMm, -5.05f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-1.22f*CmToMm, -5.05f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-1.22f*CmToMm, -5f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-0.55f*CmToMm, -5f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-0.55f*CmToMm, -4.95f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-1.22f*CmToMm, -4.95f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-1.22f*CmToMm, -4.9f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-0.55f*CmToMm, -4.9f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-0.55f*CmToMm, -4.85f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-1.22f*CmToMm, -4.85f*CmToMm, SupportSize * CmToMm),
-                
-                new Vector3(-1.22f*CmToMm, -4.8f*CmToMm, SupportSize * CmToMm),
-                new Vector3(-0.55f*CmToMm, -4.8f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-1.22f * CmToMm, -5.1f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-0.55f * CmToMm, -5.1f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-0.55f * CmToMm, -5.05f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-1.22f * CmToMm, -5.05f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-1.22f * CmToMm, -5f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-0.55f * CmToMm, -5f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-0.55f * CmToMm, -4.95f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-1.22f * CmToMm, -4.95f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-1.22f * CmToMm, -4.9f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-0.55f * CmToMm, -4.9f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-0.55f * CmToMm, -4.85f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-1.22f * CmToMm, -4.85f * CmToMm, SupportSize * CmToMm + 0.02f),
+
+                new Vector3(-1.22f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
+                new Vector3(-0.55f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
             };
             AddMoveFromAndToCenter(kolko);
             finalPoints.AddRange(kolko);
@@ -905,7 +905,7 @@ public partial class PathsGenerator
                 };
             }
         }
-        
+
         SavePath(frez, radius, finalPoints, false);
     }
 

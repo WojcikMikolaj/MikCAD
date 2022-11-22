@@ -862,6 +862,34 @@ public partial class PathsGenerator
 
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
+
+
+            //finalPoints.Clear();
+            var kolko = new List<Vector3>()
+            {
+                new Vector3(-1.22f*CmToMm, -5.1f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-0.55f*CmToMm, -5.1f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-0.55f*CmToMm, -5.05f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-1.22f*CmToMm, -5.05f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-1.22f*CmToMm, -5f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-0.55f*CmToMm, -5f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-0.55f*CmToMm, -4.95f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-1.22f*CmToMm, -4.95f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-1.22f*CmToMm, -4.9f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-0.55f*CmToMm, -4.9f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-0.55f*CmToMm, -4.85f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-1.22f*CmToMm, -4.85f*CmToMm, SupportSize * CmToMm),
+                
+                new Vector3(-1.22f*CmToMm, -4.8f*CmToMm, SupportSize * CmToMm),
+                new Vector3(-0.55f*CmToMm, -4.8f*CmToMm, SupportSize * CmToMm),
+            };
+            AddMoveFromAndToCenter(kolko);
+            finalPoints.AddRange(kolko);
         }
 #endif
 

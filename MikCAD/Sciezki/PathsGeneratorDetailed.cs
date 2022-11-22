@@ -887,11 +887,11 @@ public partial class PathsGenerator
             new Vector3(-1.34f * CmToMm, -4.9f * CmToMm, SupportSize * CmToMm + 0.02f),
             new Vector3(-0.46f * CmToMm, -4.9f * CmToMm, SupportSize * CmToMm + 0.02f),
 
-            new Vector3(-0.44f * CmToMm, -4.85f * CmToMm, SupportSize * CmToMm + 0.02f),
+            new Vector3(-0.46f * CmToMm, -4.85f * CmToMm, SupportSize * CmToMm + 0.02f),
             new Vector3(-1.36f * CmToMm, -4.85f * CmToMm, SupportSize * CmToMm + 0.02f),
 
             new Vector3(-1.38f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
-            new Vector3(-0.41f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
+            new Vector3(-0.46f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
         };
         AddMoveFromAndToCenter(kolko);
         finalPoints.AddRange(kolko);

@@ -54,7 +54,7 @@ public partial class RigidBody
             return Vector3.Zero;
         }
 
-        //mam g;
+        //mam g; jedno Q bo implementacja to obsluguje
         var G = Q.Inverted() * (IsGravityFlipped ? -GravityVector : GravityVector);
         float faceLength4ro = MathF.Pow((float) CubeEdgeLength, 4) * (float) CubeDensity;
         var integrationResult = (

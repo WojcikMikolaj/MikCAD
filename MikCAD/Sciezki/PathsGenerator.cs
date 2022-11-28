@@ -254,6 +254,7 @@ public partial class PathsGenerator
         GenerateHeightmap();
 
         List<CuttingLinePoint> finalList = new List<CuttingLinePoint>();
+        List<List<CuttingLinePoint>> allLists = new List<List<CuttingLinePoint>>();
         finalList.Add(new CuttingLinePoint()
         {
             XPosInMm = 0,
@@ -344,7 +345,7 @@ public partial class PathsGenerator
 
                 if (ObjectInRadius(posXInMm, posYInMm, rX, rY))
                 {
-                    if (i != 2 && i!=8 && i!=16)
+                    if (i != 2 && i != 8 && i != 16)
                     {
                         list.Add(new CuttingLinePoint()
                         {
@@ -366,13 +367,13 @@ public partial class PathsGenerator
                 });
             }
 
-            if (i == 3 || i==9 || i==17)
+            if (i == 3 || i == 9 || i == 17)
             {
                 list.RemoveAt(0);
-                list.RemoveAt(list.Count-1);
+                list.RemoveAt(list.Count - 1);
                 list.Reverse();
             }
-            
+
             if (!moveBack)
             {
                 var endXinMm = (moveRight ? XBlockSize / 2 * CmToMm + radius : -XBlockSize / 2 * CmToMm - radius);
@@ -392,11 +393,20 @@ public partial class PathsGenerator
                 finalList.Add(list[0]);
                 finalList.Add(list[^2]);
                 finalList.Add(list[^1]);
+                allLists.Add(new List<CuttingLinePoint>()
+                {
+                    list[0],
+                    list[^2],
+                    list[^1],
+                });
             }
             else
             {
                 finalList.AddRange(list);
+                allLists.Add(new List<CuttingLinePoint>(list));
             }
+
+            
         }
 
         finalList.Add(new CuttingLinePoint()
@@ -408,6 +418,39 @@ public partial class PathsGenerator
 
         finalList.Add(finalList[1]);
         finalList.Add(finalList[0]);
+
+        finalList.Clear();
+        finalList.AddRange(allLists[0]);
+        for (int i = 1; i < allLists.Count; i++)
+        {
+            switch (i % 8)
+            {
+                case 0:
+                case 6:
+                    allLists[i].RemoveAt(allLists[i].Count - 1);
+                    allLists[i].Reverse();
+                    finalList.AddRange(allLists[i]);
+                    break;
+                case 1:
+                case 5:
+                case 7:
+                    allLists[i].RemoveAt(allLists[i].Count - 1);
+                    finalList.AddRange(allLists[i]);
+                    break;
+                case 2:
+                    allLists[i].Reverse();
+                    finalList.AddRange(allLists[i]);
+                    break;
+                case 3:
+                    allLists[i].Reverse();
+                    finalList.AddRange(allLists[i]);
+                    break;
+                case 4:
+                    allLists[i].RemoveAt(0);
+                    finalList.AddRange(allLists[i]);
+                    break;
+            }
+        }
 
         SavePath(frez, radius, finalList, false);
     }

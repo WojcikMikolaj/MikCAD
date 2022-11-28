@@ -42,7 +42,7 @@ public partial class PathsGenerator
     private const int SamplesPerObjectCount = 500;
     private const float CmToMm = 10;
     private const float UnitsToCm = 1;
-    private const float SafetyDistance = 5;
+    private const float SafetyDistance = 4;
 
     private float[,] HeightMap;
     private float dXPerArrayElement;

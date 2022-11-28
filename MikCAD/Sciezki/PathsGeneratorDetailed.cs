@@ -614,7 +614,7 @@ public partial class PathsGenerator
                 {
                     X = p.pos.X,
                     Y = -p.pos.Z,
-                    Z = p.pos.Y + 0.01f
+                    Z = p.pos.Y + 0.018f
                 };
                 point *= CmToMm;
                 if (point.Z > SupportSize * CmToMm)

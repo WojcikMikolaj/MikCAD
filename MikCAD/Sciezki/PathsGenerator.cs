@@ -366,96 +366,93 @@ public partial class PathsGenerator
                     ZPosInMm = posZInMm + 0.02f
                 });
             }
-
-            if (i == 3 || i == 9 || i == 17)
-            {
-                list.RemoveAt(0);
-                list.RemoveAt(list.Count - 1);
-                list.Reverse();
-            }
-
-            if (!moveBack)
-            {
-                var endXinMm = (moveRight ? XBlockSize / 2 * CmToMm + radius : -XBlockSize / 2 * CmToMm - radius);
-                var endYinMm = i * distanceBetweenPaths - (YBlockSize / 2) * CmToMm;
-                var endZinMm = SupportSize * CmToMm;
-
-                list.Add(new CuttingLinePoint()
-                {
-                    XPosInMm = endXinMm,
-                    YPosInMm = endYinMm,
-                    ZPosInMm = endZinMm + 0.02f
-                });
-            }
-
+            
             if (list.Count > 2)
             {
-                finalList.Add(list[0]);
-                finalList.Add(list[^2]);
-                finalList.Add(list[^1]);
                 allLists.Add(new List<CuttingLinePoint>()
                 {
                     list[0],
-                    list[^2],
-                    list[^1],
+                    i==0 || i == 13?list[^1] : list[^2],
                 });
             }
             else
             {
-                finalList.AddRange(list);
                 allLists.Add(new List<CuttingLinePoint>(list));
             }
-
-            
         }
-
-        finalList.Add(new CuttingLinePoint()
-        {
-            XPosInMm = -XBlockSize / 2 * CmToMm - 1.1f * radius,
-            YPosInMm = -YBlockSize / 2 * CmToMm,
-            ZPosInMm = SupportSize * CmToMm + 0.02f,
-        });
-
-        finalList.Add(finalList[1]);
-        finalList.Add(finalList[0]);
-
+        
         finalList.Clear();
         finalList.AddRange(allLists[0]);
+        finalList[^1] = finalList[^1] with {XPosInMm = allLists[1][0].XPosInMm};
+        var mod = 0;
         for (int i = 1; i < allLists.Count; i++)
         {
-            switch (i % 8)
+            if (i == 14)
             {
-                case 0:
-                case 6:
-                    allLists[i].RemoveAt(allLists[i].Count - 1);
-                    allLists[i].Reverse();
-                    finalList.AddRange(allLists[i]);
-                    break;
+                mod = 1;
+                finalList[^1] = finalList[^1] with {XPosInMm = allLists[i][0].XPosInMm};
+            }
+
+            if (i == 8)
+            {
+                finalList.Add(allLists[i][^1]);
+                finalList.Add(
+                    finalList[^1] with
+                    {
+                        XPosInMm = 2*finalList[^1].XPosInMm - allLists[i-1][^1].XPosInMm,
+                        YPosInMm = 2*finalList[^1].YPosInMm - allLists[i-1][^1].YPosInMm,
+                    });
+                finalList.Add(allLists[i][^1]);
+            }
+            
+            switch ((i + mod) % 2)
+            {
                 case 1:
-                case 5:
-                case 7:
-                    allLists[i].RemoveAt(allLists[i].Count - 1);
                     finalList.AddRange(allLists[i]);
                     break;
-                case 2:
+                case 0:
                     allLists[i].Reverse();
-                    finalList.AddRange(allLists[i]);
-                    break;
-                case 3:
-                    allLists[i].Reverse();
-                    finalList.AddRange(allLists[i]);
-                    break;
-                case 4:
-                    allLists[i].RemoveAt(0);
                     finalList.AddRange(allLists[i]);
                     break;
             }
+            
+            if (i == 3 || i==14)
+            {
+                finalList.Add(
+                    finalList[^1] with
+                    {
+                        XPosInMm = 2*finalList[^1].XPosInMm - allLists[i+1][^1].XPosInMm,
+                        YPosInMm = 2*finalList[^1].YPosInMm - allLists[i+1][^1].YPosInMm,
+                    });
+            }
         }
-
+        AddMoveFromAndToCenter(finalList);
         SavePath(frez, radius, finalList, false);
     }
 
-
+    private void AddMoveFromAndToCenter(List<CuttingLinePoint> list)
+    {
+        list.Insert(0, new Vector3()
+        {
+            X = 0,
+            Y = 0,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Insert(1, new Vector3()
+        {
+            X = list[1].XPosInMm,
+            Y = list[1].YPosInMm,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Add(new Vector3()
+        {
+            X = list[^1].XPosInMm,
+            Y = list[^1].YPosInMm,
+            Z = 2 * ZBlockSize * CmToMm,
+        });
+        list.Add(list[0]);
+    }
+    
     private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list, bool optimize = true)
     {
         CuttingLines cuttingLines = new CuttingLines()

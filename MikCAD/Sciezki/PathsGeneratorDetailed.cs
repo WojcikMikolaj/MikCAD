@@ -918,19 +918,19 @@ public partial class PathsGenerator
         {
             X = 0,
             Y = 0,
-            Z = 2 * ZBlockSize * CmToMm,
+            Z = 1.1f * ZBlockSize * CmToMm,
         });
         list.Insert(1, new Vector3()
         {
             X = list[1].X,
             Y = list[1].Y,
-            Z = 2 * ZBlockSize * CmToMm,
+            Z =  1.1f *ZBlockSize * CmToMm,
         });
         list.Add(new Vector3()
         {
             X = list[^1].X,
             Y = list[^1].Y,
-            Z = 2 * ZBlockSize * CmToMm,
+            Z = 1.1f *ZBlockSize * CmToMm,
         });
         list.Add(list[0]);
     }

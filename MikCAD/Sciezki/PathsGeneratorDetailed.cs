@@ -614,7 +614,7 @@ public partial class PathsGenerator
                 {
                     X = p.pos.X,
                     Y = -p.pos.Z,
-                    Z = p.pos.Y + 0.018f
+                    Z = p.pos.Y
                 };
                 point *= CmToMm;
                 if (point.Z > SupportSize * CmToMm)
@@ -717,6 +717,7 @@ public partial class PathsGenerator
 
             finalDPoints.Clear();
             u = 0;
+            var it = 0;
             for (int i = 0; i < samplesPerParam; i++)
             {
                 if (i <= samplesPerParam / 2)
@@ -726,8 +727,15 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < 52; j++)
                     {
-                        if (v >= startv + 0.05f)
+                        if (v >= startv)
                         {
+                            if (it < 2)
+                            {
+                                if (v < startv + 0.03f)
+                                {
+                                    goto skip;
+                                }
+                            }
                             var point = new Vector3();
 
                             point = detailedD.GetValueAt(u, v);
@@ -745,9 +753,11 @@ public partial class PathsGenerator
                                 }
                             }
                         }
-
+skip: ;
                         v += dV;
                     }
+
+                    it++;
 
 
                     if (i % 2 == 1)

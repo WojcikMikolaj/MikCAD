@@ -971,7 +971,7 @@ public partial class PathsGenerator
         }
 
         var raczka = ConnectPaths(raczkaWewnatrz, raczkaZewnatrz, 0.7f * ZBlockSize * CmToMm);
-        var sloikPrawo = ConnectPaths(sloikPrawoPomiedzy, sloikPrawoGora, 0.7f * ZBlockSize * CmToMm);
+        var sloikPrawo = ConnectPaths(sloikPrawoPomiedzy, sloikPrawoGora);
         var sloikSrodekPrawo = ConnectPaths(sloikSrodek, sloikPrawo);
         var sloik = ConnectPaths(sloikLewo, sloikSrodekPrawo);
 
@@ -995,6 +995,17 @@ public partial class PathsGenerator
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
         AddMoveFromAndToCenter(koncowe);
 
+        for (int i = 0; i < koncowe.Count; i++)
+        {
+            if (koncowe[i].Z < SupportSize * CmToMm + 0.02f)
+            {
+                koncowe[i] = koncowe[i] with
+                {
+                    Z = SupportSize * CmToMm + 0.02f
+                };
+            }
+        }
+        
         SavePath(frez, radius, koncowe, false);
     }
 

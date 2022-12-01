@@ -134,6 +134,8 @@ public partial class PathsGenerator
         var przeciecieRaczka = new List<Vector3>();
         var przeciecieDziubek = new List<Vector3>();
 
+        var dziura = new List<Vector3>();
+
         #region raczka
 
 #if RACZKA
@@ -632,6 +634,9 @@ public partial class PathsGenerator
             //mainPartFinalPoints.AddRange(interUpPointsHelp);
 
             interUpPointsHelp.AddRange(interDownPoints);
+
+            przeciecieRaczka.AddRange(interUpPointsHelp);
+
             AddMoveFromAndToCenter(interUpPointsHelp);
             mainPartFinalPoints.AddRange(interUpPointsHelp);
 
@@ -673,6 +678,9 @@ public partial class PathsGenerator
             }
 
             interLeftPointsHelp.AddRange(interLeftPoints);
+
+            przeciecieDziubek.AddRange(interLeftPointsHelp);
+
             AddMoveFromAndToCenter(interLeftPointsHelp);
             mainPartFinalPoints.AddRange(interLeftPointsHelp);
 
@@ -857,6 +865,7 @@ public partial class PathsGenerator
 
                 u += dU;
             }
+
             dziubekLewoGora.AddRange(finalDPoints);
 
             AddMoveFromAndToCenter(finalDPoints);
@@ -943,6 +952,8 @@ public partial class PathsGenerator
             new Vector3(-1.38f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
             new Vector3(-0.47f * CmToMm, -4.8f * CmToMm, SupportSize * CmToMm + 0.02f),
         };
+        dziura.AddRange(kolko);
+
         AddMoveFromAndToCenter(kolko);
         finalPoints.AddRange(kolko);
 
@@ -961,19 +972,30 @@ public partial class PathsGenerator
 
         var raczka = ConnectPaths(raczkaWewnatrz, raczkaZewnatrz, 0.7f * ZBlockSize * CmToMm);
         var sloikPrawo = ConnectPaths(sloikPrawoPomiedzy, sloikPrawoGora, 0.7f * ZBlockSize * CmToMm);
+        var sloikSrodekPrawo = ConnectPaths(sloikSrodek, sloikPrawo);
+        var sloik = ConnectPaths(sloikLewo, sloikSrodekPrawo);
 
-        AddMoveFromAndToCenter(raczka);
+
         AddMoveFromAndToCenter(sloikSrodek);
-
         AddMoveFromAndToCenter(sloikPrawoGora);
         AddMoveFromAndToCenter(sloikPrawoPomiedzy);
         AddMoveFromAndToCenter(sloikLewo);
+
 
         var dziubekPrawo = ConnectPaths(dziubekPrawoGora, dziubekPrawoDol, 0.8f * ZBlockSize * CmToMm);
         var dziubekLewo = ConnectPaths(dziubekLewoGora, dziubekLewoDol, 0.75f * ZBlockSize * CmToMm);
         dziubekLewo.Reverse();
         var dziubek = ConnectPaths(dziubekLewo, dziubekPrawo, 0.8f * ZBlockSize * CmToMm);
-        SavePath(frez, radius, dziubek, false);
+
+        raczka = ConnectPaths(raczka, przeciecieRaczka, 0.75f * ZBlockSize * CmToMm);
+        raczka = ConnectPaths(raczka, dziura, 0.75f * ZBlockSize * CmToMm);
+
+        dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
+
+        var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
+        AddMoveFromAndToCenter(koncowe);
+
+        SavePath(frez, radius, koncowe, false);
     }
 
     private void AddMoveFromAndToCenter(List<Vector3> list)

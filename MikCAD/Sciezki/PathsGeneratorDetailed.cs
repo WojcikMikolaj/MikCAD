@@ -12,6 +12,7 @@ using System.Numerics;
 using MikCAD.BezierSurfaces;
 using MikCAD.Extensions;
 using MikCAD.Objects;
+using OpenTK.Audio.OpenAL.Extensions.Creative.EFX;
 using Vector3 = OpenTK.Mathematics.Vector3;
 
 namespace MikCAD.Sciezki;
@@ -116,6 +117,23 @@ public partial class PathsGenerator
 
         var finalPoints = new List<Vector3>();
 
+        var raczkaZewnatrz = new List<Vector3>();
+        var raczkaWewnatrz = new List<Vector3>();
+
+        var sloikSrodek = new List<Vector3>();
+        var sloikPrawoGora = new List<Vector3>();
+        var sloikPrawoPomiedzy = new List<Vector3>();
+        var sloikLewo = new List<Vector3>();
+
+        var dziubekLewoGora = new List<Vector3>();
+        var dziubekLewoDol = new List<Vector3>();
+
+        var dziubekPrawoGora = new List<Vector3>();
+        var dziubekPrawoDol = new List<Vector3>();
+
+        var przeciecieRaczka = new List<Vector3>();
+        var przeciecieDziubek = new List<Vector3>();
+
         #region raczka
 
 #if RACZKA
@@ -188,6 +206,9 @@ public partial class PathsGenerator
             finalRPoints.RemoveAt(finalRPoints.Count - 1);
             finalRPoints.RemoveAt(finalRPoints.Count - 1);
             finalRPoints.RemoveAt(finalRPoints.Count - 1);
+
+            raczkaWewnatrz.AddRange(finalRPoints);
+
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
 
@@ -247,6 +268,8 @@ public partial class PathsGenerator
             // finalRPoints.RemoveAt(0);
             // finalRPoints.RemoveAt(0);
             // finalRPoints.RemoveAt(0);
+
+            raczkaZewnatrz.AddRange(finalRPoints);
 
             AddMoveFromAndToCenter(finalRPoints);
             finalPoints.AddRange(finalRPoints);
@@ -340,6 +363,8 @@ public partial class PathsGenerator
                 }
             }
 
+            sloikSrodek.AddRange(mainPartFinalPoints);
+
             AddMoveFromAndToCenter(mainPartFinalPoints);
 
             var middleRightPart = new List<Vector3>();
@@ -402,6 +427,8 @@ public partial class PathsGenerator
                 }
             }
 
+            sloikPrawoPomiedzy.AddRange(middleRightPart);
+
             AddMoveFromAndToCenter(middleRightPart);
             mainPartFinalPoints.AddRange(middleRightPart);
 
@@ -461,6 +488,8 @@ public partial class PathsGenerator
                 }
             }
 
+            sloikPrawoGora.AddRange(upRightPart);
+
             AddMoveFromAndToCenter(upRightPart);
             mainPartFinalPoints.AddRange(upRightPart);
 
@@ -518,6 +547,8 @@ public partial class PathsGenerator
                     break;
                 }
             }
+
+            sloikLewo.AddRange(leftPart);
 
             AddMoveFromAndToCenter(leftPart);
             mainPartFinalPoints.AddRange(leftPart);
@@ -712,6 +743,8 @@ public partial class PathsGenerator
                 u += dU;
             }
 
+            dziubekPrawoGora.AddRange(finalDPoints);
+
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
 
@@ -736,6 +769,7 @@ public partial class PathsGenerator
                                     goto skip;
                                 }
                             }
+
                             var point = new Vector3();
 
                             point = detailedD.GetValueAt(u, v);
@@ -753,7 +787,8 @@ public partial class PathsGenerator
                                 }
                             }
                         }
-skip: ;
+
+                        skip: ;
                         v += dV;
                     }
 
@@ -771,6 +806,8 @@ skip: ;
 
                 u += dU;
             }
+
+            dziubekPrawoDol.AddRange(finalDPoints);
 
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
@@ -820,6 +857,7 @@ skip: ;
 
                 u += dU;
             }
+            dziubekLewoGora.AddRange(finalDPoints);
 
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
@@ -870,6 +908,8 @@ skip: ;
                 u += dU;
             }
 
+            dziubekLewoDol.AddRange(finalDPoints);
+
             AddMoveFromAndToCenter(finalDPoints);
             finalPoints.AddRange(finalDPoints);
         }
@@ -919,7 +959,21 @@ skip: ;
             }
         }
 
-        SavePath(frez, radius, finalPoints, false);
+        var raczka = ConnectPaths(raczkaWewnatrz, raczkaZewnatrz, 0.7f * ZBlockSize * CmToMm);
+        var sloikPrawo = ConnectPaths(sloikPrawoPomiedzy, sloikPrawoGora, 0.7f * ZBlockSize * CmToMm);
+
+        AddMoveFromAndToCenter(raczka);
+        AddMoveFromAndToCenter(sloikSrodek);
+
+        AddMoveFromAndToCenter(sloikPrawoGora);
+        AddMoveFromAndToCenter(sloikPrawoPomiedzy);
+        AddMoveFromAndToCenter(sloikLewo);
+
+        var dziubekPrawo = ConnectPaths(dziubekPrawoGora, dziubekPrawoDol, 0.8f * ZBlockSize * CmToMm);
+        var dziubekLewo = ConnectPaths(dziubekLewoGora, dziubekLewoDol, 0.75f * ZBlockSize * CmToMm);
+        dziubekLewo.Reverse();
+        var dziubek = ConnectPaths(dziubekLewo, dziubekPrawo, 0.8f * ZBlockSize * CmToMm);
+        SavePath(frez, radius, dziubek, false);
     }
 
     private void AddMoveFromAndToCenter(List<Vector3> list)
@@ -934,14 +988,28 @@ skip: ;
         {
             X = list[1].X,
             Y = list[1].Y,
-            Z =  1.1f *ZBlockSize * CmToMm,
+            Z = 1.1f * ZBlockSize * CmToMm,
         });
         list.Add(new Vector3()
         {
             X = list[^1].X,
             Y = list[^1].Y,
-            Z = 1.1f *ZBlockSize * CmToMm,
+            Z = 1.1f * ZBlockSize * CmToMm,
         });
         list.Add(list[0]);
+    }
+
+    private List<Vector3> ConnectPaths(List<Vector3> first, List<Vector3> second, float z = -1)
+    {
+        if (z < 0)
+        {
+            z = 1.1f * ZBlockSize * CmToMm;
+        }
+
+        List<Vector3> finalList = new List<Vector3>(first);
+        finalList.Add(first[^1] with {Z = z});
+        finalList.Add(second[0] with {Z = z});
+        finalList.AddRange(second);
+        return finalList;
     }
 }

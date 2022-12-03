@@ -187,4 +187,74 @@ public class CuttingLines
             // ignored
         }
     }
+    
+    public void SaveFileText(CutterType frez, bool optimize = true)
+    {
+        var fileExtensionBuilder = new StringBuilder();
+        var diameter = 1;
+        fileExtensionBuilder.Append(".");
+        if (frez == CutterType.Flat)
+        {
+            fileExtensionBuilder.Append("f");
+        }
+        else
+        {
+            fileExtensionBuilder.Append("k");
+        }
+
+        if (diameter < 10)
+        {
+            fileExtensionBuilder.Append("0");
+        }
+
+        fileExtensionBuilder.Append(diameter);
+
+        var firstInstructionNumber = 3;
+        List<string> lines = new List<string>();
+
+        var punktyWynikowe = PathOptimizer.OptimizePaths(points.ToList(), 0.001f, optimize);
+
+        StringBuilder instruction = new StringBuilder();
+        foreach (var point in punktyWynikowe)
+        {
+            instruction.Clear();
+
+            instruction.Append($"N{firstInstructionNumber++}G01");
+            if (point.WriteX)
+            {
+                instruction.Append(
+                    $"X{point.XPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (point.WriteY)
+            {
+                instruction.Append(
+                    $"Y{point.YPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (point.WriteZ)
+            {
+                instruction.Append(
+                    $"Z{point.ZPosInMm.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            lines.Add(instruction.ToString());
+        }
+
+        SaveFileDialog diag = new SaveFileDialog()
+        {
+            Filter = $@"{fileExtensionBuilder}|*{fileExtensionBuilder}"
+        };
+        try
+        {
+            if (diag.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllLines($"{diag.FileName}", lines);
+            }
+        }
+        catch (Exception _)
+        {
+            // ignored
+        }
+    }
 }

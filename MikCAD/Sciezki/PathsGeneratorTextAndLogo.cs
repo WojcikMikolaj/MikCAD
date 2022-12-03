@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Speech.Synthesis.TtsEngine;
+using System.Text.RegularExpressions;
 using MikCAD.BezierSurfaces;
 using MikCAD.CustomControls;
 using MikCAD.Extensions;
@@ -17,12 +19,115 @@ namespace MikCAD.Sciezki;
 public partial class PathsGenerator
 {
     public float TextStartXInMm { get; set; } = -70;
-    public float TextStartYInMm { get; set; } = 70;
+    public float TextStartYInMm { get; set; } = 40;
     public float TextHeightInMm { get; set; } = 10;
 
     public float zText => SupportSize * CmToMm - 0.05f;
 
     public void GenerateTextAndLogo(CutterType frez, uint radiusInMm)
+    {
+        var logo = GenerateLogo();
+        var tekst = GenerateText();
+
+        var final = ConnectPaths(logo, tekst);
+        
+        SavePath(frez, 1, final, false, true);
+    }
+
+    private List<Vector3> GenerateLogo()
+    {
+        var logoLines = File.ReadAllLines("./Sciezki/logo.k01");
+        var logoPointsRead = ParseLogo(logoLines);
+        //N779G01X54.856Y-35.715Z19.500
+        var center = new Vector3()
+        {
+            X = 54.856f,
+            Y = -35.715f,
+            Z = 19.500f
+        };
+
+        var rotMatrix = Matrix3.CreateFromAxisAngle(new(0, 0, 1), MathHelper.DegreesToRadians(90));
+        var centerLogoToFinalLogoPos = new Vector3(-60, 60, 0) - center with{ Z=0};
+        
+        for (int i = 0; i < logoPointsRead.Count; i++)
+        {
+            var point = logoPointsRead[i];
+            point -= center;
+            point = rotMatrix * point;
+            point += center;
+            point += centerLogoToFinalLogoPos;
+            if (point.Z < 20f)
+            {
+                point.Z = zText;
+            }
+            else
+            {
+                point.Z = zText + 1;
+            }
+
+            logoPointsRead[i] = point;
+        }
+        
+        logoPointsRead.RemoveAt(logoPointsRead.Count-1);
+        logoPointsRead.RemoveAt(logoPointsRead.Count-1);
+        logoPointsRead.RemoveAt(logoPointsRead.Count-1);
+        return logoPointsRead;
+    }
+
+    private Regex _moveLineRegex = new Regex(@"(N\d+)G01(X-?\d+.\d{3})?(Y-?\d+.\d{3})?(Z-?\d+.\d{3})?");
+
+    public List<Vector3> ParseLogo(string[] lines)
+    {
+        List<Vector3> points = new List<Vector3>(capacity: lines.Length);
+        float XLastPosInMm = 0;
+        float YLastPosInMm = 0;
+        float ZLastPosInMm = 0;
+
+        foreach (var line in lines)
+        {
+            var matchCollection = _moveLineRegex.Matches(line, 0);
+            if (matchCollection.Count == 1 && matchCollection[0].Length == line.Length)
+            {
+                foreach (var group in matchCollection[0].Groups)
+                {
+                    var groupStr = group.ToString();
+                    float posValue;
+
+                    if (groupStr.Length < 1 || !float.TryParse(groupStr.Substring(1), NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out posValue))
+                    {
+                        continue;
+                    }
+
+                    switch (groupStr[0])
+                    {
+                        case 'N':
+                            break;
+                        case 'X':
+                            XLastPosInMm = posValue;
+                            break;
+                        case 'Y':
+                            YLastPosInMm = posValue;
+                            break;
+                        case 'Z':
+                            ZLastPosInMm = posValue;
+                            break;
+                    }
+                }
+
+                points.Add(new Vector3()
+                {
+                    X = XLastPosInMm,
+                    Y = YLastPosInMm,
+                    Z = ZLastPosInMm
+                });
+            }
+        }
+
+        return points;
+    }
+    
+    private List<Vector3> GenerateText()
     {
         List<Vector3> tekst = new List<Vector3>();
         List<Vector3> M = new List<Vector3>();
@@ -63,40 +168,40 @@ public partial class PathsGenerator
         //Ł
         L_ = GenerateL_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
-        
+
         //A
         A = GenerateA(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
-        
+
         //J
         J1 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
 
         //Spacja
         currYPos -= 3 * moveBetweenLetters;
-        
+
         //W
         W = GenerateW(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
-        
+
         //Ó
         O_ = GenerateO_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenPartsOfLetter;
         currYPos -= moveBetweenLetters;
-        
+
         //J
         J2 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
-        
+
         //C
         C = GenerateC(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenPartsOfLetter;
         currYPos -= moveBetweenLetters;
-        
+
         //I
         I2 = GenerateI(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
-        
+
         //K
         K2 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
@@ -115,7 +220,7 @@ public partial class PathsGenerator
         tekst = ConnectPaths(tekst, I2);
         tekst = ConnectPaths(tekst, K2);
         AddMoveFromAndToCenter(tekst);
-        SavePath(frez, 1, tekst, false, true);
+        return tekst;
     }
 
     List<Vector3> GenerateM(float startX, ref float currYPos, float moveBetweenPartsOfLetter)
@@ -233,14 +338,14 @@ public partial class PathsGenerator
         O.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
-                X = startX + 4*TextHeightInMm/5,
+                X = startX + 4 * TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
@@ -248,27 +353,27 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
-                X = startX + 4*TextHeightInMm/5,
+                X = startX + 4 * TextHeightInMm / 5,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
@@ -276,20 +381,20 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
@@ -371,22 +476,22 @@ public partial class PathsGenerator
         A.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/2,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                X = startX + TextHeightInMm / 2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         A.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/2,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/2,
+                X = startX + TextHeightInMm / 2,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         A.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/2,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                X = startX + TextHeightInMm / 2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         A.Add(
@@ -405,7 +510,7 @@ public partial class PathsGenerator
             });
         return A;
     }
-    
+
     List<Vector3> GenerateJ(float startX, ref float currYPos, float moveBetweenPartsOfLetter)
     {
         List<Vector3> J = new List<Vector3>();
@@ -426,29 +531,29 @@ public partial class PathsGenerator
         J.Add(
             new Vector3()
             {
-                X = startX - TextHeightInMm /7,
+                X = startX - TextHeightInMm / 7,
                 Y = currYPos,
                 Z = zText
             });
         J.Add(
             new Vector3()
             {
-                X = startX - 2*TextHeightInMm /7,
-                Y = currYPos = currYPos + moveBetweenPartsOfLetter/4,
+                X = startX - 2 * TextHeightInMm / 7,
+                Y = currYPos = currYPos + moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         J.Add(
             new Vector3()
             {
-                X = startX - 2*TextHeightInMm /7,
-                Y = currYPos = currYPos + 2 * moveBetweenPartsOfLetter/4,
+                X = startX - 2 * TextHeightInMm / 7,
+                Y = currYPos = currYPos + 2 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         J.Add(
             new Vector3()
             {
-                X = startX - TextHeightInMm /7,
-                Y = currYPos = currYPos + moveBetweenPartsOfLetter/4,
+                X = startX - TextHeightInMm / 7,
+                Y = currYPos = currYPos + moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         J.Add(
@@ -461,21 +566,21 @@ public partial class PathsGenerator
         J.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm /7,
-                Y = currYPos = currYPos - moveBetweenPartsOfLetter/4,
+                X = startX + TextHeightInMm / 7,
+                Y = currYPos = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         J.Add(
             new Vector3()
             {
-                X = startX + 2 * TextHeightInMm /7,
+                X = startX + 2 * TextHeightInMm / 7,
                 Y = currYPos = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
         currYPos = currYPos + moveBetweenPartsOfLetter / 4;
         return J;
     }
-    
+
     List<Vector3> GenerateW(float startX, ref float currYPos, float moveBetweenPartsOfLetter)
     {
         List<Vector3> W = new List<Vector3>();
@@ -490,7 +595,7 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         W.Add(
@@ -504,7 +609,7 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         W.Add(
@@ -517,21 +622,21 @@ public partial class PathsGenerator
 
         return W;
     }
-    
+
     List<Vector3> GenerateO_(float startX, ref float currYPos, float moveBetweenPartsOfLetter)
     {
         List<Vector3> O_ = new List<Vector3>();
         O_.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + 4*TextHeightInMm/5,
+                X = startX + 4 * TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
@@ -539,59 +644,59 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
-        
-        
+
+
         O_.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm + TextHeightInMm/5,
-                Y = currYPos - moveBetweenPartsOfLetter/2 -moveBetweenPartsOfLetter/4,
+                X = startX + TextHeightInMm + TextHeightInMm / 5,
+                Y = currYPos - moveBetweenPartsOfLetter / 2 - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm - TextHeightInMm/5,
-                Y = currYPos - moveBetweenPartsOfLetter/2 + moveBetweenPartsOfLetter/4,
+                X = startX + TextHeightInMm - TextHeightInMm / 5,
+                Y = currYPos - moveBetweenPartsOfLetter / 2 + moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - moveBetweenPartsOfLetter/2,
+                Y = currYPos - moveBetweenPartsOfLetter / 2,
                 Z = zText
             });
-        
-        
+
+
         O_.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + 4*TextHeightInMm/5,
+                X = startX + 4 * TextHeightInMm / 5,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
@@ -599,41 +704,41 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         O_.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
-        
+
         return O_;
     }
-    
+
     List<Vector3> GenerateC(float startX, ref float currYPos, float moveBetweenPartsOfLetter)
     {
         List<Vector3> C = new List<Vector3>();
         C.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
         C.Add(
             new Vector3()
             {
-                X = startX + 4*TextHeightInMm/5,
+                X = startX + 4 * TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
@@ -641,45 +746,45 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         C.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         C.Add(
             new Vector3()
             {
-                X = startX + 5*TextHeightInMm/6,
+                X = startX + 5 * TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
-        
-        
+
+
         C.Add(
             new Vector3()
             {
-                X = startX + 5*TextHeightInMm/6,
+                X = startX + 5 * TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText + 0.5f
             });
         C.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/6,
+                X = startX + TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
-                Z = zText+0.5f
+                Z = zText + 0.5f
             });
-        
-        
+
+
         C.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/6,
+                X = startX + TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
                 Z = zText
             });
@@ -687,24 +792,24 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - 3*moveBetweenPartsOfLetter/4,
+                Y = currYPos - 3 * moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         C.Add(
             new Vector3()
             {
                 X = startX,
-                Y = currYPos - moveBetweenPartsOfLetter/4,
+                Y = currYPos - moveBetweenPartsOfLetter / 4,
                 Z = zText
             });
         C.Add(
             new Vector3()
             {
-                X = startX + TextHeightInMm/5,
+                X = startX + TextHeightInMm / 5,
                 Y = currYPos,
                 Z = zText
             });
-        
+
         return C;
     }
 }

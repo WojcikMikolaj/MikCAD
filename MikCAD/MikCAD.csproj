@@ -146,6 +146,10 @@
     <Content Include="Icons\ptok2.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Remove="Sciezki\logo.k01" />
+    <Content Include="Sciezki\logo.k01">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dirkster.NumericUpDownLib" Version="3.2.0" />

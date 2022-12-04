@@ -19,7 +19,7 @@ namespace MikCAD.Sciezki;
 public partial class PathsGenerator
 {
     public float TextStartXInMm { get; set; } = -70;
-    public float TextStartYInMm { get; set; } = 40;
+    public float TextStartYInMm { get; set; } = 30;
     public float TextHeightInMm { get; set; } = 10;
 
     public float zText => SupportSize * CmToMm - 0.05f;
@@ -47,7 +47,7 @@ public partial class PathsGenerator
         };
 
         var rotMatrix = Matrix3.CreateFromAxisAngle(new(0, 0, 1), MathHelper.DegreesToRadians(90));
-        var centerLogoToFinalLogoPos = new Vector3(-60, 60, 0) - center with{ Z=0};
+        var centerLogoToFinalLogoPos = new Vector3(-50, 50, 0) - center with{ Z=0};
         
         for (int i = 0; i < logoPointsRead.Count; i++)
         {

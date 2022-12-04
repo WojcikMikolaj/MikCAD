@@ -657,12 +657,12 @@ public partial class PathsGenerator
                 {
                     if (!useHelp)
                     {
-                        interLeftPoints.Add(point);
+                        interLeftPoints.Add(point with{ Z = point.Z + .12f});
                     }
                     else
                     {
                         exitOnBrake = true;
-                        interLeftPointsHelp.Add(point);
+                        interLeftPointsHelp.Add(point with{ Z = point.Z + .12f});
                     }
                 }
                 else

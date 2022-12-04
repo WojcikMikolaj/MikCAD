@@ -264,8 +264,8 @@ public partial class PathsGenerator
 
         finalList.Add(new CuttingLinePoint()
         {
-            XPosInMm = -XBlockSize / 2 * CmToMm - 1.1f * radius,
-            YPosInMm = -YBlockSize / 2 * CmToMm,
+            XPosInMm = -XBlockSize / 2 * CmToMm - 1.5f * radius,
+            YPosInMm = -YBlockSize / 2 * CmToMm - 1.5f * radius,
             ZPosInMm = 2 * ZBlockSize * CmToMm,
         });
 
@@ -426,6 +426,8 @@ public partial class PathsGenerator
                     });
             }
         }
+
+        finalList[0] = finalList[0] with {XPosInMm = -XBlockSize / 2 * CmToMm - 1.5f * radius};
         AddMoveFromAndToCenter(finalList);
         SavePath(frez, radius, finalList, false);
     }

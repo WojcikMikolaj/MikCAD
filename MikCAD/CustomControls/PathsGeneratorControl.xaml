@@ -83,8 +83,8 @@
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0">Flat eps</Label>
                     <n:FloatUpDown Grid.Row="0" Grid.Column="1"
@@ -131,6 +131,48 @@
                 <RadioButton IsEnabled="False" x:Name="radioDF12">F12</RadioButton>
                 <RadioButton IsEnabled="False" x:Name="radioDF10">F10</RadioButton>
                 <Button Click="GenerateDetailed">Generuj</Button>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Napis">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0">X [mm] (lewy dolny)</Label>
+                    <Label Grid.Row="1" Grid.Column="0">Y [mm] (lewy dolny)</Label>
+                    <Label Grid.Row="2" Grid.Column="0">Wysokość liter [mm]</Label>
+
+                    <n:FloatUpDown Grid.Row="0" Grid.Column="1"
+                                   Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.TextStartXInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   DisplayLength="13" IsReadOnly="False"
+                                   IsUpdateValueWhenLostFocus="True"
+                                   StepSize="1" LargeStepSize="1"
+                                   FormatString="0.###" />
+                    <n:FloatUpDown Grid.Row="1" Grid.Column="1"
+                                   Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.TextStartYInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   DisplayLength="13" IsReadOnly="False"
+                                   IsUpdateValueWhenLostFocus="True"
+                                   StepSize="1" LargeStepSize="1"
+                                   FormatString="0.###" />
+                    <n:FloatUpDown Grid.Row="2" Grid.Column="1"
+                                   Value="{Binding RelativeSource={RelativeSource AncestorType=StackPanel},
+                             Path=DataContext.TextHeightInMm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                   DisplayLength="13" IsReadOnly="False"
+                                   IsUpdateValueWhenLostFocus="True"
+                                   StepSize="1" LargeStepSize="1"
+                                   FormatString="0.###" />
+                </Grid>
+                <Button Click="GenerateTextAndLogo">Generuj</Button>
             </StackPanel>
         </GroupBox>
 

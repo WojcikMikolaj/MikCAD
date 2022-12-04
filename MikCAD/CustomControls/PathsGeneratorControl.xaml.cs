@@ -177,4 +177,13 @@ public partial class PathsGeneratorControl : UserControl
         
         PathsGenerator.Generator.GenerateDetailed(frez, diameter/2);
     }
+
+    private void GenerateTextAndLogo(object sender, RoutedEventArgs e)
+    {
+        PathsGenerator.Generator.PathsGeneratorControl ??= this;
+        
+        CutterType frez = CutterType.Spherical;
+        uint diameter = 1;
+        PathsGenerator.Generator.GenerateTextAndLogo(frez, diameter/2);
+    }
 }

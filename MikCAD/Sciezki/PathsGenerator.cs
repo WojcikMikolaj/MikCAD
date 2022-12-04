@@ -455,16 +455,23 @@ public partial class PathsGenerator
         list.Add(list[0]);
     }
     
-    private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list, bool optimize = true)
+    private static void SavePath(CutterType frez, uint radius, List<CuttingLinePoint> list, bool optimize = true, bool tekst = false)
     {
         CuttingLines cuttingLines = new CuttingLines()
         {
             points = list.ToArray()
         };
-        cuttingLines.SaveFile(frez, radius, optimize);
+        if (!tekst)
+        {
+            cuttingLines.SaveFile(frez, radius, optimize);
+        }
+        else
+        {
+            cuttingLines.SaveFileText(frez, optimize);
+        }
     }
 
-    private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints, bool optimize = true)
+    private void SavePath(CutterType frez, uint radius, List<Vector3> finalPoints, bool optimize = true, bool tekst = false)
     {
         var list = new List<CuttingLinePoint>();
         foreach (var point in finalPoints)
@@ -472,7 +479,7 @@ public partial class PathsGenerator
             list.Add(point);
         }
 
-        SavePath(frez, radius, list, optimize);
+        SavePath(frez, radius, list, optimize, tekst);
     }
 
     private float[,] CalculateCutterArray(CutterType frez, uint radiusInMm)

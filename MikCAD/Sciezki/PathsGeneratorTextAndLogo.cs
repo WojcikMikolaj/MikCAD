@@ -19,7 +19,7 @@ namespace MikCAD.Sciezki;
 public partial class PathsGenerator
 {
     public float TextStartXInMm { get; set; } = -70;
-    public float TextStartYInMm { get; set; } = 30;
+    public float TextStartYInMm { get; set; } = 35;
     public float TextHeightInMm { get; set; } = 10;
 
     public float zText => SupportSize * CmToMm - 0.05f;
@@ -29,7 +29,8 @@ public partial class PathsGenerator
         var logo = GenerateLogo();
         var tekst = GenerateText();
 
-        var final = ConnectPaths(logo, tekst);
+        var final = ConnectPaths(logo, tekst, zText + 2f);
+        AddMoveFromAndToCenter(final);
         
         SavePath(frez, 1, final, false, true);
     }
@@ -47,7 +48,7 @@ public partial class PathsGenerator
         };
 
         var rotMatrix = Matrix3.CreateFromAxisAngle(new(0, 0, 1), MathHelper.DegreesToRadians(90));
-        var centerLogoToFinalLogoPos = new Vector3(-50, 50, 0) - center with{ Z=0};
+        var centerLogoToFinalLogoPos = new Vector3(-55, 55, 0) - center with{ Z=0};
         
         for (int i = 0; i < logoPointsRead.Count; i++)
         {
@@ -157,16 +158,16 @@ public partial class PathsGenerator
         currYPos -= moveBetweenLetters;
 
         //K
-        K1 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
+        K1 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
         currYPos -= moveBetweenLetters;
 
         //0
-        O = GenerateO(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
-        currYPos -= moveBetweenPartsOfLetter;
+        O = GenerateO(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
+        currYPos -= moveBetweenPartsOfLetter*1.5f;
         currYPos -= moveBetweenLetters;
 
         //Ł
-        L_ = GenerateL_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
+        L_ = GenerateL_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.4f);
         currYPos -= moveBetweenLetters;
 
         //A
@@ -174,28 +175,28 @@ public partial class PathsGenerator
         currYPos -= moveBetweenLetters;
 
         //J
-        J1 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
+        J1 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.4f);
         currYPos -= moveBetweenLetters;
 
         //Spacja
-        currYPos -= 3 * moveBetweenLetters;
+        currYPos -= 2 * moveBetweenLetters;
 
         //W
         W = GenerateW(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
         currYPos -= moveBetweenLetters;
 
         //Ó
-        O_ = GenerateO_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
-        currYPos -= moveBetweenPartsOfLetter;
+        O_ = GenerateO_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
+        currYPos -= moveBetweenPartsOfLetter*1.5f;
         currYPos -= moveBetweenLetters;
 
         //J
-        J2 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
+        J2 = GenerateJ(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.4f);
         currYPos -= moveBetweenLetters;
 
         //C
-        C = GenerateC(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
-        currYPos -= moveBetweenPartsOfLetter;
+        C = GenerateC(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
+        currYPos -= moveBetweenPartsOfLetter*1.5f;
         currYPos -= moveBetweenLetters;
 
         //I
@@ -203,23 +204,22 @@ public partial class PathsGenerator
         currYPos -= moveBetweenLetters;
 
         //K
-        K2 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter);
+        K2 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
         currYPos -= moveBetweenLetters;
 
         tekst.AddRange(M);
-        tekst = ConnectPaths(tekst, I1);
-        tekst = ConnectPaths(tekst, K1);
-        tekst = ConnectPaths(tekst, O);
-        tekst = ConnectPaths(tekst, L_);
-        tekst = ConnectPaths(tekst, A);
-        tekst = ConnectPaths(tekst, J1);
-        tekst = ConnectPaths(tekst, W);
-        tekst = ConnectPaths(tekst, O_);
-        tekst = ConnectPaths(tekst, J2);
-        tekst = ConnectPaths(tekst, C);
-        tekst = ConnectPaths(tekst, I2);
-        tekst = ConnectPaths(tekst, K2);
-        AddMoveFromAndToCenter(tekst);
+        tekst = ConnectPaths(tekst, I1,zText + 2f);
+        tekst = ConnectPaths(tekst, K1,zText + 2f);
+        tekst = ConnectPaths(tekst, O,zText + 2f);
+        tekst = ConnectPaths(tekst, L_,zText + 2f);
+        tekst = ConnectPaths(tekst, A,zText + 2f);
+        tekst = ConnectPaths(tekst, J1,zText + 2f);
+        tekst = ConnectPaths(tekst, W,zText + 2f);
+        tekst = ConnectPaths(tekst, O_,zText + 2f);
+        tekst = ConnectPaths(tekst, J2,zText + 2f);
+        tekst = ConnectPaths(tekst, C,zText + 2f);
+        tekst = ConnectPaths(tekst, I2,zText + 2f);
+        tekst = ConnectPaths(tekst, K2,zText + 2f);
         return tekst;
     }
 
@@ -770,14 +770,14 @@ public partial class PathsGenerator
             {
                 X = startX + 5 * TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
-                Z = zText + 0.5f
+                Z = zText + 2f
             });
         C.Add(
             new Vector3()
             {
                 X = startX + TextHeightInMm / 6,
                 Y = currYPos - moveBetweenPartsOfLetter,
-                Z = zText + 0.5f
+                Z = zText + 2f
             });
 
 

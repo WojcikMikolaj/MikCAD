@@ -135,6 +135,8 @@ public partial class PathsGenerator
         var przeciecieDziubek = new List<Vector3>();
 
         var dziura = new List<Vector3>();
+        
+        var C0 = new List<Vector3>();
 
         #region raczka
 
@@ -657,12 +659,12 @@ public partial class PathsGenerator
                 {
                     if (!useHelp)
                     {
-                        interLeftPoints.Add(point with{ Z = point.Z + .12f});
+                        interLeftPoints.Add(point with {Z = point.Z + .12f});
                     }
                     else
                     {
                         exitOnBrake = true;
-                        interLeftPointsHelp.Add(point with{ Z = point.Z + .12f});
+                        interLeftPointsHelp.Add(point with {Z = point.Z + .12f});
                     }
                 }
                 else
@@ -959,6 +961,42 @@ public partial class PathsGenerator
 
         #endregion
 
+        #region C0
+
+        {
+            var u = detailedD.USize;
+            var v = detailedD.VSize;
+            for (int i = 50; i < 100; i++)
+            {
+                var pos = detailedD.GetValueAt(u * i / 100f, v / 2);
+                (pos.Y, pos.Z) = (-pos.Z, pos.Y /*-radius/CmToMm*/);
+                pos *= CmToMm;
+                if (pos.Z >= SupportSize * CmToMm - 0.1)
+                {
+                    C0.Add(pos);
+                }
+                else
+                {
+                }
+            }
+            for (int i = 0; i < 50; i++)
+            {
+                var pos = detailedD.GetValueAt(u * i / 100f, v / 2);
+                (pos.Y, pos.Z) = (-pos.Z, pos.Y /*-radius/CmToMm*/);
+                pos *= CmToMm;
+                if (pos.Z >= SupportSize * CmToMm - 0.1)
+                {
+                    C0.Add(pos);
+                }
+                else
+                {
+                }
+            }
+        }
+
+        #endregion
+
+
         for (int i = 0; i < finalPoints.Count; i++)
         {
             if (finalPoints[i].Z < SupportSize * CmToMm + 0.02f)
@@ -990,6 +1028,7 @@ public partial class PathsGenerator
         raczka = ConnectPaths(raczka, przeciecieRaczka, 0.75f * ZBlockSize * CmToMm);
         raczka = ConnectPaths(raczka, dziura, 0.75f * ZBlockSize * CmToMm);
 
+        dziubek = ConnectPaths(C0, dziubek, 0.8f * ZBlockSize * CmToMm);
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
 
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
@@ -1005,7 +1044,7 @@ public partial class PathsGenerator
                 };
             }
         }
-        
+
         SavePath(frez, radius, koncowe, false);
     }
 

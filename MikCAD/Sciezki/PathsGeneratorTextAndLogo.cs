@@ -159,7 +159,7 @@ public partial class PathsGenerator
 
         //K
         K1 = GenerateK(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
-        currYPos -= moveBetweenLetters;
+        currYPos -= moveBetweenLetters*0.75f;
 
         //0
         O = GenerateO(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
@@ -408,7 +408,7 @@ public partial class PathsGenerator
             new Vector3()
             {
                 X = startX,
-                Y = currYPos,
+                Y = currYPos = currYPos -moveBetweenPartsOfLetter/2,
                 Z = zText
             });
         L_.Add(

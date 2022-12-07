@@ -115,7 +115,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius * 0.01f;
+                    posXInMm += radius* 0.015f ;
                 }
                 else
                 {
@@ -124,7 +124,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius * 0.01f;
+                    posXInMm -= radius* 0.015f;
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
@@ -191,7 +191,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius * 0.01f;
+                    posXInMm += radius * 0.015f;
                 }
                 else
                 {
@@ -200,7 +200,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius * 0.01f;
+                    posXInMm -= radius * 0.015f;
                 }
 
                 posZInMm = MathF.Max(SupportSize * CmToMm,

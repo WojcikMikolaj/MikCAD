@@ -162,8 +162,8 @@ public partial class PathsGenerator
         currYPos -= moveBetweenLetters*0.75f;
 
         //0
-        O = GenerateO(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
-        currYPos -= moveBetweenPartsOfLetter*1.5f;
+        O = GenerateO(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.8f);
+        currYPos -= moveBetweenPartsOfLetter*1.8f;
         currYPos -= moveBetweenLetters;
 
         //Ł
@@ -186,8 +186,8 @@ public partial class PathsGenerator
         currYPos -= moveBetweenLetters;
 
         //Ó
-        O_ = GenerateO_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.5f);
-        currYPos -= moveBetweenPartsOfLetter*1.5f;
+        O_ = GenerateO_(TextStartXInMm, ref currYPos, moveBetweenPartsOfLetter*1.8f);
+        currYPos -= moveBetweenPartsOfLetter*1.8f;
         currYPos -= moveBetweenLetters;
 
         //J

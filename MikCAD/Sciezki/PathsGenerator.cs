@@ -115,7 +115,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius* 0.015f ;
+                    posXInMm += radius* 0.5f ;
                 }
                 else
                 {
@@ -124,7 +124,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius* 0.015f;
+                    posXInMm -= radius* 0.5f;
                 }
 
                 posZInMm = MathF.Max(nominalHeightForFirstPass,
@@ -191,7 +191,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm += radius * 0.015f;
+                    posXInMm += radius * 0.5f;
                 }
                 else
                 {
@@ -200,7 +200,7 @@ public partial class PathsGenerator
                         break;
                     }
 
-                    posXInMm -= radius * 0.015f;
+                    posXInMm -= radius * 0.5f;
                 }
 
                 posZInMm = MathF.Max(SupportSize * CmToMm,
@@ -246,7 +246,7 @@ public partial class PathsGenerator
         });
 
 
-        SavePath(frez, radius, list);
+        SavePath(frez, radius, list, false);
     }
 
     public void GenerateSupportFlatFinish(CutterType frez, uint radius)

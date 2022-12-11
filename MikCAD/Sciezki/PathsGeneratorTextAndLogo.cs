@@ -20,7 +20,7 @@ public partial class PathsGenerator
 {
     public float TextStartXInMm { get; set; } = -70;
     public float TextStartYInMm { get; set; } = 35;
-    public float TextHeightInMm { get; set; } = 10;
+    public float TextHeightInMm { get; set; } = 9;
 
     public float zText => SupportSize * CmToMm - 0.05f;
 

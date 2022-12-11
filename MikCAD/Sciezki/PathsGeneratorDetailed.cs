@@ -510,7 +510,7 @@ public partial class PathsGenerator
                     for (int j = 0; j < samplesPerParam; j++)
                     {
                         var point = detailed.GetValueAt(u, v);
-                        if (intersectLeft.IsInside(u, v))
+                        if (intersectLeft.IsInside(u, v + 0.01f))
                         {
                             v += dV;
                             continue;
@@ -659,12 +659,15 @@ public partial class PathsGenerator
                 {
                     if (!useHelp)
                     {
-                        interLeftPoints.Add(point with {Z = point.Z + .12f});
+                        interLeftPoints.Add(point with {Z = point.Z + .15f});
                     }
                     else
                     {
                         exitOnBrake = true;
-                        interLeftPointsHelp.Add(point with {Z = point.Z + .12f});
+                        interLeftPointsHelp.Add(point with
+                        {
+                            Z = point.Z + .15f
+                        });
                     }
                 }
                 else
@@ -1030,6 +1033,8 @@ public partial class PathsGenerator
 
         dziubek = ConnectPaths(C0, dziubek, 0.8f * ZBlockSize * CmToMm);
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
+
+        sloik = sloikLewo;
 
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
         AddMoveFromAndToCenter(koncowe);

@@ -135,7 +135,7 @@ public partial class PathsGenerator
         var przeciecieDziubek = new List<Vector3>();
 
         var dziura = new List<Vector3>();
-        
+
         var C0 = new List<Vector3>();
 
         #region raczka
@@ -703,11 +703,12 @@ public partial class PathsGenerator
             var lines = new List<List<Vector3>>();
 
             var samplesPerParam = 100;
+            var samplesPerParamV = 200;
 
             var u = 0.0f;
 
             var dU = detailedD.USize / samplesPerParam;
-            var dV = detailedD.VSize / samplesPerParam;
+            var dV = detailedD.VSize / samplesPerParamV;
 
 
             //gora
@@ -718,9 +719,12 @@ public partial class PathsGenerator
                     var v = 0.0f;
                     var startv = intersectLeft.GetVOnULineSecondObject(u);
                     var points = new List<Vector3>();
-                    for (int j = 0; j < 52; j++)
+                    for (int j = 0; j < 104; j++)
                     {
-                        if (v >= startv + 0.15f)
+                        if ((v >= startv + 0.12f && i > samplesPerParam / 2 + 45)
+                            || (v >= startv + 0.18f && i > samplesPerParam / 2 + 39 && i <= samplesPerParam / 2 + 45)
+                            || (v >= startv + 0.12f && i == samplesPerParam / 2 + 39)
+                            || (v >= startv + 0.08f && i <= samplesPerParam / 2 + 38))
                         {
                             var point = new Vector3();
 
@@ -771,7 +775,7 @@ public partial class PathsGenerator
                     var v = 0.0f;
                     var startv = intersectLeft.GetVOnULineSecondObject(u);
                     var points = new List<Vector3>();
-                    for (int j = 0; j < 52; j++)
+                    for (int j = 0; j < 104; j++)
                     {
                         if (v >= startv)
                         {
@@ -833,9 +837,9 @@ public partial class PathsGenerator
                 {
                     var v = 0.0f;
                     var points = new List<Vector3>();
-                    for (int j = 0; j < samplesPerParam; j++)
+                    for (int j = 0; j < samplesPerParamV; j++)
                     {
-                        if (j > 70)
+                        if (j > 140)
                         {
                             var point = new Vector3();
 
@@ -884,9 +888,9 @@ public partial class PathsGenerator
                 {
                     var v = 0.0f;
                     var points = new List<Vector3>();
-                    for (int j = 0; j < samplesPerParam; j++)
+                    for (int j = 0; j < samplesPerParamV; j++)
                     {
-                        if (j > 70 && ((i < 5 && j < 95) || j < 90))
+                        if (j > 140 && ((i < 5 && j < 190) || j < 180))
                         {
                             var point = new Vector3();
 
@@ -982,6 +986,7 @@ public partial class PathsGenerator
                 {
                 }
             }
+
             for (int i = 0; i < 50; i++)
             {
                 var pos = detailedD.GetValueAt(u * i / 100f, v / 2);
@@ -1032,11 +1037,31 @@ public partial class PathsGenerator
         raczka = ConnectPaths(raczka, dziura, 0.75f * ZBlockSize * CmToMm);
 
         dziubek = ConnectPaths(C0, dziubek, 0.8f * ZBlockSize * CmToMm);
+        for (int i = przeciecieDziubek.Count / 2; i < przeciecieDziubek.Count; i++)
+        {
+            przeciecieDziubek[i] = przeciecieDziubek[i] with
+            {
+                X = przeciecieDziubek[i].X + 0.1f,
+                Y = przeciecieDziubek[i].Y + 0.1f,
+                Z = przeciecieDziubek[i].Z - 0.1f
+            };
+        }
+        
+        for (int i = 0; i < przeciecieDziubek.Count/2; i++)
+        {
+            przeciecieDziubek[i] = przeciecieDziubek[i] with
+            {
+                Z = przeciecieDziubek[i].Z - 0.1f
+            };
+        }
+
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
 
         sloik = sloikLewo;
 
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
+        //var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, przeciecieDziubek));
+        //var koncowe = ConnectPaths(dziubek, przeciecieDziubek);
         AddMoveFromAndToCenter(koncowe);
 
         for (int i = 0; i < koncowe.Count; i++)

@@ -510,7 +510,11 @@ public partial class PathsGenerator
                     for (int j = 0; j < samplesPerParam; j++)
                     {
                         var point = detailed.GetValueAt(u, v);
-                        if (intersectLeft.IsInside(u, v + 0.01f))
+                        if ((intersectLeft.IsInside(u, v) && i < 35)
+                            || (intersectLeft.IsInside(u, v - 0.1f) && i == 35)
+                            || (intersectLeft.IsInside(u, v - 0.1f) && i == 36)
+                            || (intersectLeft.IsInside(u, v) && i >= 37)
+                            )
                         {
                             v += dV;
                             continue;
@@ -721,10 +725,12 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < 104; j++)
                     {
-                        if ((v >= startv + 0.12f && i > samplesPerParam / 2 + 45)
-                            || (v >= startv + 0.18f && i > samplesPerParam / 2 + 39 && i <= samplesPerParam / 2 + 45)
-                            || (v >= startv + 0.12f && i == samplesPerParam / 2 + 39)
-                            || (v >= startv + 0.08f && i <= samplesPerParam / 2 + 38))
+                        if ((v >= startv + 0.14f && i > samplesPerParam / 2 + 48)
+                            || (v >= startv + 0.17f && i > samplesPerParam / 2 + 45 && i <= samplesPerParam / 2 + 48)
+                            || (v >= startv + 0.20f && i > samplesPerParam / 2 + 39 && i <= samplesPerParam / 2 + 45)
+                            || (v >= startv + 0.18f && i == samplesPerParam / 2 + 39)
+                            || (v >= startv + 0.18f && i == samplesPerParam / 2 + 38)
+                            || (v >= startv + 0.08f && i <= samplesPerParam / 2 + 37))
                         {
                             var point = new Vector3();
 
@@ -777,7 +783,9 @@ public partial class PathsGenerator
                     var points = new List<Vector3>();
                     for (int j = 0; j < 104; j++)
                     {
-                        if (v >= startv)
+                        if ((v >= startv + 0.1f && i <= 1)
+                            ||(v >= startv + 0.05f && i is > 1 and <= 6)
+                            ||(v >= startv && i>6))
                         {
                             if (it < 2)
                             {
@@ -1043,21 +1051,23 @@ public partial class PathsGenerator
             {
                 X = przeciecieDziubek[i].X + 0.1f,
                 Y = przeciecieDziubek[i].Y + 0.1f,
-                Z = przeciecieDziubek[i].Z - 0.1f
+                Z = przeciecieDziubek[i].Z - 0.08f
             };
         }
-        
-        for (int i = 0; i < przeciecieDziubek.Count/2; i++)
+
+        for (int i = 0; i < przeciecieDziubek.Count / 2; i++)
         {
             przeciecieDziubek[i] = przeciecieDziubek[i] with
             {
-                Z = przeciecieDziubek[i].Z - 0.1f
+                X = przeciecieDziubek[i].X + 0.1f,
+                Y = przeciecieDziubek[i].Y + 0.1f,
+                Z = przeciecieDziubek[i].Z - 0.08f
             };
         }
 
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
 
-        sloik = sloikLewo;
+        //sloik = sloikLewo;
 
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
         //var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, przeciecieDziubek));

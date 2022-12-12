@@ -1045,33 +1045,9 @@ public partial class PathsGenerator
         raczka = ConnectPaths(raczka, dziura, 0.75f * ZBlockSize * CmToMm);
 
         dziubek = ConnectPaths(C0, dziubek, 0.8f * ZBlockSize * CmToMm);
-        for (int i = przeciecieDziubek.Count / 2; i < przeciecieDziubek.Count; i++)
-        {
-            przeciecieDziubek[i] = przeciecieDziubek[i] with
-            {
-                X = przeciecieDziubek[i].X + 0.1f,
-                Y = przeciecieDziubek[i].Y + 0.1f,
-                Z = przeciecieDziubek[i].Z - 0.08f
-            };
-        }
-
-        for (int i = 0; i < przeciecieDziubek.Count / 2; i++)
-        {
-            przeciecieDziubek[i] = przeciecieDziubek[i] with
-            {
-                X = przeciecieDziubek[i].X + 0.1f,
-                Y = przeciecieDziubek[i].Y + 0.1f,
-                Z = przeciecieDziubek[i].Z - 0.08f
-            };
-        }
-
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
 
-        //sloik = sloikLewo;
-
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
-        //var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, przeciecieDziubek));
-        //var koncowe = ConnectPaths(dziubek, przeciecieDziubek);
         AddMoveFromAndToCenter(koncowe);
 
         for (int i = 0; i < koncowe.Count; i++)

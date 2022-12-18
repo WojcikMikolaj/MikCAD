@@ -22,7 +22,7 @@ public partial class PathsGenerator
     public float TextStartYInMm { get; set; } = 35;
     public float TextHeightInMm { get; set; } = 9;
 
-    public float zText => SupportSize * CmToMm - 0.05f;
+    public float zText => SupportSize * CmToMm - 0.5f;
 
     public void GenerateTextAndLogo(CutterType frez, uint radiusInMm)
     {

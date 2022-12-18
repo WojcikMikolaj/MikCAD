@@ -981,9 +981,10 @@ public partial class PathsGenerator
         {
             var u = detailedD.USize;
             var v = detailedD.VSize;
+            var dV = detailedD.VSize / 100;
             for (int i = 50; i < 100; i++)
             {
-                var pos = detailedD.GetValueAt(u * i / 100f, v / 2);
+                var pos = detailedD.GetValueAt(u * i / 100f, v / 2 + 1.5f*dV);
                 (pos.Y, pos.Z) = (-pos.Z, pos.Y /*-radius/CmToMm*/);
                 pos *= CmToMm;
                 if (pos.Z >= SupportSize * CmToMm - 0.1)
@@ -997,7 +998,7 @@ public partial class PathsGenerator
 
             for (int i = 0; i < 50; i++)
             {
-                var pos = detailedD.GetValueAt(u * i / 100f, v / 2);
+                var pos = detailedD.GetValueAt(u * i / 100f, v / 2 +1.5f*dV);
                 (pos.Y, pos.Z) = (-pos.Z, pos.Y /*-radius/CmToMm*/);
                 pos *= CmToMm;
                 if (pos.Z >= SupportSize * CmToMm - 0.1)
@@ -1012,7 +1013,71 @@ public partial class PathsGenerator
 
         #endregion
 
+        #region koniec dziobka
 
+        var koniecDziubka = new List<Vector3>();
+        
+        {
+            var samplesPerParam = 100;
+            var samplesPerParamV = 200;
+
+            var u = 0.0f;
+
+            var dU = detailedD.USize / samplesPerParam;
+            var dV = detailedD.VSize / samplesPerParamV;
+
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                var point = detailedD.GetValueAt(u, detailedD.VSize - dV);
+                if (point.isFinite())
+                {
+                    (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
+                    point *= CmToMm;
+                    if (point.Z >= SupportSize * CmToMm - 0.1)
+                    {
+                        koniecDziubka.Add(point);
+                    }
+                }
+                
+                u += dU;
+            }
+        }
+
+        #endregion
+
+        #region koniec dzbana
+
+        var koniecDzbana = new List<Vector3>();
+        
+        {
+            var samplesPerParam = 100;
+            var samplesPerParamV = 100;
+
+            var u = 0.0f;
+
+            var dU = detailed.USize / samplesPerParam;
+            var dV = detailed.VSize / samplesPerParamV;
+
+            for (int i = 0; i < samplesPerParam; i++)
+            {
+                var point = detailed.GetValueAt(u, detailed.VSize - dV);
+                if (point.isFinite())
+                {
+                    (point.Y, point.Z) = (-point.Z, point.Y /*-radius/CmToMm*/);
+                    point *= CmToMm;
+                    if (point.Z >= SupportSize * CmToMm - 0.1)
+                    {
+                        koniecDzbana.Add(point);
+                    }
+                }
+
+                u += dU;
+            }
+        }
+
+        #endregion
+        
+        
         for (int i = 0; i < finalPoints.Count; i++)
         {
             if (finalPoints[i].Z < SupportSize * CmToMm + 0.02f)
@@ -1027,7 +1092,8 @@ public partial class PathsGenerator
         var raczka = ConnectPaths(raczkaWewnatrz, raczkaZewnatrz, 0.7f * ZBlockSize * CmToMm);
         var sloikPrawo = ConnectPaths(sloikPrawoPomiedzy, sloikPrawoGora);
         var sloikSrodekPrawo = ConnectPaths(sloikSrodek, sloikPrawo);
-        var sloik = ConnectPaths(sloikLewo, sloikSrodekPrawo);
+        var sloik = ConnectPaths(sloikLewo, koniecDzbana);
+        sloik = ConnectPaths(sloik, sloikSrodekPrawo);
 
 
         AddMoveFromAndToCenter(sloikSrodek);
@@ -1046,6 +1112,7 @@ public partial class PathsGenerator
 
         dziubek = ConnectPaths(C0, dziubek, 0.8f * ZBlockSize * CmToMm);
         dziubek = ConnectPaths(dziubek, przeciecieDziubek, 0.5f * ZBlockSize * CmToMm);
+        dziubek = ConnectPaths(dziubek, koniecDziubka);
 
         var koncowe = ConnectPaths(raczka, ConnectPaths(sloik, dziubek));
         AddMoveFromAndToCenter(koncowe);

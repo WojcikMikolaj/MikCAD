@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -126,9 +126,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <None Remove="Textures\pd_v2.jpg" />
-    <Content Include="Textures\pd_v2.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Remove="Textures\Heightmap.jpg" />
     <None Remove="Icons\mikcad.ico" />
     <Content Include="Icons\mikcad.ico">
@@ -150,6 +147,18 @@
     <Content Include="Sciezki\logo.k01">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Remove="Textures\pd2_v2.jpg" />
+    <EmbeddedResource Include="Textures\pd2_v2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Textures\wood.jpg" />
+    <EmbeddedResource Include="Textures\wood.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="schema.json" />
+    <EmbeddedResource Include="schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dirkster.NumericUpDownLib" Version="3.2.0" />
@@ -164,11 +173,5 @@
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.1.0" />
     <PackageReference Include="SharpSceneSerializer" Version="1.2.1" />
     <PackageReference Include="SpicyTaco.AutoGrid" Version="1.2.29" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Textures\wood.jpg" />
-    <Content Include="Textures\wood.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 </Project>
